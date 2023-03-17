@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Box,
+  CircularProgress,
   Paper,
   Table,
   TableBody,
@@ -8,21 +10,12 @@ import {
   TableRow,
 } from "@mui/material";
 
-function createData(
-  name: string,
-  etiqueta: string,
-  favorito: boolean,
-  estado: string
-) {
-  return { name, etiqueta, favorito, estado };
-}
-
-const rows = [
-  createData("Ejercicio 1", "Herencia", true, "pending"),
-  createData("Ejercicio 2", "Poliformismo", false, "completado"),
-  createData("Ejercicio 3", "Getters", false, "pending"),
-  createData("Ejercicio 4", "Etiqueta Profesor", false, "errores"),
-];
+type MyType = {
+  name: string;
+  tags: string;
+  numberErrorsSolution: number;
+  statusSolution: string;
+};
 
 {
   //Obtener los datos con los http requests
@@ -30,24 +23,73 @@ const rows = [
 }
 
 export function Home() {
-  return (
-    <TableContainer component={Paper}>
-      <Table aria-label="exercises">
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.name}>
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">
-                {row.favorito ? "true" : "false"}
-              </TableCell>
-              <TableCell align="right">{row.etiqueta}</TableCell>
-              <TableCell align="right">{row.estado}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<MyType[]>();
+
+  useEffect(() => {
+    if (isLoading) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch("http://localhost:8080/exercises", {
+            method: "GET",
+          });
+          if (response.ok) {
+            setData(await response.json());
+            setError(null);
+            setIsLoading(true);
+          } else {
+            setError("Hubo un error al obtener los datos");
+            setIsLoading(true);
+          }
+        } catch (error: any) {
+          setError("Hubo un problema con la petición Fetch:" + error.message);
+          setIsLoading(true);
+        }
+      };
+      fetchData();
+    }
+  }, [isLoading]);
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "50px",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  if (data === undefined) {
+    return <p>Ayuda</p>;
+  } else {
+    return (
+      <TableContainer component={Paper}>
+        <Table aria-label="exercises">
+          <TableBody>
+            {data.map((row) => (
+              <TableRow key={row.name}>
+                <TableCell component="th" scope="row">
+                  {row.name}
+                </TableCell>
+                <TableCell align="right">{row.tags}</TableCell>
+                <TableCell align="right">{row.numberErrorsSolution}</TableCell>
+                <TableCell align="right">{row.statusSolution}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  }
 }
