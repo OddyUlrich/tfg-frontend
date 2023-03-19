@@ -8,13 +8,11 @@ import { Navbar } from "./components/Navbar";
 
 const darkTheme = createTheme({
   palette: {
-    mode: "light",
+    mode: "dark",
   },
 });
 
-{
-  //Revisar el modo noche una vez mas
-}
+//Revisar el modo noche una vez mas
 
 function App() {
   return (

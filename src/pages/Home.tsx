@@ -1,31 +1,26 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  CircularProgress,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-} from "@mui/material";
+import { Box, CircularProgress, Stack } from "@mui/material";
+import { ExerciseList } from "../components/ExerciseList";
 
-type MyType = {
+export type Tag = {
   name: string;
-  tags: string;
+};
+
+export type Exercise = {
+  name: string;
+  tags: Tag[];
+  batteryName: string;
   numberErrorsSolution: number;
   statusSolution: string;
 };
 
-{
-  //Obtener los datos con los http requests
-  //Preguntar a Axel por el TableCell scope
-}
+//https://mui.com/material-ui/react-progress/ lo del valor anterior
+//Siguiente paso: el collapse ---> mandar algo de vuelta al backend
 
 export function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<MyType[]>();
+  const [data, setData] = useState<Map<string, Exercise[]>>(new Map());
 
   useEffect(() => {
     if (isLoading) {
@@ -35,17 +30,30 @@ export function Home() {
             method: "GET",
           });
           if (response.ok) {
-            setData(await response.json());
+            const data: Exercise[] = await response.json();
+            const ejercicios = new Map<string, Exercise[]>();
+
+            for (const e of data) {
+              if (ejercicios.has(e.batteryName)) {
+                const valor = ejercicios.get(e.batteryName);
+                if (valor !== undefined) {
+                  valor.push(e);
+                }
+              } else {
+                ejercicios.set(e.batteryName, [e]);
+              }
+            }
+
+            setData(ejercicios);
+
             setError(null);
-            setIsLoading(true);
           } else {
             setError("Hubo un error al obtener los datos");
-            setIsLoading(true);
           }
         } catch (error: any) {
           setError("Hubo un problema con la petición Fetch:" + error.message);
-          setIsLoading(true);
         }
+        setIsLoading(false);
       };
       fetchData();
     }
@@ -54,9 +62,9 @@ export function Home() {
   if (isLoading) {
     return (
       <Box
+        display="flex"
+        justifyContent="center"
         sx={{
-          display: "flex",
-          justifyContent: "center",
           alignItems: "center",
           marginTop: "50px",
         }}
@@ -70,26 +78,9 @@ export function Home() {
     return <p>{error}</p>;
   }
 
-  if (data === undefined) {
-    return <p>Ayuda</p>;
-  } else {
-    return (
-      <TableContainer component={Paper}>
-        <Table aria-label="exercises">
-          <TableBody>
-            {data.map((row) => (
-              <TableRow key={row.name}>
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell align="right">{row.tags}</TableCell>
-                <TableCell align="right">{row.numberErrorsSolution}</TableCell>
-                <TableCell align="right">{row.statusSolution}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  }
+  return (
+    <Stack spacing={2} direction="column">
+      <ExerciseList data={data} />
+    </Stack>
+  );
 }

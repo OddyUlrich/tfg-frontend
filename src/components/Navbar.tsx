@@ -24,10 +24,6 @@ export const Navbar = () => {
           MyAPP
         </Typography>
         <Stack direction="row" spacing={2}>
-          {
-            //Puedo reducir esto?
-          }
-
           <IconButton component={Link} to="/about" color="inherit" size="large">
             <Forum fontSize="inherit" />
           </IconButton>
