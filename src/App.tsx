@@ -5,6 +5,7 @@ import { Home } from "./pages/Home";
 import { About } from "./pages/About";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { Navbar } from "./components/Navbar";
+import { MyBreadcrumbs } from "./components/MyBreadcrumbs";
 
 const darkTheme = createTheme({
   palette: {
@@ -19,6 +20,7 @@ function App() {
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <Navbar />
+      <MyBreadcrumbs />
       <div className="container">
         <Routes>
           <Route path="/" element={<Home />} />

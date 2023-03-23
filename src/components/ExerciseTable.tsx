@@ -1,39 +1,28 @@
 import {
   Box,
-  Chip,
   Collapse,
   IconButton,
   Paper,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
-  TableRow,
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { Exercise, ExerciseBattery, Tag } from "../pages/Home";
-import {
-  KeyboardArrowDown,
-  KeyboardArrowUp,
-  Star,
-  StarBorder,
-} from "@mui/icons-material";
+import { Exercise, ExerciseBattery } from "../pages/Home";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import { ExerciseRow } from "./ExerciseRow";
 
 type ExerciseListProps = {
   data: ExerciseBattery;
+  onFavRow: (exercise: Exercise) => void;
 };
 
 export function ExerciseTable(props: ExerciseListProps) {
   const [open, setOpen] = useState(true);
-  const [fav, setFav] = useState(false);
 
   const handleOpen = () => {
     setOpen(!open);
-  };
-
-  const handleFav = () => {
-    setFav(!fav);
   };
 
   return (
@@ -53,33 +42,7 @@ export function ExerciseTable(props: ExerciseListProps) {
           <Table aria-label="exercises">
             <TableBody>
               {props.data.exercises.map((row: Exercise) => (
-                <TableRow
-                  key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    <Typography variant="h6">{row.name}</Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    {row.tags.map((tag: Tag) => (
-                      <Chip
-                        key={tag.name}
-                        label={tag.name}
-                        sx={{
-                          border: 0,
-                          marginLeft: "5px",
-                          fontWeight: "bold",
-                        }}
-                      />
-                    ))}
-                  </TableCell>
-                  <TableCell align="center">
-                    <IconButton sx={{ border: 0 }} onClick={handleFav}>
-                      {fav ? <Star /> : <StarBorder />}
-                    </IconButton>
-                  </TableCell>
-                  <TableCell align="right">{row.statusSolution}</TableCell>
-                </TableRow>
+                <ExerciseRow exercise={row} onFav={props.onFavRow} />
               ))}
             </TableBody>
           </Table>

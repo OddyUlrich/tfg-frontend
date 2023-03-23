@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Box, CircularProgress, Stack } from "@mui/material";
-import { ExerciseList } from "../components/ExerciseList";
+import { Box, Card, CardContent, CircularProgress, Stack } from "@mui/material";
+import { ExerciseTable } from "../components/ExerciseTable";
 
 export type Tag = {
   name: string;
@@ -9,18 +9,25 @@ export type Tag = {
 export type Exercise = {
   name: string;
   tags: Tag[];
+  favorite: boolean;
   batteryName: string;
   numberErrorsSolution: number;
   statusSolution: string;
 };
 
-//https://mui.com/material-ui/react-progress/ lo del valor anterior
-//Siguiente paso: el collapse ---> mandar algo de vuelta al backend
+export type ExerciseBattery = {
+  batteryName: string;
+  exercises: Exercise[];
+};
 
 export function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<Map<string, Exercise[]>>(new Map());
+  const [data, setData] = useState<ExerciseBattery[]>([]);
+
+  const handleFavRow = (exercise: Exercise) => {
+    console.log("ey");
+  };
 
   useEffect(() => {
     if (isLoading) {
@@ -29,23 +36,28 @@ export function Home() {
           const response = await fetch("http://localhost:8080/exercises", {
             method: "GET",
           });
+
           if (response.ok) {
             const data: Exercise[] = await response.json();
-            const ejercicios = new Map<string, Exercise[]>();
+            const batteries: ExerciseBattery[] = [];
 
-            for (const e of data) {
-              if (ejercicios.has(e.batteryName)) {
-                const valor = ejercicios.get(e.batteryName);
-                if (valor !== undefined) {
-                  valor.push(e);
-                }
+            for (const exercise of data) {
+              const battery = batteries.find(
+                (battery) => battery.batteryName === exercise.batteryName
+              );
+              if (battery === undefined) {
+                const newBattery: ExerciseBattery = {
+                  batteryName: exercise.batteryName,
+                  exercises: [exercise],
+                };
+                batteries.push(newBattery);
               } else {
-                ejercicios.set(e.batteryName, [e]);
+                battery.exercises.push(exercise);
               }
             }
+            // Hashmap -> String/Exercises[] ->
 
-            setData(ejercicios);
-
+            setData(batteries);
             setError(null);
           } else {
             setError("Hubo un error al obtener los datos");
@@ -79,8 +91,28 @@ export function Home() {
   }
 
   return (
-    <Stack spacing={2} direction="column">
-      <ExerciseList data={data} />
-    </Stack>
+    <div
+      style={{
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%",
+      }}
+    >
+      <Card sx={{ width: "75%", marginTop: "50px", padding: "1%" }}>
+        <CardContent>
+          <Stack spacing={10} direction="column">
+            {data.map((battery) => (
+              <ExerciseTable
+                key={battery.batteryName}
+                data={battery}
+                onFavRow={handleFavRow}
+              />
+            ))}
+          </Stack>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
