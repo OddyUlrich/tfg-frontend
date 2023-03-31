@@ -1,9 +1,10 @@
-.centered {
+.centered-mt {
     width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
-    height: 100%;
     white-space: pre-line;
+    margin-top: 50px;
 }
 
 .flex-center{

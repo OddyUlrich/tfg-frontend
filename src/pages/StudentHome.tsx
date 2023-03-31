@@ -7,6 +7,7 @@ import {
   CardContent,
   CircularProgress,
   Stack,
+  Typography,
 } from "@mui/material";
 import { ExerciseTable } from "../components/ExerciseTable";
 import { MySnackbar } from "../components/MySnackbar";
@@ -120,25 +121,34 @@ export function StudentHome() {
 
   if (globalError) {
     return (
-      <div className="centered">
+      <div className="centered-mt">
         <Card
           className="flex-center"
           sx={{
             width: "40%",
-            marginTop: "50px",
           }}
         >
           <CardContent>
-            <p>{globalError}</p>
+            <Typography>{globalError}</Typography>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  return (
-    <div className="centered">
-      <Card sx={{ width: "75%", marginTop: "50px", padding: "1%" }}>
+  let content;
+  if (data.size === 0) {
+    const txt = "There is no exercises yet!\nAsk Penin ᕕ(⌐■_■)ᕗ ♪♬";
+    content = (
+      <>
+        <Typography whiteSpace="pre-line" variant="h5">
+          {txt}
+        </Typography>
+      </>
+    );
+  } else {
+    content = (
+      <Card sx={{ width: "75%", padding: "1%" }}>
         <CardContent>
           <Stack spacing={10} direction="column">
             {Array.from(data.keys()).map((battery) => (
@@ -152,6 +162,12 @@ export function StudentHome() {
           </Stack>
         </CardContent>
       </Card>
+    );
+  }
+
+  return (
+    <div className="centered-mt">
+      {content}
       <MySnackbar
         open={openSnackbar}
         severity={snackbarSeverity}
