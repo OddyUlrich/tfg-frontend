@@ -7,6 +7,7 @@ import {
   LinkProps,
   Typography,
 } from "@mui/material";
+import { Home } from "@mui/icons-material";
 
 const breadcrumbNameMap: { [key: string]: string } = {
   "/about": "About",
@@ -28,7 +29,13 @@ export function MyBreadcrumbs() {
   return (
     <Box sx={{ marginLeft: "25px", marginTop: "15px" }}>
       <Breadcrumbs separator="›" aria-label="breadcrumb">
-        <Link underline="hover" color="inherit" to="/">
+        <Link
+          sx={{ display: "flex", alignItems: "center" }}
+          underline="hover"
+          color="inherit"
+          to="/"
+        >
+          <Home sx={{ mr: 0.5, mb: 0.5 }} color="primary" fontSize="medium" />
           Home
         </Link>
         {pathnames.map((value, index) => {

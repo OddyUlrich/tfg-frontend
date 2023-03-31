@@ -1,19 +1,15 @@
 import { AppBar, IconButton, Stack, Toolbar, Typography } from "@mui/material";
-import {
-  AccountCircle,
-  CatchingPokemon,
-  Forum,
-  Notifications,
-} from "@mui/icons-material";
+import { AccountCircle, Forum, Notifications } from "@mui/icons-material";
 import React from "react";
 import { Link } from "react-router-dom";
+import myLogo from "../images/logo192.svg";
 
 export const Navbar = () => {
   return (
     <AppBar position="static">
       <Toolbar>
         <IconButton color="inherit" component={Link} to="/">
-          <CatchingPokemon />
+          <img alt="Logotipo" src={myLogo} height={40} width={40} />
         </IconButton>
         <Typography
           component={Link}

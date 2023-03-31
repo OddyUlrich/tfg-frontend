@@ -9,13 +9,14 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { Exercise, ExerciseBattery } from "../pages/Home";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { ExerciseRow } from "./ExerciseRow";
+import { Exercise } from "../Types";
 
 type ExerciseListProps = {
-  data: ExerciseBattery;
-  onFavRow: (exercise: Exercise) => void;
+  batteryName: string;
+  exercises: Exercise[];
+  onFavRow: (exercise: Exercise, index: number) => void;
 };
 
 export function ExerciseTable(props: ExerciseListProps) {
@@ -30,7 +31,7 @@ export function ExerciseTable(props: ExerciseListProps) {
       <Box justifyContent="left" display="flex">
         <Typography marginRight="10px" variant="h5" sx={{ fontWeight: "bold" }}>
           {" "}
-          {props.data.batteryName}
+          {props.batteryName}
         </Typography>
         <IconButton sx={{ border: 0 }} onClick={handleOpen}>
           {open ? <KeyboardArrowDown /> : <KeyboardArrowUp />}
@@ -41,8 +42,12 @@ export function ExerciseTable(props: ExerciseListProps) {
         <TableContainer component={Paper}>
           <Table aria-label="exercises">
             <TableBody>
-              {props.data.exercises.map((row: Exercise) => (
-                <ExerciseRow exercise={row} onFav={props.onFavRow} />
+              {props.exercises.map((row: Exercise, index) => (
+                <ExerciseRow
+                  key={row.name}
+                  exercise={row}
+                  onFav={() => props.onFavRow(row, index)}
+                />
               ))}
             </TableBody>
           </Table>

@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
-import { Home } from "./pages/Home";
+import { StudentHome } from "./pages/StudentHome";
 import { About } from "./pages/About";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { Navbar } from "./components/Navbar";
@@ -23,7 +23,7 @@ function App() {
       <MyBreadcrumbs />
       <div className="container">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<StudentHome />} />
           <Route path="/about" element={<About />} />
         </Routes>
       </div>

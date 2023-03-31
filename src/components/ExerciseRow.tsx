@@ -5,13 +5,14 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { Exercise, Tag } from "../pages/Home";
 import { Star, StarBorder } from "@mui/icons-material";
 import React from "react";
+import { Exercise, Tag } from "../Types";
+import { yellow } from "@mui/material/colors";
 
 type ExerciseRowProps = {
   exercise: Exercise;
-  onFav: (exercise: Exercise) => void;
+  onFav: () => void;
 };
 
 export function ExerciseRow(props: ExerciseRowProps) {
@@ -20,10 +21,10 @@ export function ExerciseRow(props: ExerciseRowProps) {
       key={props.exercise.name}
       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
     >
-      <TableCell component="th" scope="row">
+      <TableCell width="40%" component="th" scope="row">
         <Typography variant="h6">{props.exercise.name}</Typography>
       </TableCell>
-      <TableCell align="center">
+      <TableCell width="30%" align="center">
         {props.exercise.tags.map((tag: Tag) => (
           <Chip
             key={tag.name}
@@ -36,12 +37,13 @@ export function ExerciseRow(props: ExerciseRowProps) {
           />
         ))}
       </TableCell>
-      <TableCell align="center">
-        <IconButton
-          sx={{ border: 0 }}
-          onClick={() => props.onFav(props.exercise)}
-        >
-          {props.exercise.favorite ? <Star /> : <StarBorder />}
+      <TableCell width="10%" align="center">
+        <IconButton sx={{ border: 0 }} onClick={props.onFav}>
+          {props.exercise.favorite ? (
+            <Star sx={{ color: yellow["800"] }} />
+          ) : (
+            <StarBorder />
+          )}
         </IconButton>
       </TableCell>
       <TableCell align="right">{props.exercise.statusSolution}</TableCell>
