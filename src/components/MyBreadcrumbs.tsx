@@ -11,6 +11,7 @@ import { Home } from "@mui/icons-material";
 
 const breadcrumbNameMap: { [key: string]: string } = {
   "/about": "About",
+  "/*": "NotFound",
 };
 
 interface LinkRouterProps extends LinkProps {
@@ -44,7 +45,9 @@ export function MyBreadcrumbs() {
 
           return last ? (
             <Typography color="text.primary" key={to}>
-              {breadcrumbNameMap[to]}
+              {breadcrumbNameMap[to] !== undefined
+                ? breadcrumbNameMap[to]
+                : "Not found"}
             </Typography>
           ) : (
             <Link underline="hover" color="inherit" to={to} key={to}>

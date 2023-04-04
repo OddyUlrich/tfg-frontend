@@ -6,33 +6,25 @@ import {
   Card,
   CardContent,
   CircularProgress,
+  IconButton,
   Stack,
   Typography,
 } from "@mui/material";
 import { ExerciseTable } from "../components/ExerciseTable";
-import { MySnackbar } from "../components/MySnackbar";
 import { ErrorSpring, Exercise } from "../Types";
+import { enqueueSnackbar } from "notistack";
+import { Refresh } from "@mui/icons-material";
 
 export function StudentHome() {
   const [isLoading, setIsLoading] = useState(true);
   const [globalError, setGlobalError] = useState<string | null>(null);
-  const [favError, setFavError] = useState<string | null>(null);
-  const [snackbarText, setSnackbarText] = useState<string | null>(null);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarSeverity, setSnackbarSeverity] =
-    useState<AlertColor>("success");
   const [data, setData] = useState<Map<string, Exercise[]>>(new Map());
+  const [favError, setFavError] = useState<string | null>(null);
+  useState<AlertColor>("success");
 
-  const handleCloseSnackbar = (
-    event: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenSnackbar(false);
-  };
+  function refresh() {
+    setIsLoading(true);
+  }
 
   const handleFavRow = (exercise: Exercise, index: number) => {
     const updateFavorite = async () => {
@@ -58,17 +50,33 @@ export function StudentHome() {
         setData(newMap);
         setFavError(null);
 
-        setSnackbarText(`${exercise.name} set as favorite`);
-        setSnackbarSeverity("success");
-        setOpenSnackbar(true);
+        enqueueSnackbar(
+          `${exercise.name}` +
+            (exercise.favorite
+              ? " set as favorite"
+              : " removed from favorites"),
+          {
+            variant: "success",
+          }
+        );
       } catch (err: any) {
         setFavError(
-          `${exercise.name} could not be set as a favorite:\n` + err.message
+          `${exercise.name}` +
+            (exercise.favorite
+              ? " could not be set as favorite"
+              : " could not be removed from favorites") +
+            err.message
         );
         console.log(favError);
-        setSnackbarText(`${exercise.name} could not be set as a favorite`);
-        setSnackbarSeverity("error");
-        setOpenSnackbar(true);
+        enqueueSnackbar(
+          `${exercise.name}` +
+            (exercise.favorite
+              ? " could not be set as favorite"
+              : " could not be removed from favorites"),
+          {
+            variant: "error",
+          }
+        );
       }
     };
     updateFavorite();
@@ -111,33 +119,24 @@ export function StudentHome() {
     }
   }, [isLoading]);
 
-  if (isLoading) {
-    return (
-      <Box className="flex-center" marginTop="50px">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (globalError) {
-    return (
-      <div className="centered-mt">
-        <Card
-          className="flex-center"
-          sx={{
-            width: "40%",
-          }}
-        >
-          <CardContent>
-            <Typography>{globalError}</Typography>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   let content;
-  if (data.size === 0) {
+
+  if (isLoading) {
+    content = <CircularProgress />;
+  } else if (globalError) {
+    content = (
+      <Card
+        className="flex-center"
+        sx={{
+          width: "40%",
+        }}
+      >
+        <CardContent>
+          <Typography>{globalError}</Typography>
+        </CardContent>
+      </Card>
+    );
+  } else if (data.size === 0) {
     const txt = "There is no exercises yet!\nAsk Penin ᕕ(⌐■_■)ᕗ ♪♬";
     content = (
       <>
@@ -148,32 +147,30 @@ export function StudentHome() {
     );
   } else {
     content = (
-      <Card sx={{ width: "75%", padding: "1%" }}>
-        <CardContent>
-          <Stack spacing={10} direction="column">
-            {Array.from(data.keys()).map((battery) => (
-              <ExerciseTable
-                key={battery}
-                batteryName={battery}
-                exercises={data.get(battery) ?? []}
-                onFavRow={handleFavRow}
-              />
-            ))}
-          </Stack>
-        </CardContent>
-      </Card>
+      <Stack sx={{ width: "75%" }}>
+        <Box justifyContent="left" display="flex">
+          <IconButton color="primary" onClick={refresh}>
+            <Refresh />
+            <Typography marginLeft="6px"> Reload</Typography>
+          </IconButton>
+        </Box>
+        <Card sx={{ padding: "1%" }}>
+          <CardContent>
+            <Stack spacing={10} direction="column">
+              {Array.from(data.keys()).map((battery) => (
+                <ExerciseTable
+                  key={battery}
+                  batteryName={battery}
+                  exercises={data.get(battery) ?? []}
+                  onFavRow={handleFavRow}
+                />
+              ))}
+            </Stack>
+          </CardContent>
+        </Card>
+      </Stack>
     );
   }
 
-  return (
-    <div className="centered-mt">
-      {content}
-      <MySnackbar
-        open={openSnackbar}
-        severity={snackbarSeverity}
-        message={snackbarText}
-        handleClose={handleCloseSnackbar}
-      />
-    </div>
-  );
+  return <div className="centered-mt">{content}</div>;
 }

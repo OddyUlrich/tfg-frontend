@@ -6,6 +6,8 @@ import { About } from "./pages/About";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { Navbar } from "./components/Navbar";
 import { MyBreadcrumbs } from "./components/MyBreadcrumbs";
+import { SnackbarProvider } from "notistack";
+import { NotFound } from "./pages/NotFound";
 
 const darkTheme = createTheme({
   palette: {
@@ -13,20 +15,21 @@ const darkTheme = createTheme({
   },
 });
 
-//Revisar el modo noche una vez mas
-
 function App() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <Navbar />
-      <MyBreadcrumbs />
-      <div className="container">
-        <Routes>
-          <Route path="/" element={<StudentHome />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
-      </div>
+      <SnackbarProvider maxSnack={1}>
+        <Navbar />
+        <MyBreadcrumbs />
+        <div className="container">
+          <Routes>
+            <Route path="/" element={<StudentHome />} />
+            <Route path="/about" element={<About />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }
