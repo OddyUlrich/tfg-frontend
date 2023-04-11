@@ -1,14 +1,9 @@
-import {
-  Chip,
-  IconButton,
-  TableCell,
-  TableRow,
-  Typography,
-} from "@mui/material";
+import { Chip, IconButton, TableCell, TableRow } from "@mui/material";
 import { Star, StarBorder } from "@mui/icons-material";
 import React from "react";
 import { Exercise, Tag } from "../Types";
 import { yellow } from "@mui/material/colors";
+import { Link } from "../Utils";
 
 type ExerciseRowProps = {
   exercise: Exercise;
@@ -22,7 +17,16 @@ export function ExerciseRow(props: ExerciseRowProps) {
       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
     >
       <TableCell width="40%" component="th" scope="row">
-        <Typography variant="h6">{props.exercise.name}</Typography>
+        <Link
+          underline="hover"
+          variant="h6"
+          color="inherit"
+          to={{
+            pathname: `/exercises/${props.exercise.name}`,
+          }}
+        >
+          {props.exercise.name}
+        </Link>
       </TableCell>
       <TableCell width="30%" align="center">
         {props.exercise.tags.map((tag: Tag) => (

@@ -1,27 +1,13 @@
 import React from "react";
-import { Link as ReactLink, useLocation } from "react-router-dom";
-import {
-  Box,
-  Breadcrumbs,
-  Link as LinkMUI,
-  LinkProps,
-  Typography,
-} from "@mui/material";
+import { useLocation } from "react-router-dom";
+import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { Home } from "@mui/icons-material";
+import { Link } from "../Utils";
 
 const breadcrumbNameMap: { [key: string]: string } = {
   "/about": "About",
   "/*": "NotFound",
 };
-
-interface LinkRouterProps extends LinkProps {
-  to: string;
-  replace?: boolean;
-}
-
-function Link(props: LinkRouterProps) {
-  return <LinkMUI {...props} component={ReactLink} />;
-}
 
 export function MyBreadcrumbs() {
   const location = useLocation();

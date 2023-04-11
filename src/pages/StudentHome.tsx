@@ -32,7 +32,7 @@ export function StudentHome() {
         const response = await fetch(
           "http://localhost:8080/users/5/favorites/" + exercise.id,
           {
-            method: "PUT",
+            method: "PATCH",
           }
         );
 
@@ -44,8 +44,9 @@ export function StudentHome() {
         exercise.favorite = !exercise.favorite;
         const newMap = new Map(data);
 
-        const exerciseList = newMap.get(exercise.batteryName) ?? [];
+        const exerciseList = [...(newMap.get(exercise.batteryName) ?? [])];
         exerciseList[index] = exercise;
+        newMap.set(exercise.batteryName, exerciseList);
 
         setData(newMap);
         setFavError(null);

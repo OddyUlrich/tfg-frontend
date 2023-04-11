@@ -8,10 +8,11 @@ import { Navbar } from "./components/Navbar";
 import { MyBreadcrumbs } from "./components/MyBreadcrumbs";
 import { SnackbarProvider } from "notistack";
 import { NotFound } from "./pages/NotFound";
+import { ExerciseEditor } from "./pages/ExerciseEditor";
 
 const darkTheme = createTheme({
   palette: {
-    mode: "dark",
+    mode: "light",
   },
 });
 
@@ -26,6 +27,7 @@ function App() {
           <Routes>
             <Route path="/" element={<StudentHome />} />
             <Route path="/about" element={<About />} />
+            <Route path="/exercises/:id" element={<ExerciseEditor />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

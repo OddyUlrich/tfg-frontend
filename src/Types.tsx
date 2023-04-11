@@ -1,3 +1,11 @@
+import { LinkProps } from "@mui/material";
+import { Path } from "@remix-run/router/history";
+
+export interface LinkRouterProps extends LinkProps {
+  to: string | Partial<Path>;
+  replace?: boolean;
+}
+
 export type Tag = {
   name: string;
 };

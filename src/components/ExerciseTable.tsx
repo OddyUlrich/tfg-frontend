@@ -8,7 +8,7 @@ import {
   TableContainer,
   Typography,
 } from "@mui/material";
-import React, { useCallback, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   KeyboardArrowDown,
   KeyboardArrowUp,
@@ -24,32 +24,31 @@ type ExerciseListProps = {
   onFavRow: (exercise: Exercise, index: number) => void;
 };
 
+function compareExerciseByFavorite(a: Exercise, b: Exercise) {
+  if (a.favorite < b.favorite) {
+    return 1;
+  }
+  if (a.favorite > b.favorite) {
+    return -1;
+  }
+  return a.name.localeCompare(b.name);
+}
+
+function sortData(data: Exercise[], order: boolean) {
+  if (order) {
+    return data.sort((a, b) => compareExerciseByFavorite(a, b));
+  } else {
+    return data.sort((a, b) => a.name.localeCompare(b.name));
+  }
+}
+
 export function ExerciseTable(props: ExerciseListProps) {
   const [open, setOpen] = useState(true);
-  const [order, setOrder] = useState(false);
+  const [orderFav, setOrderFav] = useState(false);
 
-  function compareExerciseByFavorite(a: Exercise, b: Exercise) {
-    if (a.favorite < b.favorite) {
-      return 1;
-    }
-    if (a.favorite > b.favorite) {
-      return -1;
-    }
-
-    return a.name.localeCompare(b.name);
-  }
-
-  function sortData(data: Exercise[]) {
-    if (order) {
-      return data.sort((a, b) => compareExerciseByFavorite(a, b));
-    } else {
-      return data.sort((a, b) => a.name.localeCompare(b.name));
-    }
-  }
-
-  const sortedData = useCallback(
-    () => sortData(props.exercises),
-    [props.exercises, order]
+  const sortedData = useMemo(
+    () => sortData(props.exercises, orderFav),
+    [props.exercises, orderFav]
   );
 
   const handleOpen = () => {
@@ -57,7 +56,7 @@ export function ExerciseTable(props: ExerciseListProps) {
   };
 
   const handleOrder = () => {
-    setOrder(!order);
+    setOrderFav(!orderFav);
   };
 
   return (
@@ -78,7 +77,7 @@ export function ExerciseTable(props: ExerciseListProps) {
         </Box>
         <IconButton sx={{ border: 0 }} onClick={handleOrder} color="primary">
           <Typography marginRight="10px">Favorites First</Typography>
-          {order ? <RadioButtonChecked /> : <RadioButtonUnchecked />}
+          {orderFav ? <RadioButtonChecked /> : <RadioButtonUnchecked />}
         </IconButton>
       </Box>
 
@@ -86,7 +85,7 @@ export function ExerciseTable(props: ExerciseListProps) {
         <TableContainer component={Paper}>
           <Table aria-label="exercises">
             <TableBody>
-              {sortedData().map((row: Exercise, index) => (
+              {sortedData.map((row: Exercise, index) => (
                 <ExerciseRow
                   key={row.name}
                   exercise={row}

@@ -11,3 +11,14 @@
     display: flex;
     justify-content: center;
 }
+
+.flex-editor{
+    display: flex;
+    justify-content: right;
+    margin-right: 50px;
+}
+
+.editor{
+    display: flex;
+    border: 1px solid #ced4da;
+}
