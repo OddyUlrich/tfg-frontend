@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "../assets/styles.css";
 import {
   AlertColor,
@@ -14,6 +14,7 @@ import { ExerciseTable } from "../components/ExerciseTable";
 import { ErrorSpring, Exercise } from "../Types";
 import { enqueueSnackbar } from "notistack";
 import { Refresh } from "@mui/icons-material";
+import { MyBreadcrumbs } from "../components/MyBreadcrumbs";
 
 export function StudentHome() {
   const [isLoading, setIsLoading] = useState(true);
@@ -158,7 +159,7 @@ export function StudentHome() {
         <Card sx={{ padding: "1%" }}>
           <CardContent>
             <Stack spacing={10} direction="column">
-              {Array.from(data.keys()).map((battery) => (
+              {Array.from(data.keys()).map((battery, index) => (
                 <ExerciseTable
                   key={battery}
                   batteryName={battery}
@@ -173,5 +174,10 @@ export function StudentHome() {
     );
   }
 
-  return <div className="centered-mt">{content}</div>;
+  return (
+    <>
+      <MyBreadcrumbs />
+      <div className="centered-mt">{content}</div>;
+    </>
+  );
 }

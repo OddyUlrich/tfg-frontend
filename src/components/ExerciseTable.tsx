@@ -59,8 +59,10 @@ export function ExerciseTable(props: ExerciseListProps) {
     setOrderFav(!orderFav);
   };
 
+  const batterySection = props.batteryName?.split(" ").join("-");
+
   return (
-    <div>
+    <div id={batterySection}>
       <Box display="flex">
         <Box justifyContent="left" display="flex" sx={{ flexGrow: 1 }}>
           <Typography

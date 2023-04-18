@@ -2,8 +2,12 @@ import { LinkProps } from "@mui/material";
 import { Path } from "@remix-run/router/history";
 
 export interface LinkRouterProps extends LinkProps {
-  to: string | Partial<Path>;
+  to:
+    | string
+    | Partial<Path>
+    | { pathname: string; state: { [key: string]: any } };
   replace?: boolean;
+  smooth?: boolean;
 }
 
 export type Tag = {

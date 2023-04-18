@@ -1,5 +1,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
+import { MyBreadcrumbs } from "../components/MyBreadcrumbs";
 
 export function NotFound() {
   return (

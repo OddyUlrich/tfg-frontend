@@ -5,21 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Utils.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/FileTree.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Types.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/assets/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ExerciseRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExerciseRow.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ExerciseTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExerciseTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/MyBreadcrumbs.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MyBreadcrumbs.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Navbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/About.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/About.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/NotFound.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/NotFound.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/StudentHome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/StudentHome.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/react-app-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/react-app-env.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +144,15 @@
       <workItem from="1680657330472" duration="1596000" />
       <workItem from="1680747875377" duration="2678000" />
       <workItem from="1681089232048" duration="4706000" />
-      <workItem from="1681174536543" duration="6341000" />
+      <workItem from="1681174536543" duration="6925000" />
+      <workItem from="1681234629598" duration="9056000" />
+      <workItem from="1681294441705" duration="6524000" />
+      <workItem from="1681320413135" duration="20990000" />
+      <workItem from="1681408320096" duration="7218000" />
+      <workItem from="1681582250104" duration="16714000" />
+      <workItem from="1681728316078" duration="888000" />
+      <workItem from="1681776079623" duration="8810000" />
+      <workItem from="1681804238267" duration="4445000" />
     </task>
     <servers />
   </component>

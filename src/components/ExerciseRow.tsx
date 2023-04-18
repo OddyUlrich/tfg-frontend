@@ -22,7 +22,7 @@ export function ExerciseRow(props: ExerciseRowProps) {
           variant="h6"
           color="inherit"
           to={{
-            pathname: `/exercises/${props.exercise.name}`,
+            pathname: `/exercises/${props.exercise.id}`,
           }}
         >
           {props.exercise.name}
