@@ -1,24 +1,26 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { MonacoEditor } from "../components/MonacoEditor";
 import { MyBreadcrumbs } from "../components/MyBreadcrumbs";
-import { ErrorSpring, Exercise } from "../Types";
-import { useLocation } from "react-router-dom";
+import { ErrorSpring, ExerciseCode, LoginTypes } from "../Types";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Allotment } from "allotment";
 import { FileTree } from "../components/FileTree";
 import { Box } from "@mui/material";
 import TreeModel from "tree-model";
-import { treeData } from "../Utils";
+import { handleCheckStatus, LoginContext, treeData } from "../Utils";
 
 export function ExerciseEditor() {
   const location = useLocation();
-  const exerciseNameRef = useRef<string | undefined>();
-  const batteryNameRef = useRef<string | undefined>();
+  const [exerciseName, setExerciseName] = useState<string>();
+  const [batteryName, setBatteryName] = useState<string>();
+  const loginStatus: LoginTypes = useContext(LoginContext);
+  const navigate = useNavigate();
+
+  const exerciseId = decodeURI(
+    location.pathname.slice(location.pathname.lastIndexOf("/") + 1)
+  );
 
   useEffect(() => {
-    const exerciseId = decodeURI(
-      location.pathname.slice(location.pathname.lastIndexOf("/") + 1)
-    );
-
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -28,30 +30,30 @@ export function ExerciseEditor() {
           }
         );
 
+        handleCheckStatus(response.status, navigate, loginStatus);
+
         if (!response.ok) {
           const errorExercise: ErrorSpring = await response.json();
           throw new Error("Error from backend - " + errorExercise.message);
         }
 
-        const exercise: Exercise = await response.json();
-        exerciseNameRef.current = exercise.name;
-        batteryNameRef.current = exercise.batteryName;
+        const exercise: ExerciseCode = await response.json();
+        setExerciseName(exercise.name);
+        setBatteryName(exercise.exerciseBattery.name);
       } catch (error: any) {
-        //TODO queda pendiente ver qué hacer si el ejercicio no existe
+        //TODO: queda pendiente ver qué hacer si el ejercicio no existe, literalmente poner texto
+        //TODO: de ejemplo diciendo que seleccionemos un objeto en el arbol de ficheros
       }
     };
     fetchData();
-  }, []);
+  }, [exerciseId, loginStatus, navigate]);
 
   const tree = new TreeModel();
   const root = tree.parse(treeData);
 
   return (
     <>
-      <MyBreadcrumbs
-        exerciseName={exerciseNameRef.current}
-        batteryName={batteryNameRef.current}
-      />
+      <MyBreadcrumbs exerciseName={exerciseName} batteryName={batteryName} />
       <Box className="editor-size" width="100%">
         <Allotment>
           <Allotment.Pane snap>

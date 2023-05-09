@@ -3,7 +3,7 @@ import { Star, StarBorder } from "@mui/icons-material";
 import React from "react";
 import { Exercise, Tag } from "../Types";
 import { yellow } from "@mui/material/colors";
-import { Link } from "../Utils";
+import { Link } from "./Link";
 
 type ExerciseRowProps = {
   exercise: Exercise;

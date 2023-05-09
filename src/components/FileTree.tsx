@@ -30,7 +30,7 @@ export const FileTree: FC<MyTreeItemProps> = ({ nodeId, label, children }) => {
       defaultCollapseIcon={<MinusSquare />}
       defaultExpandIcon={<PlusSquare />}
       defaultEndIcon={<InsertDriveFile />}
-      sx={{ height: 264, flexGrow: 1, maxWidth: 400, overflowY: "auto" }}
+      sx={{ height: 264, flexGrow: 1, maxWidth: 600, overflowY: "auto" }}
     >
       <MyTreeItem nodeId={nodeId} label={label} children={children} />
     </TreeView>

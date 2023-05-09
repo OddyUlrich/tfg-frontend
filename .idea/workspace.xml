@@ -5,27 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/components/FileTree.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Utils.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Link.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/RequireAuth.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/Login.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/SignUp.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Types.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils.tsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ExerciseRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExerciseRow.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ExerciseTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExerciseTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/FileTree.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/FileTree.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/MyBreadcrumbs.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MyBreadcrumbs.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Navbar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/About.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/About.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/NotFound.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/NotFound.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/StudentHome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/StudentHome.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/react-app-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/react-app-env.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,7 +151,18 @@
       <workItem from="1681582250104" duration="16714000" />
       <workItem from="1681728316078" duration="888000" />
       <workItem from="1681776079623" duration="8810000" />
-      <workItem from="1681804238267" duration="4445000" />
+      <workItem from="1681804238267" duration="10856000" />
+      <workItem from="1681925206706" duration="5417000" />
+      <workItem from="1682054307491" duration="609000" />
+      <workItem from="1682183789105" duration="9169000" />
+      <workItem from="1682364033552" duration="729000" />
+      <workItem from="1682976066994" duration="7133000" />
+      <workItem from="1682986241864" duration="10462000" />
+      <workItem from="1683065442786" duration="3874000" />
+      <workItem from="1683255148773" duration="21465000" />
+      <workItem from="1683309140335" duration="12363000" />
+      <workItem from="1683475228265" duration="12000000" />
+      <workItem from="1683547018057" duration="11550000" />
     </task>
     <servers />
   </component>

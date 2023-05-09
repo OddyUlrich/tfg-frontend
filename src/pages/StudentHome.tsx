@@ -11,10 +11,31 @@ import {
   Typography,
 } from "@mui/material";
 import { ExerciseTable } from "../components/ExerciseTable";
-import { ErrorSpring, Exercise } from "../Types";
+import { ErrorSpring, Exercise, LoginTypes } from "../Types";
 import { enqueueSnackbar } from "notistack";
 import { Refresh } from "@mui/icons-material";
 import { MyBreadcrumbs } from "../components/MyBreadcrumbs";
+import { handleCheckStatus, LoginContext } from "../Utils";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+
+async function checkResponseError(
+  response: Response,
+  navigate: NavigateFunction,
+  loginStatus: LoginTypes
+) {
+  if (
+    !response.ok &&
+    !handleCheckStatus(response.status, navigate, loginStatus)
+  ) {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      const errorExercise: ErrorSpring = await response.json();
+      throw new Error("Error from backend - " + errorExercise.message);
+    } else {
+      throw new Error("Error from backend - " + response.status);
+    }
+  }
+}
 
 export function StudentHome() {
   const [isLoading, setIsLoading] = useState(true);
@@ -22,6 +43,9 @@ export function StudentHome() {
   const [data, setData] = useState<Map<string, Exercise[]>>(new Map());
   const [favError, setFavError] = useState<string | null>(null);
   useState<AlertColor>("success");
+
+  const loginStatus: LoginTypes = useContext(LoginContext);
+  const navigate = useNavigate();
 
   function refresh() {
     setIsLoading(true);
@@ -31,16 +55,14 @@ export function StudentHome() {
     const updateFavorite = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/users/5/favorites/" + exercise.id,
+          "http://localhost:8080/users/favorites/" + exercise.id,
           {
             method: "PATCH",
+            credentials: "include",
           }
         );
 
-        if (!response.ok) {
-          const errorPatch: ErrorSpring = await response.json();
-          throw new Error("Error from backend " + errorPatch.message);
-        }
+        await checkResponseError(response, navigate, loginStatus);
 
         exercise.favorite = !exercise.favorite;
         const newMap = new Map(data);
@@ -90,20 +112,18 @@ export function StudentHome() {
         try {
           const response = await fetch("http://localhost:8080/exercises", {
             method: "GET",
+            credentials: "include",
           });
 
-          if (!response.ok) {
-            const errorPatch: ErrorSpring = await response.json();
-            throw new Error("Error from backend - " + errorPatch.message);
-          }
+          await checkResponseError(response, navigate, loginStatus);
 
-          const data: Exercise[] = await response.json();
+          const exercises: Exercise[] = await response.json();
 
           const batteries = new Map<string, Exercise[]>(
-            data.map((exercise) => [exercise.batteryName, []])
+            exercises.map((exercise) => [exercise.batteryName, []])
           );
 
-          data.forEach((exercise) => {
+          exercises.forEach((exercise) => {
             batteries.get(exercise.batteryName)?.push(exercise);
           });
 
@@ -119,7 +139,7 @@ export function StudentHome() {
       };
       fetchData();
     }
-  }, [isLoading]);
+  }, [isLoading, loginStatus, navigate]);
 
   let content;
 
@@ -159,7 +179,7 @@ export function StudentHome() {
         <Card sx={{ padding: "1%" }}>
           <CardContent>
             <Stack spacing={10} direction="column">
-              {Array.from(data.keys()).map((battery, index) => (
+              {Array.from(data.keys()).map((battery) => (
                 <ExerciseTable
                   key={battery}
                   batteryName={battery}
@@ -177,7 +197,7 @@ export function StudentHome() {
   return (
     <>
       <MyBreadcrumbs />
-      <div className="centered-mt">{content}</div>;
+      <div className="centered-mt">{content}</div>
     </>
   );
 }
