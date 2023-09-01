@@ -14,34 +14,14 @@ import { ExerciseTable } from "../components/ExerciseTable";
 import { ErrorSpring, Exercise, LoginTypes } from "../Types";
 import { enqueueSnackbar } from "notistack";
 import { Refresh } from "@mui/icons-material";
-import { MyBreadcrumbs } from "../components/MyBreadcrumbs";
-import { handleCheckStatus, LoginContext } from "../Utils";
-import { NavigateFunction, useNavigate } from "react-router-dom";
-
-async function checkResponseError(
-  response: Response,
-  navigate: NavigateFunction,
-  loginStatus: LoginTypes
-) {
-  if (
-    !response.ok &&
-    !handleCheckStatus(response.status, navigate, loginStatus)
-  ) {
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
-      const errorExercise: ErrorSpring = await response.json();
-      throw new Error("Error from backend - " + errorExercise.message);
-    } else {
-      throw new Error("Error from backend - " + response.status);
-    }
-  }
-}
+import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
+import { LoginContext } from "../Utils";
+import { useNavigate } from "react-router-dom";
 
 export function StudentHome() {
   const [isLoading, setIsLoading] = useState(true);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [data, setData] = useState<Map<string, Exercise[]>>(new Map());
-  const [favError, setFavError] = useState<string | null>(null);
   useState<AlertColor>("success");
 
   const loginStatus: LoginTypes = useContext(LoginContext);
@@ -62,7 +42,19 @@ export function StudentHome() {
           }
         );
 
-        await checkResponseError(response, navigate, loginStatus);
+        if (!response.ok) {
+          if (response.status === 403) {
+            loginStatus.setIsLogged(false);
+            navigate("/login");
+          }
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.indexOf("application/json") !== -1) {
+            const errorExercise: ErrorSpring = await response.json();
+            throw new Error("Error from backend - " + errorExercise.message);
+          } else {
+            throw new Error("Error from backend - " + response.status);
+          }
+        }
 
         exercise.favorite = !exercise.favorite;
         const newMap = new Map(data);
@@ -72,7 +64,6 @@ export function StudentHome() {
         newMap.set(exercise.batteryName, exerciseList);
 
         setData(newMap);
-        setFavError(null);
 
         enqueueSnackbar(
           `${exercise.name}` +
@@ -84,23 +75,15 @@ export function StudentHome() {
           }
         );
       } catch (err: any) {
-        setFavError(
+        const error =
           `${exercise.name}` +
-            (exercise.favorite
-              ? " could not be set as favorite"
-              : " could not be removed from favorites") +
-            err.message
-        );
-        console.log(favError);
-        enqueueSnackbar(
-          `${exercise.name}` +
-            (exercise.favorite
-              ? " could not be set as favorite"
-              : " could not be removed from favorites"),
-          {
-            variant: "error",
-          }
-        );
+          (exercise.favorite
+            ? " could not be set as favorite"
+            : " could not be removed from favorites");
+        console.log(error + ", " + err.message);
+        enqueueSnackbar(error, {
+          variant: "error",
+        });
       }
     };
     updateFavorite();
@@ -108,14 +91,28 @@ export function StudentHome() {
 
   useEffect(() => {
     if (isLoading) {
-      const fetchData = async () => {
+      const fetchExercises = async () => {
         try {
           const response = await fetch("http://localhost:8080/exercises", {
             method: "GET",
             credentials: "include",
           });
 
-          await checkResponseError(response, navigate, loginStatus);
+          if (!response.ok) {
+            if (response.status === 403) {
+              loginStatus.setIsLogged(false);
+              navigate("/login");
+            }
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+              const errorExercise: ErrorSpring = await response.json();
+              setIsLoading(false);
+              throw new Error("Error from backend - " + errorExercise.message);
+            } else {
+              setIsLoading(false);
+              throw new Error("Error from backend - " + response.status);
+            }
+          }
 
           const exercises: Exercise[] = await response.json();
 
@@ -130,14 +127,16 @@ export function StudentHome() {
           setData(batteries);
           setGlobalError(null);
         } catch (error: any) {
-          setIsLoading(false);
           setGlobalError(
+            "There was a problem fetching the data:\n" + error.message
+          );
+          console.log(
             "There was a problem fetching the data:\n" + error.message
           );
         }
         setIsLoading(false);
       };
-      fetchData();
+      fetchExercises();
     }
   }, [isLoading, loginStatus, navigate]);
 

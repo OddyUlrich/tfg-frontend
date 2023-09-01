@@ -26,36 +26,6 @@ export const LoginContext = createContext<LoginTypes>({
   },
 });
 
-export const handleCheckStatus = (
-  statusNumber: number,
-  navigate: NavigateFunction,
-  loginStatus: LoginTypes
-) => {
-  switch (statusNumber) {
-    case 401 | 403: {
-      loginStatus.setIsLogged(false);
-      navigate("/login");
-      enqueueSnackbar("Login or sign up, please", {
-        variant: "info",
-      });
-      break;
-    }
-    case 419: {
-      loginStatus.setIsLogged(false);
-      navigate("/login");
-      enqueueSnackbar("Last session has expired, please login again", {
-        variant: "error",
-      });
-      break;
-    }
-    default: {
-      break;
-    }
-  }
-
-  return statusNumber >= 200 && statusNumber < 300;
-};
-
 export const treeData = {
   nodeId: "1",
   label: "Main",

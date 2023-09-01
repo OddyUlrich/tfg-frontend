@@ -5,26 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Utils.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/Link.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/RequireAuth.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pages/Login.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pages/SignUp.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/files/Terms_and_Conditions.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/navigation/AlreadyAuth.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Types.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ExerciseRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExerciseRow.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/FileTree.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/FileTree.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MyBreadcrumbs.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MyBreadcrumbs.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Navbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Link.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/navigation/Link.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MyBreadcrumbs.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/navigation/MyBreadcrumbs.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/navigation/Navbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/RequireAuth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/navigation/RequireAuth.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/About.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/About.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/NotFound.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/NotFound.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Login.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/SignUp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SignUp.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/StudentHome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/StudentHome.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/react-app-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/react-app-env.d.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,6 +81,8 @@
       <recent name="D:\tfg-frontend\src\pages" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\tfg-frontend\public\files" />
+      <recent name="D:\tfg-frontend\src\components\navigation" />
       <recent name="D:\tfg-frontend\src\components" />
     </key>
   </component>
@@ -162,7 +159,14 @@
       <workItem from="1683255148773" duration="21465000" />
       <workItem from="1683309140335" duration="12363000" />
       <workItem from="1683475228265" duration="12000000" />
-      <workItem from="1683547018057" duration="11550000" />
+      <workItem from="1683547018057" duration="11871000" />
+      <workItem from="1683778682833" duration="1296000" />
+      <workItem from="1684005086377" duration="690000" />
+      <workItem from="1688403458191" duration="9495000" />
+      <workItem from="1688414648819" duration="634000" />
+      <workItem from="1688489083660" duration="10151000" />
+      <workItem from="1688578688633" duration="11887000" />
+      <workItem from="1693585196935" duration="12927000" />
     </task>
     <servers />
   </component>
@@ -174,7 +178,52 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="user">
+                    <value>
+                      <list>
+                        <option value="*" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="HEAD" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="*" />
+                </option>
+              </RecentGroup>
+            </list>
           </value>
         </entry>
       </map>

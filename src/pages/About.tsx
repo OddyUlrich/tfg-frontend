@@ -1,5 +1,5 @@
 import React from "react";
-import { MyBreadcrumbs } from "../components/MyBreadcrumbs";
+import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 
 export function About() {
   return (

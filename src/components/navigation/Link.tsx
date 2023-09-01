@@ -1,4 +1,4 @@
-import { HashLinkProps } from "../Types";
+import { HashLinkProps } from "../../Types";
 import { Link as LinkMUI } from "@mui/material";
 import { HashLink } from "react-router-hash-link";
 

@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MonacoEditor } from "../components/MonacoEditor";
-import { MyBreadcrumbs } from "../components/MyBreadcrumbs";
+import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import { ErrorSpring, ExerciseCode, LoginTypes } from "../Types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Allotment } from "allotment";
 import { FileTree } from "../components/FileTree";
 import { Box } from "@mui/material";
 import TreeModel from "tree-model";
-import { handleCheckStatus, LoginContext, treeData } from "../Utils";
+import { LoginContext, treeData } from "../Utils";
 
 export function ExerciseEditor() {
   const location = useLocation();
@@ -16,21 +16,20 @@ export function ExerciseEditor() {
   const loginStatus: LoginTypes = useContext(LoginContext);
   const navigate = useNavigate();
 
-  const exerciseId = decodeURI(
-    location.pathname.slice(location.pathname.lastIndexOf("/") + 1)
-  );
-
   useEffect(() => {
+    const exerciseId = decodeURI(
+      location.pathname.slice(location.pathname.lastIndexOf("/") + 1)
+    );
+
     const fetchData = async () => {
       try {
         const response = await fetch(
           "http://localhost:8080/exercises/" + exerciseId,
           {
             method: "GET",
+            credentials: "include",
           }
         );
-
-        handleCheckStatus(response.status, navigate, loginStatus);
 
         if (!response.ok) {
           const errorExercise: ErrorSpring = await response.json();
@@ -46,7 +45,7 @@ export function ExerciseEditor() {
       }
     };
     fetchData();
-  }, [exerciseId, loginStatus, navigate]);
+  }, [location.pathname]);
 
   const tree = new TreeModel();
   const root = tree.parse(treeData);

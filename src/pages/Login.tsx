@@ -15,7 +15,7 @@ import { enqueueSnackbar } from "notistack";
 import { ErrorSpring, LoginTypes, User } from "../Types";
 import { useContext } from "react";
 import { LoginContext } from "../Utils";
-import { Link } from "../components/Link";
+import { Link } from "../components/navigation/Link";
 
 function Copyright(props: any) {
   return (
@@ -48,53 +48,59 @@ export default function Login() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    if (!data.get("email")) {
+    const email = data.get("email");
+    if (!email) {
       setShowEmailError(true);
       setEmailMessage("The email field must be filled in");
       return;
-    } else {
-      setShowEmailError(false);
-      setEmailMessage("");
+    } else if (!validator.isEmail(email.toString())) {
+      setShowEmailError(true);
+      setEmailMessage("Email format is not correct");
+      return;
     }
+    setShowEmailError(false);
+    setEmailMessage("");
 
     if (!data.get("password")) {
       setShowPassError(true);
       setPassMessage("The password field must be filled in");
       return;
-    } else {
-      setShowPassError(false);
-      setPassMessage("");
     }
+    setShowPassError(false);
+    setPassMessage("");
 
     const login = async () => {
       try {
         //Primero intentamos hacer login al usuario
-        const responseLogin = await fetch("http://localhost:8080/login", {
+        const response = await fetch("http://localhost:8080/login", {
           method: "POST",
           body: JSON.stringify({
             email: data.get("email"),
             password: data.get("password"),
             remember: !!data.get("remember"),
           }),
+          headers: {
+            "Content-Type": "application/json",
+          },
           credentials: "include",
         });
 
         /* El servidor responde un 403 si los credenciales no son correctos y
          * en caso de cualquier otro error lanzamos un error*/
-        if (responseLogin.status === 403) {
+        if (response.status === 403) {
           enqueueSnackbar("User not found with these credentials", {
             variant: "error",
           });
-        } else if (!responseLogin.ok) {
+        } else if (!response.ok) {
           enqueueSnackbar("Error trying to log in, please try again", {
             variant: "error",
           });
-          const contentType = responseLogin.headers.get("content-type");
+          const contentType = response.headers.get("content-type");
           if (contentType && contentType.indexOf("application/json") !== -1) {
-            const errorExercise: ErrorSpring = await responseLogin.json();
+            const errorExercise: ErrorSpring = await response.json();
             throw new Error("Error from backend - " + errorExercise.message);
           } else {
-            throw new Error("Error from backend - " + responseLogin.status);
+            throw new Error("Error from backend - " + response.status);
           }
         } else {
           //En caso de hacer login correctamente obtenemos los datos del usuario

@@ -16,7 +16,7 @@ import {
   Notifications,
 } from "@mui/icons-material";
 import React from "react";
-import myLogo from "../images/logo192.svg";
+import myLogo from "../../images/logo192.svg";
 import { Link } from "react-router-dom";
 
 interface NavbarProps {

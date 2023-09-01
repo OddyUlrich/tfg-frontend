@@ -8,16 +8,17 @@ import {
   CssBaseline,
   ThemeProvider,
 } from "@mui/material";
-import { Navbar } from "./components/Navbar";
+import { Navbar } from "./components/navigation/Navbar";
 import { SnackbarProvider } from "notistack";
 import { NotFound } from "./pages/NotFound";
 import { ExerciseEditor } from "./pages/ExerciseEditor";
 import Login from "./pages/Login";
-import { handleCheckStatus, LoginContext } from "./Utils";
-import { RequireAuth } from "./components/RequireAuth";
+import { LoginContext } from "./Utils";
+import { RequireAuth } from "./components/navigation/RequireAuth";
 import { ErrorSpring, User } from "./Types";
 import { DateTime } from "luxon";
 import SignUp from "./pages/SignUp";
+import { AlreadyAuth } from "./components/navigation/AlreadyAuth";
 
 const darkTheme = createTheme({
   palette: {
@@ -39,7 +40,6 @@ function App() {
   const [creationDate, setCreationDate] = useState<DateTime | null>(null);
   const [roles, setRoles] = useState<string[]>([]);
   const [isLogged, setIsLogged] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   const stateLogin = useMemo(
     () => ({
@@ -68,8 +68,6 @@ function App() {
           credentials: "include",
         });
 
-        handleCheckStatus(response.status, navigate, stateLogin);
-
         if (!response.ok) {
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -93,7 +91,8 @@ function App() {
 
         setIsLoading(false);
       } catch (error: any) {
-        console.log(error);
+        setIsLoading(false);
+        console.log("FETCH ERROR: " + error);
       }
     };
     checkAuth();
@@ -127,8 +126,22 @@ function App() {
                       </RequireAuth>
                     }
                   />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<SignUp />} />
+                  <Route
+                    path="/login"
+                    element={
+                      <AlreadyAuth>
+                        <Login />
+                      </AlreadyAuth>
+                    }
+                  />
+                  <Route
+                    path="/signup"
+                    element={
+                      <AlreadyAuth>
+                        <SignUp />
+                      </AlreadyAuth>
+                    }
+                  />
                   <Route path="/about" element={<About />} />
                   <Route
                     path="/exercises/:exerciseId"

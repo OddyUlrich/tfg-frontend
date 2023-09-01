@@ -12,9 +12,12 @@ import { ErrorSpring, LoginTypes } from "../Types";
 import { useContext, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { IconButton, InputAdornment } from "@mui/material";
-import { Link } from "../components/Link";
+import { Link } from "../components/navigation/Link";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../Utils";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import validator from "validator";
 
 function Copyright(props: any) {
   return (
@@ -38,42 +41,63 @@ export default function SignUp() {
   const navigate = useNavigate();
   const loginStatus: LoginTypes = useContext(LoginContext);
 
+  const [showUsernameError, setShowUsernameError] = React.useState(false);
+  const [usernameMessage, setUsernameMessage] = React.useState("");
   const [showEmailError, setShowEmailError] = React.useState(false);
   const [emailMessage, setEmailMessage] = React.useState("");
   const [showPassError, setShowPassError] = React.useState(false);
   const [passMessage, setPassMessage] = React.useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isCheckboxDisabled, setIsCheckboxDisabled] = React.useState(true);
+  const [isCheckboxChecked, setIsCheckboxChecked] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
+
+  const handleLinkClick = () => {
+    setIsCheckboxDisabled(false);
+    setIsCheckboxChecked(true);
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     if (!data.get("username")) {
-      setShowEmailError(true);
-      setEmailMessage("The username field must be filled in");
+      setShowUsernameError(true);
+      setUsernameMessage("The username field must be filled in");
       return;
-    } else {
-      setShowEmailError(false);
-      setEmailMessage("");
     }
+    setShowUsernameError(false);
+    setUsernameMessage("");
 
-    if (!data.get("email")) {
+    const email = data.get("email");
+    if (!email) {
       setShowEmailError(true);
       setEmailMessage("The email field must be filled in");
       return;
-    } else {
-      setShowEmailError(false);
-      setEmailMessage("");
+    } else if (!validator.isEmail(email.toString())) {
+      setShowEmailError(true);
+      setEmailMessage("Email format is not correct");
+      return;
     }
+    setShowEmailError(false);
+    setEmailMessage("");
 
     if (!data.get("password")) {
       setShowPassError(true);
       setPassMessage("The password field must be filled in");
       return;
-    } else {
-      setShowPassError(false);
-      setPassMessage("");
+    }
+    setShowPassError(false);
+    setPassMessage("");
+
+    if (!data.get("readDocument")) {
+      enqueueSnackbar(
+        "You must read the document and mark the checkbox to continue",
+        {
+          variant: "error",
+        }
+      );
+      return;
     }
 
     const signup = async () => {
@@ -85,6 +109,9 @@ export default function SignUp() {
             username: data.get("username"),
             password: data.get("password"),
           }),
+          headers: {
+            "Content-Type": "application/json",
+          },
           credentials: "include",
         });
 
@@ -92,14 +119,23 @@ export default function SignUp() {
           enqueueSnackbar("There is already a user with that email", {
             variant: "error",
           });
-        } else if (response.status === 419) {
+        } else if (response.status === 409) {
           enqueueSnackbar("A user with these credentials already exists", {
             variant: "error",
           });
         } else if (!response.ok) {
-          const errorExercise: ErrorSpring = await response.json();
-          throw new Error("Error from backend - " + errorExercise.message);
+          enqueueSnackbar("Error trying to sign up, please try again", {
+            variant: "error",
+          });
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.indexOf("application/json") !== -1) {
+            const errorExercise: ErrorSpring = await response.json();
+            throw new Error("Error from backend - " + errorExercise.message);
+          } else {
+            throw new Error("Error from backend - " + response.status);
+          }
         } else {
+          //Cambiar para que si recibimos un response con created se haga un login en el servidor
           const email = await response.json();
           loginStatus.setIsLogged(true);
           loginStatus.setEmail(email);
@@ -138,6 +174,8 @@ export default function SignUp() {
                 fullWidth
                 id="username"
                 label="Username"
+                error={showUsernameError}
+                helperText={usernameMessage}
                 autoFocus
               />
             </Grid>
@@ -149,6 +187,8 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                error={showEmailError}
+                helperText={emailMessage}
               />
             </Grid>
             <Grid item xs={12}>
@@ -160,6 +200,8 @@ export default function SignUp() {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 autoComplete="new-password"
+                error={showPassError}
+                helperText={passMessage}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -172,6 +214,40 @@ export default function SignUp() {
                     </InputAdornment>
                   ),
                 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                sx={{
+                  ".MuiFormControlLabel-asterisk": {
+                    display: "none",
+                  },
+                }}
+                control={
+                  <Checkbox
+                    name="readDocument"
+                    id="readDocument"
+                    required
+                    color="primary"
+                    disabled={isCheckboxDisabled}
+                    checked={isCheckboxChecked}
+                  />
+                }
+                label={
+                  <>
+                    <Link
+                      onClick={handleLinkClick}
+                      target="_blank"
+                      underline="always"
+                      to="/files/Terms_and_Conditions.pdf"
+                      download
+                    >
+                      Pulse aquí
+                    </Link>
+                    {/*prettier-ignore*/}
+                    <span> para leer y aceptar los términos del tratamiento de datos. *</span>
+                  </>
+                }
               />
             </Grid>
           </Grid>
