@@ -85,9 +85,9 @@ export default function Login() {
           credentials: "include",
         });
 
-        /* El servidor responde un 403 si los credenciales no son correctos y
+        /* El servidor responde un 401 si los credenciales no son correctos y
          * en caso de cualquier otro error lanzamos un error*/
-        if (response.status === 403) {
+        if (response.status === 401) {
           enqueueSnackbar("User not found with these credentials", {
             variant: "error",
           });

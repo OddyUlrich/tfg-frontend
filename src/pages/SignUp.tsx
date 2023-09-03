@@ -8,7 +8,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { enqueueSnackbar } from "notistack";
-import { ErrorSpring, LoginTypes } from "../Types";
+import { ErrorSpring, LoginTypes, User } from "../Types";
 import { useContext, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { IconButton, InputAdornment } from "@mui/material";
@@ -136,9 +136,16 @@ export default function SignUp() {
           }
         } else {
           //Cambiar para que si recibimos un response con created se haga un login en el servidor
-          const email = await response.json();
-          loginStatus.setIsLogged(true);
-          loginStatus.setEmail(email);
+          const user: User = await response.json();
+          if (user !== null) {
+            loginStatus.setIsLogged(true);
+            loginStatus.setEmail(user.email);
+            loginStatus.setUsername(user.username);
+            loginStatus.setCreationDate(user.creationDate);
+            loginStatus.setRoles(user.roles);
+          }
+
+          //Y redireccionamos a la página principal del usuario en cuestión
           navigate("/");
         }
       } catch (error: any) {
@@ -146,6 +153,17 @@ export default function SignUp() {
       }
     };
     signup();
+  };
+
+  const handleEmailBlur = (e: any) => {
+    const emailValue: string = e.target.value;
+    if (!validator.isEmpty(emailValue) && !validator.isEmail(emailValue)) {
+      setShowEmailError(true);
+      setEmailMessage("Email format is not correct");
+    } else {
+      setShowEmailError(false);
+      setEmailMessage("");
+    }
   };
 
   return (
@@ -187,6 +205,7 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                onBlur={handleEmailBlur}
                 error={showEmailError}
                 helperText={emailMessage}
               />
