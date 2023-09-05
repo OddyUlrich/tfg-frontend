@@ -138,6 +138,7 @@ export default function Login() {
 
           //Y redireccionamos a la página principal del usuario en cuestión
           navigate("/");
+          return;
         }
       } catch (error: any) {
         console.log(error);

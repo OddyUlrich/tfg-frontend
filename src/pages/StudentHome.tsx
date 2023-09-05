@@ -31,6 +31,57 @@ export function StudentHome() {
     setIsLoading(true);
   }
 
+  useEffect(() => {
+    if (isLoading) {
+      const fetchExercises = async () => {
+        try {
+          const response = await fetch("http://localhost:8080/exercises", {
+            method: "GET",
+            credentials: "include",
+          });
+
+          if (response.status === 403) {
+            loginStatus.setIsLogged(false);
+            navigate("/login");
+            return;
+          } else if (!response.ok) {
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+              const errorExercise: ErrorSpring = await response.json();
+              setIsLoading(false);
+              throw new Error("Error from backend - " + errorExercise.message);
+            } else {
+              setIsLoading(false);
+              throw new Error("Error from backend - " + response.status);
+            }
+          }
+
+          const exercises: Exercise[] = await response.json();
+
+          const batteries = new Map<string, Exercise[]>(
+            exercises.map((exercise) => [exercise.batteryName, []])
+          );
+
+          exercises.forEach((exercise) => {
+            batteries.get(exercise.batteryName)?.push(exercise);
+          });
+
+          setData(batteries);
+          setGlobalError(null);
+        } catch (error: any) {
+          setGlobalError(
+            "There was a problem fetching the data:\n" + error.message
+          );
+          console.log(
+            "There was a problem fetching the data:\n" + error.message
+          );
+        }
+        setIsLoading(false);
+      };
+      fetchExercises();
+    }
+  }, [isLoading, loginStatus, navigate]);
+
   const handleFavRow = (exercise: Exercise, index: number) => {
     const updateFavorite = async () => {
       try {
@@ -42,11 +93,11 @@ export function StudentHome() {
           }
         );
 
-        if (!response.ok) {
-          if (response.status === 403) {
-            loginStatus.setIsLogged(false);
-            navigate("/login");
-          }
+        if (response.status === 403) {
+          loginStatus.setIsLogged(false);
+          navigate("/login");
+          return;
+        } else if (!response.ok) {
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.indexOf("application/json") !== -1) {
             const errorExercise: ErrorSpring = await response.json();
@@ -88,57 +139,6 @@ export function StudentHome() {
     };
     updateFavorite();
   };
-
-  useEffect(() => {
-    if (isLoading) {
-      const fetchExercises = async () => {
-        try {
-          const response = await fetch("http://localhost:8080/exercises", {
-            method: "GET",
-            credentials: "include",
-          });
-
-          if (!response.ok) {
-            if (response.status === 403) {
-              loginStatus.setIsLogged(false);
-              navigate("/login");
-            }
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.indexOf("application/json") !== -1) {
-              const errorExercise: ErrorSpring = await response.json();
-              setIsLoading(false);
-              throw new Error("Error from backend - " + errorExercise.message);
-            } else {
-              setIsLoading(false);
-              throw new Error("Error from backend - " + response.status);
-            }
-          }
-
-          const exercises: Exercise[] = await response.json();
-
-          const batteries = new Map<string, Exercise[]>(
-            exercises.map((exercise) => [exercise.batteryName, []])
-          );
-
-          exercises.forEach((exercise) => {
-            batteries.get(exercise.batteryName)?.push(exercise);
-          });
-
-          setData(batteries);
-          setGlobalError(null);
-        } catch (error: any) {
-          setGlobalError(
-            "There was a problem fetching the data:\n" + error.message
-          );
-          console.log(
-            "There was a problem fetching the data:\n" + error.message
-          );
-        }
-        setIsLoading(false);
-      };
-      fetchExercises();
-    }
-  }, [isLoading, loginStatus, navigate]);
 
   let content;
 

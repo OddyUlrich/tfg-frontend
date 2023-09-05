@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, Outlet } from "react-router-dom";
 import { StudentHome } from "./pages/StudentHome";
 import { About } from "./pages/About";
 import {
@@ -68,7 +68,10 @@ function App() {
           credentials: "include",
         });
 
-        if (!response.ok) {
+        if (response.status === 401) {
+          setIsLoading(false);
+          return;
+        } else if (!response.ok) {
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.indexOf("application/json") !== -1) {
             const errorExercise: ErrorSpring = await response.json();
@@ -115,34 +118,19 @@ function App() {
             </div>
           ) : (
             <>
-              <Navbar onClickTheme={handleClickTheme} />
-              <div>
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <RequireAuth>
-                        <StudentHome />
-                      </RequireAuth>
-                    }
-                  />
-                  <Route
-                    path="/login"
-                    element={
-                      <AlreadyAuth>
-                        <Login />
-                      </AlreadyAuth>
-                    }
-                  />
-                  <Route
-                    path="/signup"
-                    element={
-                      <AlreadyAuth>
-                        <SignUp />
-                      </AlreadyAuth>
-                    }
-                  />
-                  <Route path="/about" element={<About />} />
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <RequireAuth>
+                      <>
+                        <Navbar onClickTheme={handleClickTheme} />
+                        <Outlet />
+                      </>
+                    </RequireAuth>
+                  }
+                >
+                  <Route path="/" element={<StudentHome />} />
                   <Route
                     path="/exercises/:exerciseId"
                     element={
@@ -151,9 +139,26 @@ function App() {
                       </RequireAuth>
                     }
                   />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </div>
+                  <Route path="/about" element={<About />} />
+                </Route>
+                <Route
+                  path="/login"
+                  element={
+                    <AlreadyAuth>
+                      <Login />
+                    </AlreadyAuth>
+                  }
+                />
+                <Route
+                  path="/signup"
+                  element={
+                    <AlreadyAuth>
+                      <SignUp />
+                    </AlreadyAuth>
+                  }
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </>
           )}
         </LoginContext.Provider>

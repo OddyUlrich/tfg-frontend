@@ -115,23 +115,21 @@ export default function SignUp() {
           credentials: "include",
         });
 
-        if (response.status === 403) {
-          enqueueSnackbar("There is already a user with that email", {
-            variant: "error",
-          });
-        } else if (response.status === 409) {
-          enqueueSnackbar("A user with these credentials already exists", {
-            variant: "error",
-          });
-        } else if (!response.ok) {
-          enqueueSnackbar("Error trying to sign up, please try again", {
-            variant: "error",
-          });
+        if (!response.ok) {
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.indexOf("application/json") !== -1) {
-            const errorExercise: ErrorSpring = await response.json();
-            throw new Error("Error from backend - " + errorExercise.message);
+            const errorSpring: ErrorSpring = await response.json();
+            //If the response is a conflict we can/should warn the user
+            if (response.status === 409) {
+              enqueueSnackbar(errorSpring.message, {
+                variant: "error",
+              });
+            }
+            throw new Error("Error from backend - " + errorSpring.message);
           } else {
+            enqueueSnackbar("Error trying to sign up, please try again", {
+              variant: "error",
+            });
             throw new Error("Error from backend - " + response.status);
           }
         } else {
@@ -147,6 +145,7 @@ export default function SignUp() {
 
           //Y redireccionamos a la página principal del usuario en cuestión
           navigate("/");
+          return;
         }
       } catch (error: any) {
         console.log(error);

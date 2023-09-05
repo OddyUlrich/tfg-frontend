@@ -1,6 +1,4 @@
 import { createContext } from "react";
-import { enqueueSnackbar } from "notistack";
-import { NavigateFunction } from "react-router-dom";
 import { LoginTypes } from "./Types";
 
 export const LoginContext = createContext<LoginTypes>({
