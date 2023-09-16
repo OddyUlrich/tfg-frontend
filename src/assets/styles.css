@@ -26,6 +26,10 @@
     border: 1px solid #ced4da;
 }
 
-.editor-size{
+.editor-page{
     height: 85vh;
+}
+
+.editor-size{
+    height: 82vh;
 }

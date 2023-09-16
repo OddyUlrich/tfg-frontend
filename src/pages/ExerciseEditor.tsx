@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Allotment } from "allotment";
 import { FileTree } from "../components/FileTree";
 import { Box } from "@mui/material";
-import TreeModel from "tree-model";
+import TreeModel, { Node } from "tree-model";
 import { LoginContext, treeData } from "../Utils";
 
 export function ExerciseEditor() {
@@ -40,22 +40,39 @@ export function ExerciseEditor() {
         setExerciseName(exercise.name);
         setBatteryName(exercise.exerciseBattery.name);
       } catch (error: any) {
-        //TODO: queda pendiente ver qué hacer si el ejercicio no existe, literalmente poner texto
-        //TODO: de ejemplo diciendo que seleccionemos un objeto en el arbol de ficheros
+        /*TODO: queda pendiente ver qué hacer si el ejercicio no existe, literalmente poner texto
+        de ejemplo diciendo que seleccionemos un objeto en el árbol de ficheros*/
       }
     };
     fetchData();
   }, [location.pathname]);
 
   const tree = new TreeModel();
-  const root = tree.parse(treeData);
+  const root: Node<string> = tree.parse({
+    nodeId: "1",
+    label: "Project",
+  });
+
+  const nodoPrueba: Node<string> = tree.parse({
+    nodeId: "2",
+    label: "Prueba",
+    children: [],
+  });
+
+  root.addChild(nodoPrueba);
+
+  nodoPrueba.getPath().forEach((node, index) => {
+    console.log(
+      "Nodo numero " + index + ": " + node.model.label + " " + node.model.nodeId
+    );
+  });
 
   return (
     <>
       <MyBreadcrumbs exerciseName={exerciseName} batteryName={batteryName} />
-      <Box className="editor-size" width="100%">
+      <Box className="editor-page" width="100%">
         <Allotment>
-          <Allotment.Pane snap>
+          <Allotment.Pane minSize={250} snap>
             <FileTree
               nodeId={root.model.nodeId}
               label={root.model.label}
@@ -65,9 +82,11 @@ export function ExerciseEditor() {
           <Allotment.Pane snap>
             <Box>{root.model.label}</Box>
           </Allotment.Pane>
-          <Allotment.Pane visible snap>
-            <MonacoEditor />
-          </Allotment.Pane>
+          <Box padding="20px">
+            <Allotment.Pane visible snap>
+              <MonacoEditor />
+            </Allotment.Pane>
+          </Box>
         </Allotment>
       </Box>
     </>

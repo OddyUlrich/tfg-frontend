@@ -34,6 +34,10 @@ function compareExerciseByFavorite(a: Exercise, b: Exercise) {
   return a.name.localeCompare(b.name);
 }
 
+/*TODO poner que en el comparar normal una función donde salgan de primero los
+   ejercicios con tiempo inferior a 7 días desde su creación, si no es el caso
+   entonces simplemente salen por orden alfabético, normal.*/
+
 function sortData(data: Exercise[], order: boolean) {
   if (order) {
     return data.sort((a, b) => compareExerciseByFavorite(a, b));
