@@ -45,16 +45,48 @@ export type Exercise = {
   statusSolution: string;
 };
 
-export type ExerciseCode = {
+export type EditorData = {
+  exerciseFiles: ExerciseFiles[];
+  solutions: Solution[];
+  exercise: EditorExercise;
+};
+
+export type ExerciseFiles = {
   id: string;
   name: string;
-  favorite: boolean;
-  exerciseBattery: {
-    name: string;
-  };
-  numberErrorsSolution: number;
-  statusSolution: string;
+  path: string;
+  idFromSolution: string | null;
+  editableMethods: EditableMethod[] | null;
 };
+
+export type Solution = {
+  id: string;
+  name: string;
+  lastUpdate: DateTime;
+  status: solutionStatus;
+  numberErrors: number;
+};
+
+export type EditorExercise = {
+  id: string;
+  name: string;
+  statement: string;
+  rules: string[];
+  successCondition: string;
+  tags: Tag[];
+  idFromBattery: string;
+  nameFromBattery: string;
+};
+
+export type EditableMethod = {
+  name: string;
+  line: number;
+};
+
+enum solutionStatus {
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+}
 
 export type ErrorSpring = {
   timestamp?: string;

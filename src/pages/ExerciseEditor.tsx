@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MonacoEditor } from "../components/MonacoEditor";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
-import { ErrorSpring, ExerciseCode, LoginTypes } from "../Types";
+import { EditorData, ErrorSpring, LoginTypes } from "../Types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Allotment } from "allotment";
 import { FileTree } from "../components/FileTree";
@@ -12,6 +12,7 @@ import { LoginContext, treeData } from "../Utils";
 export function ExerciseEditor() {
   const location = useLocation();
   const [exerciseName, setExerciseName] = useState<string>();
+  const [exerciseId, setExerciseId] = useState<string>();
   const [batteryName, setBatteryName] = useState<string>();
   const loginStatus: LoginTypes = useContext(LoginContext);
   const navigate = useNavigate();
@@ -36,9 +37,10 @@ export function ExerciseEditor() {
           throw new Error("Error from backend - " + errorExercise.message);
         }
 
-        const exercise: ExerciseCode = await response.json();
-        setExerciseName(exercise.name);
-        setBatteryName(exercise.exerciseBattery.name);
+        const data: EditorData = await response.json();
+        setExerciseName(data.exercise.name);
+        setExerciseId(data.exercise.id);
+        setBatteryName(data.exercise.nameFromBattery);
       } catch (error: any) {
         /*TODO: queda pendiente ver qué hacer si el ejercicio no existe, literalmente poner texto
         de ejemplo diciendo que seleccionemos un objeto en el árbol de ficheros*/
@@ -46,6 +48,18 @@ export function ExerciseEditor() {
     };
     fetchData();
   }, [location.pathname]);
+
+  useEffect(() => {
+    console.log(
+      "Datos: " +
+        "Nombre Ejercicio - " +
+        exerciseName +
+        ": " +
+        exerciseId +
+        ", Batteria: " +
+        batteryName
+    );
+  }, [batteryName, exerciseId, exerciseName]);
 
   const tree = new TreeModel();
   const root: Node<string> = tree.parse({
