@@ -46,12 +46,13 @@ export type Exercise = {
 };
 
 export type EditorData = {
-  exerciseFiles: ExerciseFiles[];
+  filesForDisplay: ExerciseFile[];
+  freshFiles: ExerciseFile[];
   solutions: Solution[];
   exercise: EditorExercise;
 };
 
-export type ExerciseFiles = {
+export type ExerciseFile = {
   id: string;
   name: string;
   path: string;

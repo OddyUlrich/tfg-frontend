@@ -1,19 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MonacoEditor } from "../components/MonacoEditor";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
-import { EditorData, ErrorSpring, LoginTypes } from "../Types";
+import { EditorData, ErrorSpring, ExerciseFile, LoginTypes } from "../Types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Allotment } from "allotment";
 import { FileTree } from "../components/FileTree";
 import { Box } from "@mui/material";
 import TreeModel, { Node } from "tree-model";
-import { LoginContext, treeData } from "../Utils";
+import { LoginContext } from "../Utils";
 
 export function ExerciseEditor() {
   const location = useLocation();
   const [exerciseName, setExerciseName] = useState<string>();
   const [exerciseId, setExerciseId] = useState<string>();
   const [batteryName, setBatteryName] = useState<string>();
+  const [filesForDisplay, setFilesForDisplay] = useState<ExerciseFile[]>();
+  const [freshFiles, setFreshFiles] = useState<ExerciseFile[]>();
+
   const loginStatus: LoginTypes = useContext(LoginContext);
   const navigate = useNavigate();
 
@@ -41,6 +44,8 @@ export function ExerciseEditor() {
         setExerciseName(data.exercise.name);
         setExerciseId(data.exercise.id);
         setBatteryName(data.exercise.nameFromBattery);
+        setFreshFiles(data.freshFiles);
+        setFilesForDisplay(data.filesForDisplay);
       } catch (error: any) {
         /*TODO: queda pendiente ver qué hacer si el ejercicio no existe, literalmente poner texto
         de ejemplo diciendo que seleccionemos un objeto en el árbol de ficheros*/
@@ -59,7 +64,17 @@ export function ExerciseEditor() {
         ", Batteria: " +
         batteryName
     );
-  }, [batteryName, exerciseId, exerciseName]);
+
+    filesForDisplay?.forEach((file) => {
+      console.log(
+        "File for display: " + file.name + ": " + file.idFromSolution
+      );
+    });
+    console.log("\n");
+    freshFiles?.forEach((file) => {
+      console.log("Fresh File: " + file.name + ": " + file.idFromSolution);
+    });
+  }, [batteryName, exerciseId, exerciseName, filesForDisplay, freshFiles]);
 
   const tree = new TreeModel();
   const root: Node<string> = tree.parse({
@@ -74,12 +89,6 @@ export function ExerciseEditor() {
   });
 
   root.addChild(nodoPrueba);
-
-  nodoPrueba.getPath().forEach((node, index) => {
-    console.log(
-      "Nodo numero " + index + ": " + node.model.label + " " + node.model.nodeId
-    );
-  });
 
   return (
     <>
