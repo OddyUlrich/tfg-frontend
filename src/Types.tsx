@@ -1,6 +1,6 @@
 import { LinkProps } from "@mui/material";
-import { Path } from "react-router-dom";
 import { DateTime } from "luxon";
+import { Path } from "react-router-dom";
 
 export interface LoginTypes {
   email: string | null;
@@ -31,9 +31,11 @@ export interface HashLinkProps extends LinkProps {
   smooth?: boolean;
 }
 
-export type Tag = {
-  name: string;
-};
+export interface MyTreeNode {
+  nodeId: string;
+  label: string;
+  children: MyTreeNode[];
+}
 
 export type Exercise = {
   id: string;
@@ -43,6 +45,10 @@ export type Exercise = {
   batteryName: string;
   numberErrorsSolution: number;
   statusSolution: string;
+};
+
+export type Tag = {
+  name: string;
 };
 
 export type EditorData = {

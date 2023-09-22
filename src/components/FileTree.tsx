@@ -1,8 +1,9 @@
 import React, { FC } from "react";
 import { SvgIcon, SvgIconProps } from "@mui/material";
 import { TreeView } from "@mui/lab";
-import MyTreeItem, { MyTreeItemProps } from "./MyTreeItem";
+import MyTreeItem from "./MyTreeItem";
 import { InsertDriveFile } from "@mui/icons-material";
+import { MyTreeNode } from "../Types";
 
 function MinusSquare(props: SvgIconProps) {
   return (
@@ -22,7 +23,7 @@ function PlusSquare(props: SvgIconProps) {
   );
 }
 
-export const FileTree: FC<MyTreeItemProps> = ({ nodeId, label, children }) => {
+export const FileTree: FC<MyTreeNode> = ({ nodeId, label, children }) => {
   return (
     <TreeView
       aria-label="customized"

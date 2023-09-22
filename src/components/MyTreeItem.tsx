@@ -4,12 +4,7 @@ import TreeItem, { treeItemClasses, TreeItemProps } from "@mui/lab/TreeItem";
 import { alpha, Collapse } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import { useSpring, animated } from "@react-spring/web";
-
-export interface MyTreeItemProps {
-  nodeId: string;
-  label: string;
-  children?: MyTreeItemProps[];
-}
+import { MyTreeNode } from "../Types";
 
 function TransitionComponent(props: TransitionProps) {
   const style = useSpring({
@@ -43,7 +38,7 @@ const StyledTreeItem = styled((props: TreeItemProps) => (
   },
 }));
 
-const MyTreeItem: FC<MyTreeItemProps> = ({ nodeId, label, children }) => {
+const MyTreeItem: FC<MyTreeNode> = ({ nodeId, label, children }) => {
   return (
     <StyledTreeItem nodeId={nodeId} label={label}>
       {children &&
