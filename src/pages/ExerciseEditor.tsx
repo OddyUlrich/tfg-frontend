@@ -13,19 +13,69 @@ import { Allotment } from "allotment";
 import { FileTree } from "../components/FileTree";
 import { Box } from "@mui/material";
 import { LoginContext } from "../Utils";
-import { MyTree } from "../TreeStructure";
+import { TreeStructure } from "../TreeStructure";
 
 export function ExerciseEditor() {
   const location = useLocation();
+  const loginStatus: LoginTypes = useContext(LoginContext);
+  const navigate = useNavigate();
   const [exerciseName, setExerciseName] = useState<string>();
   const [exerciseId, setExerciseId] = useState<string>();
   const [batteryName, setBatteryName] = useState<string>();
   const [filesForDisplay, setFilesForDisplay] = useState<ExerciseFile[]>();
-  const [freshFiles, setFreshFiles] = useState<ExerciseFile[]>();
+  const [templateFiles, setFreshFiles] = useState<ExerciseFile[]>();
+  const [parentsIdList, setParentsIdList] = useState<string[]>([]);
+  const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
+  const [fileTree, setFileTree] = useState<TreeStructure>();
+  const [editorValue, setEditorValue] = useState<string>(
+    "//Selecciona uno de los archivos de la derecha para verlo y, si es posible, editarlo.\n" +
+      "//Select one of the files on the right to view it here and, if possible, edit it.\n"
+  );
+  const [rootNode, setRootNode] = useState<MyTreeNode>({
+    nodeId: "0",
+    label: "Exercise",
+    children: [],
+  });
 
-  const loginStatus: LoginTypes = useContext(LoginContext);
-  const navigate = useNavigate();
+  const handleEditorChange = (value: string) => {
+    setEditorValue(value);
+    setUnsavedChanges(false);
+  };
 
+  const handleNodeSelect = (
+    _event: React.SyntheticEvent,
+    nodeIds: Array<string> | string
+  ) => {
+    const nodeId = Array.isArray(nodeIds) ? nodeIds[0] : nodeIds;
+    if (fileTree === undefined) {
+      /*TODO qué hacer si el arbol no se ha generado todavía? Querría decir que
+      el fetch no se ha realizado y sin embargo se ha seleccionado un nodo
+      no tiene sentido*/
+      return;
+    }
+
+    const selectedNode = fileTree.findNodeById(nodeId);
+    if (selectedNode && selectedNode.file) {
+      console.log(selectedNode.file.content);
+      setEditorValue(selectedNode.file.content);
+    }
+
+    setUnsavedChanges(false);
+  };
+
+  //Auto-save function every X seconds
+  useEffect(() => {
+    const saveTimeout = setTimeout(() => {
+      if (unsavedChanges) {
+        //saveChangesToServer(editorValue);
+        setUnsavedChanges(false);
+      }
+    }, 3000); // Wait 3 seconds of inactivity before saving
+
+    return () => clearTimeout(saveTimeout);
+  }, [editorValue, unsavedChanges]);
+
+  //Fetching files for the editor to show and setting up states
   useEffect(() => {
     const exerciseId = decodeURI(
       location.pathname.slice(location.pathname.lastIndexOf("/") + 1)
@@ -50,7 +100,7 @@ export function ExerciseEditor() {
         setExerciseName(data.exercise.name);
         setExerciseId(data.exercise.id);
         setBatteryName(data.exercise.nameFromBattery);
-        setFreshFiles(data.freshFiles);
+        setFreshFiles(data.templateFiles);
         setFilesForDisplay(data.filesForDisplay);
       } catch (error: any) {
         /*TODO: queda pendiente ver qué hacer si el ejercicio no existe, literalmente poner texto
@@ -69,55 +119,55 @@ export function ExerciseEditor() {
       children: [],
     };
 
-    const myTree = new MyTree();
+    const myTree = new TreeStructure();
     myTree.addNode(root);
 
     const filesAndDirectories: string[] = [];
+    const parentNodeIdList: string[] = ["0"];
 
+    //Recorremos todos los archivos que se van a mostrar
     filesForDisplay?.forEach((file) => {
       let parentName = "Exercise";
       let parent: MyTreeNode | null;
+      let fileContent: ExerciseFile | null = null;
 
-      file.path.split("/").forEach((name, index) => {
-        console.log(name);
+      //Dividimos los paths de cada fichero para crear los nodos de un arbol
+      const pathNames = file.path.split("/");
+      pathNames.forEach((name, index) => {
+        /*El primer nombre de la ruta siempre tendrá como padre el nodo Root
+         * en caso contrario el anterior nodo será el padre del actual*/
         if (index === 0) {
           parent = root;
         } else {
           parent = myTree.findNodeByLabel(parentName);
+          /*Si estamos en el nombre de la ruta correspondiente a un archivo
+           * asignamos el contenido del archivo a la propiedad content del nodo*/
+          if (index === pathNames.length - 1) {
+            fileContent = file;
+          }
         }
 
         if (!filesAndDirectories.includes(name)) {
           const newNode: MyTreeNode = {
             nodeId: (counter++).toString(),
             label: name,
+            file: fileContent,
             children: [],
           };
           myTree.addNode(newNode, parent);
           filesAndDirectories.push(name);
+          if (parent && !parentNodeIdList.includes(parent.nodeId)) {
+            parentNodeIdList.push(parent.nodeId);
+          }
         }
         parentName = name;
+        fileContent = null;
       });
     });
 
-    // const primerNodo: MyTreeNode = {
-    //   nodeId: "1",
-    //   label: "Primer nodo",
-    //   children: [],
-    // };
-    //
-    // const segundoNodo: MyTreeNode = {
-    //   nodeId: "1",
-    //   label: "Segundo nodo",
-    //   children: [],
-    // };
-    //
-    // myTree.addNode(primerNodo, root);
-    // myTree.addNode(segundoNodo, primerNodo);
-    //
-    console.log(root);
-    // myTree.preOrderTraversal((node) => {
-    //   console.log(node.label);
-    // });
+    setRootNode(root);
+    setFileTree(myTree);
+    setParentsIdList(parentNodeIdList);
 
     /*filesForDisplay?.forEach((file, index) => {
       const nodoPrueba = tree.parse({
@@ -126,18 +176,6 @@ export function ExerciseEditor() {
       });
       root.addChild(nodoPrueba);
     });
-
-    setRoot(root);
-
-    console.log(
-      "Datos: " +
-        "Nombre Ejercicio - " +
-        exerciseName +
-        ": " +
-        exerciseId +
-        ", Batteria: " +
-        batteryName
-    );
 
     filesForDisplay?.forEach((file) => {
       console.log(
@@ -148,13 +186,7 @@ export function ExerciseEditor() {
     freshFiles?.forEach((file) => {
       console.log("Fresh File: " + file.name + ": " + file.idFromSolution);
     });*/
-  }, [/*batteryName, exerciseId, exerciseName, freshFiles */ filesForDisplay]);
-
-  const root: MyTreeNode = {
-    nodeId: "1",
-    label: "Project",
-    children: [],
-  };
+  }, [filesForDisplay]);
 
   /*
   const nodoPrueba: Node<string> = tree.parse({
@@ -168,23 +200,30 @@ export function ExerciseEditor() {
   return (
     <>
       <MyBreadcrumbs exerciseName={exerciseName} batteryName={batteryName} />
-      <Box className="editor-page" width="100%">
+      <Box className="editor-page" sx={{ width: "100%", mt: "1%" }}>
         <Allotment>
-          <Allotment.Pane minSize={250} snap>
-            <FileTree
-              nodeId={root?.nodeId}
-              label={root?.label}
-              children={root?.children}
-            />
-          </Allotment.Pane>
           <Allotment.Pane snap>
-            <Box>{root?.label}</Box>
+            <Box>{rootNode?.label}</Box>
           </Allotment.Pane>
           <Box padding="20px">
             <Allotment.Pane visible snap>
-              <MonacoEditor />
+              <MonacoEditor
+                onChange={handleEditorChange}
+                textValue={editorValue}
+              />
             </Allotment.Pane>
           </Box>
+          <Allotment.Pane preferredSize="25%" minSize={100} snap>
+            <Box sx={{ pl: "5%" }}>
+              <FileTree
+                onNodeSelect={handleNodeSelect}
+                parents={parentsIdList}
+                nodeId={rootNode?.nodeId}
+                label={rootNode?.label}
+                children={rootNode?.children}
+              />
+            </Box>
+          </Allotment.Pane>
         </Allotment>
       </Box>
     </>

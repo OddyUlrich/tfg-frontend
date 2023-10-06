@@ -34,6 +34,7 @@ export interface HashLinkProps extends LinkProps {
 export interface MyTreeNode {
   nodeId: string;
   label: string;
+  file?: ExerciseFile | null;
   children: MyTreeNode[];
 }
 
@@ -53,7 +54,7 @@ export type Tag = {
 
 export type EditorData = {
   filesForDisplay: ExerciseFile[];
-  freshFiles: ExerciseFile[];
+  templateFiles: ExerciseFile[];
   solutions: Solution[];
   exercise: EditorExercise;
 };
@@ -62,6 +63,7 @@ export type ExerciseFile = {
   id: string;
   name: string;
   path: string;
+  content: string;
   idFromSolution: string | null;
   editableMethods: EditableMethod[] | null;
 };

@@ -5,13 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/TreeStructure.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TreeStructure.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/TreeStructure.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Types.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/FileTree.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/FileTree.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -185,6 +183,15 @@
       <workItem from="1695230877015" duration="10538000" />
       <workItem from="1695257775766" duration="2112000" />
       <workItem from="1695314811119" duration="19184000" />
+      <workItem from="1695350480728" duration="250000" />
+      <workItem from="1695514513446" duration="2458000" />
+      <workItem from="1695666040890" duration="596000" />
+      <workItem from="1695750347853" duration="7493000" />
+      <workItem from="1695921178725" duration="1732000" />
+      <workItem from="1696007202225" duration="8808000" />
+      <workItem from="1696017434793" duration="815000" />
+      <workItem from="1696275392317" duration="1383000" />
+      <workItem from="1696525080181" duration="12238000" />
     </task>
     <servers />
   </component>

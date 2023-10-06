@@ -1,6 +1,6 @@
 import { MyTreeNode } from "./Types";
 
-export class MyTree {
+export class TreeStructure {
   private root: MyTreeNode | null;
 
   constructor() {
@@ -34,6 +34,25 @@ export class MyTree {
     const traverse = (node: MyTreeNode | null) => {
       if (node) {
         if (node.label === label) {
+          foundNode = node;
+          return;
+        }
+        node.children.forEach((child) => {
+          traverse(child);
+        });
+      }
+    };
+
+    traverse(this.root);
+    return foundNode;
+  }
+
+  findNodeById(id: string): MyTreeNode | null {
+    let foundNode: MyTreeNode | null = null;
+
+    const traverse = (node: MyTreeNode | null) => {
+      if (node) {
+        if (node.nodeId === id) {
           foundNode = node;
           return;
         }

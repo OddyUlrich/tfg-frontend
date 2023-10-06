@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import { SvgIcon, SvgIconProps } from "@mui/material";
 import { TreeView } from "@mui/lab";
 import MyTreeItem from "./MyTreeItem";
@@ -23,15 +23,45 @@ function PlusSquare(props: SvgIconProps) {
   );
 }
 
-export const FileTree: FC<MyTreeNode> = ({ nodeId, label, children }) => {
+export interface FileTreeProps {
+  onNodeSelect: (
+    event: React.SyntheticEvent,
+    nodeIds: Array<string> | string
+  ) => void;
+  parents: string[];
+  nodeId: string;
+  label: string;
+  children: MyTreeNode[];
+}
+
+export const FileTree: FC<FileTreeProps> = ({
+  onNodeSelect,
+  parents,
+  nodeId,
+  label,
+  children,
+}) => {
+  const [expanded, setExpanded] = React.useState<string[]>([]);
+
+  const handleToggle = (_event: React.SyntheticEvent, nodeIds: string[]) => {
+    setExpanded(nodeIds);
+  };
+
+  useEffect(() => {
+    setExpanded(parents);
+  }, [parents]);
+
   return (
     <TreeView
       aria-label="customized"
-      defaultExpanded={["1"]}
+      multiSelect={false}
+      expanded={expanded}
+      onNodeSelect={onNodeSelect}
+      onNodeToggle={handleToggle}
       defaultCollapseIcon={<MinusSquare />}
       defaultExpandIcon={<PlusSquare />}
       defaultEndIcon={<InsertDriveFile />}
-      sx={{ height: 264, flexGrow: 1, maxWidth: 600, overflowY: "auto" }}
+      sx={{ height: "95%", flexGrow: 1, maxWidth: "95%", overflowY: "auto" }}
     >
       <MyTreeItem nodeId={nodeId} label={label} children={children} />
     </TreeView>
