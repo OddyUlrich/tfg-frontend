@@ -7,29 +7,54 @@
     margin-top: 50px;
 }
 
-.flex{
+.flex {
     display: flex;
 }
 
-.flex-center{
+.flex-center {
     display: flex;
     justify-content: center;
 }
 
-.flex-editor{
+.flex-editor {
     display: flex;
     justify-content: right;
     margin-right: 50px;
 }
 
-.editor{
+.editor {
     border: 1px solid #ced4da;
 }
 
-.editor-page{
+.editor-page {
     height: 85vh;
 }
 
-.editor-size{
+.editor-size {
     height: 82vh;
+}
+
+.tabs{
+    display: flex;
+}
+
+.tab-panel {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 1;
+    z-index: 100;
+    transform: translateY(0px);
+    text-shadow: 0 0 0;
+    padding: 8px 10px 8px 10px;
+    cursor: pointer;
+    border-radius: 5px 5px 0 0;
+    border-bottom: none;
+    font-weight: bold;
+    max-width: 150px;
+    min-width: 100px;
+}
+
+.tab-panel.active{
+    background: #72afe3;
 }

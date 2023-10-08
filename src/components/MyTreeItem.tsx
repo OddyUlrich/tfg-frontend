@@ -6,6 +6,12 @@ import { TransitionProps } from "@mui/material/transitions";
 import { useSpring, animated } from "@react-spring/web";
 import { MyTreeNode } from "../Types";
 
+interface MyTreeItemProps {
+  nodeId: string;
+  label: string;
+  children: MyTreeNode[];
+}
+
 function TransitionComponent(props: TransitionProps) {
   const style = useSpring({
     from: {
@@ -38,7 +44,7 @@ const StyledTreeItem = styled((props: TreeItemProps) => (
   },
 }));
 
-const MyTreeItem: FC<MyTreeNode> = ({ nodeId, label, children }) => {
+const MyTreeItem: FC<MyTreeItemProps> = ({ nodeId, label, children }) => {
   return (
     <StyledTreeItem nodeId={nodeId} label={label}>
       {children &&

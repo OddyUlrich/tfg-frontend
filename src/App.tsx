@@ -11,7 +11,7 @@ import {
 import { Navbar } from "./components/navigation/Navbar";
 import { SnackbarProvider } from "notistack";
 import { NotFound } from "./pages/NotFound";
-import { ExerciseEditor } from "./pages/ExerciseEditor";
+import { EditorPage } from "./pages/EditorPage";
 import Login from "./pages/Login";
 import { LoginContext } from "./Utils";
 import { RequireAuth } from "./components/navigation/RequireAuth";
@@ -135,7 +135,7 @@ function App() {
                     path="/exercises/:exerciseId"
                     element={
                       <RequireAuth>
-                        <ExerciseEditor />
+                        <EditorPage />
                       </RequireAuth>
                     }
                   />

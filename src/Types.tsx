@@ -34,7 +34,7 @@ export interface HashLinkProps extends LinkProps {
 export interface MyTreeNode {
   nodeId: string;
   label: string;
-  file?: ExerciseFile | null;
+  file: ExerciseFile | null;
   children: MyTreeNode[];
 }
 

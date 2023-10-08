@@ -5,12 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/EditorTabs.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TreeStructure.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/TreeStructure.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Types.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/FileTree.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/FileTree.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/EditorPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,8 +24,8 @@
       <list>
         <option value="HTML File" />
         <option value="JavaScript File" />
-        <option value="TypeScript JSX File" />
         <option value="TypeScript File" />
+        <option value="TypeScript JSX File" />
       </list>
     </option>
   </component>
@@ -191,7 +193,9 @@
       <workItem from="1696007202225" duration="8808000" />
       <workItem from="1696017434793" duration="815000" />
       <workItem from="1696275392317" duration="1383000" />
-      <workItem from="1696525080181" duration="12238000" />
+      <workItem from="1696525080181" duration="12323000" />
+      <workItem from="1696700251004" duration="11517000" />
+      <workItem from="1696711844965" duration="19053000" />
     </task>
     <servers />
   </component>

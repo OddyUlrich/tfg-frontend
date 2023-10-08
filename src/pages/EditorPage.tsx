@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { MonacoEditor } from "../components/MonacoEditor";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import {
@@ -14,8 +14,48 @@ import { FileTree } from "../components/FileTree";
 import { Box } from "@mui/material";
 import { LoginContext } from "../Utils";
 import { TreeStructure } from "../TreeStructure";
+import { EditorTabs, Tab } from "../components/EditorTabs";
+import { editor } from "monaco-editor";
 
-export function ExerciseEditor() {
+const templateText =
+  "//Selecciona uno de los archivos de la derecha para verlo y, si es posible, editarlo.\n//Select one of the files on the right to view it here and, if possible, edit it.\n";
+
+const initialTabs: Tab[] = [
+  {
+    node: {
+      nodeId: "9999",
+      label: "Instructions",
+      file: {
+        id: "0",
+        name: "Instructions",
+        path: "/",
+        content: templateText,
+        idFromSolution: null,
+        editableMethods: null,
+      },
+      children: [],
+    },
+    modelMonacoEditor: null,
+  },
+  {
+    node: {
+      nodeId: "9998",
+      label: "Prueba",
+      file: {
+        id: "0",
+        name: "Prueba",
+        path: "/",
+        content: "Prueba de texto diferente",
+        idFromSolution: null,
+        editableMethods: null,
+      },
+      children: [],
+    },
+    modelMonacoEditor: null,
+  },
+];
+
+export function EditorPage() {
   const location = useLocation();
   const loginStatus: LoginTypes = useContext(LoginContext);
   const navigate = useNavigate();
@@ -24,21 +64,56 @@ export function ExerciseEditor() {
   const [batteryName, setBatteryName] = useState<string>();
   const [filesForDisplay, setFilesForDisplay] = useState<ExerciseFile[]>();
   const [templateFiles, setFreshFiles] = useState<ExerciseFile[]>();
+  const [tabs, setTabs] = useState<Tab[]>(initialTabs);
+  const [activeTab, setActiveTab] = useState<number>(0);
+  const [showSaveAsking, setShowSaveAsking] = useState<boolean>(false);
   const [parentsIdList, setParentsIdList] = useState<string[]>([]);
   const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
   const [fileTree, setFileTree] = useState<TreeStructure>();
-  const [editorValue, setEditorValue] = useState<string>(
-    "//Selecciona uno de los archivos de la derecha para verlo y, si es posible, editarlo.\n" +
-      "//Select one of the files on the right to view it here and, if possible, edit it.\n"
-  );
+  const [editorValue, setEditorValue] = useState<string>();
   const [rootNode, setRootNode] = useState<MyTreeNode>({
     nodeId: "0",
     label: "Exercise",
+    file: null,
     children: [],
   });
 
-  const handleEditorChange = (value: string) => {
-    setEditorValue(value);
+  const currentTab = useRef<number>(0);
+
+  const saveMe = (model: editor.ITextModel | null | undefined) => {
+    tabs[currentTab.current].modelMonacoEditor = model;
+  };
+
+  const loadMe = () => {
+    const model = tabs[currentTab.current].modelMonacoEditor;
+    return model ? model : null;
+  };
+
+  const handleTabClick = (index: number) => {
+    currentTab.current = index;
+    setActiveTab(index);
+
+    //TODO GUARDAR EL MODELO DE LA TAB ANTERIOR (ACTIVE TAB) Y SETTEAR EL NUEVO
+  };
+
+  const handleEditorChange = (value: string | undefined) => {
+    const updatedTabs = [...tabs];
+    const currentFile = updatedTabs[currentTab.current].node.file;
+    const currentModel = updatedTabs[currentTab.current].modelMonacoEditor;
+
+    if (!value || currentTab.current !== activeTab) {
+      return;
+    }
+
+    if (!currentFile) {
+      return;
+    }
+
+    //TODO CONSEGUIR EL MODELO Y GUARDARLO AL IGUAL QUE EL VALUE
+
+    currentFile.content = value;
+    //currentModel = MODELO_ACTUAL;
+    setTabs(updatedTabs);
     setUnsavedChanges(false);
   };
 
@@ -55,9 +130,14 @@ export function ExerciseEditor() {
     }
 
     const selectedNode = fileTree.findNodeById(nodeId);
-    if (selectedNode && selectedNode.file) {
-      console.log(selectedNode.file.content);
+    if (
+      selectedNode &&
+      selectedNode.file &&
+      selectedNode.file !== currentFile
+    ) {
+      //setCurrentFile(selectedNode.file);
       setEditorValue(selectedNode.file.content);
+      setShowSaveAsking(true);
     }
 
     setUnsavedChanges(false);
@@ -116,6 +196,7 @@ export function ExerciseEditor() {
     const root: MyTreeNode | null = {
       nodeId: "0",
       label: "Exercise",
+      file: null,
       children: [],
     };
 
@@ -197,6 +278,8 @@ export function ExerciseEditor() {
 
   root.addChild(nodoPrueba);*/
 
+  const currentFile = tabs[activeTab].node.file;
+
   return (
     <>
       <MyBreadcrumbs exerciseName={exerciseName} batteryName={batteryName} />
@@ -205,11 +288,18 @@ export function ExerciseEditor() {
           <Allotment.Pane snap>
             <Box>{rootNode?.label}</Box>
           </Allotment.Pane>
-          <Box padding="20px">
+          <Box padding="0px 20px 0px 20px">
             <Allotment.Pane visible snap>
+              <EditorTabs
+                tabs={tabs}
+                activeTab={activeTab}
+                onTabClick={handleTabClick}
+              />
               <MonacoEditor
+                saveModel={saveMe}
+                loadModel={loadMe}
                 onChange={handleEditorChange}
-                textValue={editorValue}
+                textValue={currentFile ? currentFile.content : "Loading..."}
               />
             </Allotment.Pane>
           </Box>

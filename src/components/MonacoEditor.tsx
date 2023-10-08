@@ -4,6 +4,7 @@ import Editor, { Monaco } from "@monaco-editor/react";
 import { constrainedEditor } from "constrained-editor-plugin";
 import { useTheme } from "@mui/material";
 import { editor } from "monaco-editor";
+import Button from "@mui/material/Button";
 
 interface RangeRestrictionObject {
   range: [number, number, number, number]; // Should be a positive whole number
@@ -13,13 +14,17 @@ interface RangeRestrictionObject {
 }
 
 interface MonacoEditorProps {
-  onChange: (value: string) => void;
+  onChange: (value: string | undefined) => void;
   textValue?: string;
+  saveModel: (model: editor.ITextModel | null | undefined) => void;
+  loadModel: () => editor.ITextModel | null;
 }
 
 export const MonacoEditor: React.FC<MonacoEditorProps> = ({
   onChange,
   textValue,
+  saveModel,
+  loadModel,
 }) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const restrictions: RangeRestrictionObject[] = [];
@@ -42,29 +47,34 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
     // constrainedInstance.addRestrictionsTo(model, restrictions);
   }
 
+  const prueba = () => {
+    if (editorRef.current) {
+      editorRef.current?.setModel(loadModel());
+      editorRef.current?.getModel();
+      //TODO editor.getModel(URI);
+      //TODO editor.createModel("let a = 1;", "typescript", myUri);
+    }
+  };
+
   const options: editor.IStandaloneEditorConstructionOptions = {
     minimap: { enabled: false },
   };
 
-  useEffect(() => {
-    if (editorRef.current) {
-      editorRef.current.onDidChangeModelContent(() => {
-        if (editorRef.current) {
-          const editorValue = editorRef.current.getValue();
-          onChange(editorValue); // Notifica al padre sobre el cambio
-        }
-      });
-    }
-  }, [onChange]);
-
   return (
-    <Editor
-      theme={theme.palette.mode === "dark" ? "vs-dark" : "vs"}
-      className="editor editor-size"
-      language="java"
-      value={textValue}
-      options={options}
-      onMount={handleEditorDidMount}
-    />
+    <>
+      <Button onClick={() => saveModel(editorRef.current?.getModel())}>
+        SAVE
+      </Button>
+      <Button onClick={() => prueba()}>LOAD</Button>
+      <Editor
+        theme={theme.palette.mode === "dark" ? "vs-dark" : "vs"}
+        className="editor editor-size"
+        language="java"
+        options={options}
+        onMount={handleEditorDidMount}
+        onChange={onChange}
+        value={textValue}
+      />
+    </>
   );
 };
