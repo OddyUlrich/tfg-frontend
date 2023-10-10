@@ -1,12 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 
 import Editor, { Monaco } from "@monaco-editor/react";
-import { constrainedEditor } from "constrained-editor-plugin";
 import { useTheme } from "@mui/material";
 import { editor } from "monaco-editor";
-import Button from "@mui/material/Button";
+import { EditorTabs, MyTab } from "./EditorTabs";
 
-interface RangeRestrictionObject {
+export interface RangeRestrictionObject {
   range: [number, number, number, number]; // Should be a positive whole number
   allowMultiline?: boolean;
   label?: string;
@@ -14,47 +13,30 @@ interface RangeRestrictionObject {
 }
 
 interface MonacoEditorProps {
-  onChange: (value: string | undefined) => void;
-  textValue?: string;
-  saveModel: (model: editor.ITextModel | null | undefined) => void;
-  loadModel: () => editor.ITextModel | null;
+  defaultValue: string;
+  onValueChange: (value: string | undefined) => void;
+  path: string;
+  tabs: MyTab[];
+  activeTab: number;
+  onTabClick: (event: React.SyntheticEvent, index: number) => void;
+  onCloseClick: (index: number) => void;
+  onEditorDidMount: (
+    editor: editor.IStandaloneCodeEditor,
+    monaco: Monaco
+  ) => void;
 }
 
 export const MonacoEditor: React.FC<MonacoEditorProps> = ({
-  onChange,
-  textValue,
-  saveModel,
-  loadModel,
+  defaultValue,
+  onValueChange,
+  path,
+  tabs,
+  activeTab,
+  onTabClick,
+  onCloseClick,
+  onEditorDidMount,
 }) => {
-  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-  const restrictions: RangeRestrictionObject[] = [];
   const theme = useTheme();
-
-  function handleEditorDidMount(
-    editor: editor.IStandaloneCodeEditor,
-    monaco: Monaco
-  ) {
-    editorRef.current = editor;
-
-    const constrainedInstance = constrainedEditor(monaco);
-    const model = editor.getModel();
-
-    constrainedInstance.initializeIn(editor);
-    // restrictions.push({
-    //   range: [1, 1, 2, 10],
-    //   allowMultiline: true,
-    // });
-    // constrainedInstance.addRestrictionsTo(model, restrictions);
-  }
-
-  const prueba = () => {
-    if (editorRef.current) {
-      editorRef.current?.setModel(loadModel());
-      editorRef.current?.getModel();
-      //TODO editor.getModel(URI);
-      //TODO editor.createModel("let a = 1;", "typescript", myUri);
-    }
-  };
 
   const options: editor.IStandaloneEditorConstructionOptions = {
     minimap: { enabled: false },
@@ -62,18 +44,23 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
 
   return (
     <>
-      <Button onClick={() => saveModel(editorRef.current?.getModel())}>
-        SAVE
-      </Button>
-      <Button onClick={() => prueba()}>LOAD</Button>
+      {tabs.length !== 0 ? (
+        <EditorTabs
+          myTabs={tabs}
+          activeTab={activeTab}
+          onTabClick={onTabClick}
+          onCloseClick={onCloseClick}
+        />
+      ) : null}
       <Editor
         theme={theme.palette.mode === "dark" ? "vs-dark" : "vs"}
         className="editor editor-size"
         language="java"
         options={options}
-        onMount={handleEditorDidMount}
-        onChange={onChange}
-        value={textValue}
+        onMount={onEditorDidMount}
+        onChange={onValueChange}
+        defaultValue={defaultValue}
+        path={path}
       />
     </>
   );

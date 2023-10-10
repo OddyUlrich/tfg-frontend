@@ -16,9 +16,9 @@ export interface LoginTypes {
 }
 
 export interface User {
+  creationDate: DateTime | null;
   username: string | null;
   email: string | null;
-  creationDate: DateTime | null;
   roles: string[];
 }
 

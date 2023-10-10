@@ -19,6 +19,7 @@ import { ErrorSpring, User } from "./Types";
 import { DateTime } from "luxon";
 import SignUp from "./pages/SignUp";
 import { AlreadyAuth } from "./components/navigation/AlreadyAuth";
+import { StyledEngineProvider } from "@mui/material/styles";
 
 const darkTheme = createTheme({
   palette: {
@@ -107,63 +108,65 @@ function App() {
   }
 
   return (
-    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-      <CssBaseline />
-      <SnackbarProvider maxSnack={1}>
-        <LoginContext.Provider value={stateLogin}>
-          {isLoading ? (
-            <div className="centered-mt">
-              {" "}
-              <CircularProgress />
-            </div>
-          ) : (
-            <>
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <RequireAuth>
-                      <>
-                        <Navbar onClickTheme={handleClickTheme} />
-                        <Outlet />
-                      </>
-                    </RequireAuth>
-                  }
-                >
-                  <Route path="/" element={<StudentHome />} />
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+        <CssBaseline />
+        <SnackbarProvider maxSnack={1}>
+          <LoginContext.Provider value={stateLogin}>
+            {isLoading ? (
+              <div className="centered-mt">
+                {" "}
+                <CircularProgress />
+              </div>
+            ) : (
+              <>
+                <Routes>
                   <Route
-                    path="/exercises/:exerciseId"
+                    path="/"
                     element={
                       <RequireAuth>
-                        <EditorPage />
+                        <>
+                          <Navbar onClickTheme={handleClickTheme} />
+                          <Outlet />
+                        </>
                       </RequireAuth>
                     }
+                  >
+                    <Route path="/" element={<StudentHome />} />
+                    <Route
+                      path="/exercises/:exerciseId"
+                      element={
+                        <RequireAuth>
+                          <EditorPage />
+                        </RequireAuth>
+                      }
+                    />
+                    <Route path="/about" element={<About />} />
+                  </Route>
+                  <Route
+                    path="/login"
+                    element={
+                      <AlreadyAuth>
+                        <Login />
+                      </AlreadyAuth>
+                    }
                   />
-                  <Route path="/about" element={<About />} />
-                </Route>
-                <Route
-                  path="/login"
-                  element={
-                    <AlreadyAuth>
-                      <Login />
-                    </AlreadyAuth>
-                  }
-                />
-                <Route
-                  path="/signup"
-                  element={
-                    <AlreadyAuth>
-                      <SignUp />
-                    </AlreadyAuth>
-                  }
-                />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </>
-          )}
-        </LoginContext.Provider>
-      </SnackbarProvider>
-    </ThemeProvider>
+                  <Route
+                    path="/signup"
+                    element={
+                      <AlreadyAuth>
+                        <SignUp />
+                      </AlreadyAuth>
+                    }
+                  />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </>
+            )}
+          </LoginContext.Provider>
+        </SnackbarProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 }
 

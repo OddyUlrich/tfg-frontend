@@ -1,42 +1,54 @@
 import { MyTreeNode } from "../Types";
 import { editor } from "monaco-editor";
 import React from "react";
-import Box from "@mui/material/Box";
-import { Theme, useTheme } from "@mui/material";
+import { IconButton, Tab, Tabs } from "@mui/material";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
-export interface Tab {
+export interface MyTab {
   node: MyTreeNode;
   modelMonacoEditor: editor.ITextModel | null | undefined;
 }
 
 interface TabsProps {
-  tabs: Tab[];
+  myTabs: MyTab[];
   activeTab: number;
-  onTabClick: (index: number) => void;
+  onTabClick: (event: React.SyntheticEvent, index: number) => void;
+  onCloseClick: (index: number) => void;
 }
 
 export const EditorTabs: React.FC<TabsProps> = ({
-  tabs,
+  myTabs,
   activeTab,
   onTabClick,
+  onCloseClick,
 }) => {
-  const theme: Theme = useTheme();
-
   return (
-    <div className="tabs">
-      {tabs.map((tab, index) => (
-        <Box
-          sx={{
-            backgroundColor:
-              theme.palette.mode === "dark" ? "#4d4d4d" : "#cdcdcd",
-          }}
-          key={index}
-          className={`tab-panel ${index === activeTab ? "active" : ""}`}
-          onClick={() => onTabClick(index)}
-        >
-          {tab.node.file?.name}
-        </Box>
+    <Tabs
+      value={activeTab}
+      onChange={onTabClick}
+      variant="scrollable"
+      scrollButtons={true}
+      allowScrollButtonsMobile
+      aria-label="scrollable auto file tab"
+    >
+      {myTabs.map((tab, index) => (
+        <Tab
+          sx={{ border: 1, borderBottom: 0, borderRadius: "6px 6px 0 0" }}
+          key={tab.node.label}
+          label={
+            <span>
+              {tab.node.label}
+              <IconButton
+                component="div"
+                title={"Close tab"}
+                onClick={() => onCloseClick(index)}
+              >
+                <HighlightOffIcon />
+              </IconButton>
+            </span>
+          }
+        />
       ))}
-    </div>
+    </Tabs>
   );
 };

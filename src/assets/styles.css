@@ -28,33 +28,23 @@
 
 .editor-page {
     height: 85vh;
+    width: 100%;
+    margin-top: 20px;
 }
 
 .editor-size {
-    height: 82vh;
+    height: 80vh;
 }
 
-.tabs{
-    display: flex;
+.MuiTabs-scrollButtons.Mui-disabled {
+    opacity: 0.3;
 }
 
-.tab-panel {
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    opacity: 1;
-    z-index: 100;
-    transform: translateY(0px);
-    text-shadow: 0 0 0;
-    padding: 8px 10px 8px 10px;
-    cursor: pointer;
-    border-radius: 5px 5px 0 0;
-    border-bottom: none;
-    font-weight: bold;
-    max-width: 150px;
-    min-width: 100px;
+.fileTree{
+    padding-left: 40px;
+    margin: auto;
 }
 
-.tab-panel.active{
-    background: #72afe3;
+.MuiTabs-scrollButtons.Mui-disabled {
+    opacity: 0.3;
 }
