@@ -4,11 +4,34 @@
     display: flex;
     justify-content: center;
     white-space: pre-line;
-    margin-top: 50px;
+    margin-top: 25px;
 }
 
-.flex {
+.download-buttons{
     display: flex;
+    justify-content: center;
+    padding-top: 30px;
+    gap: 20px;
+    overflow-x: hidden;
+}
+
+.editor {
+    border: 1px solid #ced4da;
+    height: 78.5vh;
+    transition: all .5s linear;
+}
+
+.editor-close-button{
+    padding: 0;
+    position: relative;
+    bottom: 2px;
+    left: 8px;
+}
+
+.editor-page {
+    height: 84vh;
+    width: 100%;
+    margin-top: 20px;
 }
 
 .flex-center {
@@ -16,35 +39,14 @@
     justify-content: center;
 }
 
-.flex-editor {
-    display: flex;
-    justify-content: right;
-    margin-right: 50px;
-}
-
-.editor {
-    border: 1px solid #ced4da;
-}
-
-.editor-page {
-    height: 85vh;
-    width: 100%;
-    margin-top: 20px;
-}
-
-.editor-size {
-    height: 80vh;
-}
-
-.MuiTabs-scrollButtons.Mui-disabled {
-    opacity: 0.3;
-}
-
 .fileTree{
-    padding-left: 40px;
-    margin: auto;
+    margin: 30px auto auto;
 }
 
 .MuiTabs-scrollButtons.Mui-disabled {
     opacity: 0.3;
+}
+
+.notFound-mt {
+    margin-top: 60px;
 }

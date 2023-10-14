@@ -13,7 +13,6 @@ export interface RangeRestrictionObject {
 }
 
 interface MonacoEditorProps {
-  defaultValue: string;
   onValueChange: (value: string | undefined) => void;
   path: string;
   tabs: MyTab[];
@@ -27,7 +26,6 @@ interface MonacoEditorProps {
 }
 
 export const MonacoEditor: React.FC<MonacoEditorProps> = ({
-  defaultValue,
   onValueChange,
   path,
   tabs,
@@ -37,6 +35,8 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
   onEditorDidMount,
 }) => {
   const theme = useTheme();
+  const templateText =
+    "//Selecciona uno de los archivos de la derecha para verlo y, si es posible, editarlo.\n//Select one of the files on the right to view it here and, if possible, edit it.\n";
 
   const options: editor.IStandaloneEditorConstructionOptions = {
     minimap: { enabled: false },
@@ -54,12 +54,12 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
       ) : null}
       <Editor
         theme={theme.palette.mode === "dark" ? "vs-dark" : "vs"}
-        className="editor editor-size"
+        className="editor"
         language="java"
         options={options}
         onMount={onEditorDidMount}
         onChange={onValueChange}
-        defaultValue={defaultValue}
+        defaultValue={tabs[activeTab]?.node.file?.content ?? templateText}
         path={path}
       />
     </>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export function NotFound() {
   return (
-    <div className="centered-mt">
+    <div className="centered-mt notFound-mt">
       <div>
         <Typography className="flex-center" variant="h2">
           Error 404
@@ -17,7 +17,7 @@ export function NotFound() {
         </Typography>
 
         <Box className="flex-center" marginTop="50px">
-          <Button component={Link} to="/" className="link_404">
+          <Button component={Link} to="/">
             Go Home
           </Button>
         </Box>

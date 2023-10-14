@@ -14,64 +14,35 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { Allotment } from "allotment";
 import { FileTree } from "../components/FileTree";
-import { Box } from "@mui/material";
+import { Box, Switch } from "@mui/material";
 import { LoginContext } from "../Utils";
 import { TreeStructure } from "../TreeStructure";
 import { MyTab } from "../components/EditorTabs";
 import { editor, Uri } from "monaco-editor";
 import { Monaco } from "@monaco-editor/react";
 import { constrainedEditor } from "constrained-editor-plugin";
-
-const templateText =
-  "//Selecciona uno de los archivos de la derecha para verlo y, si es posible, editarlo.\n//Select one of the files on the right to view it here and, if possible, edit it.\n";
-
-const initialTabs: MyTab[] = [
-  {
-    node: {
-      nodeId: "9999",
-      label: "Instructions",
-      file: {
-        id: "0",
-        name: "Instructions",
-        path: "/Instructions",
-        content: templateText,
-        idFromSolution: null,
-        editableMethods: null,
-      },
-      children: [],
-    },
-    modelMonacoEditor: null,
-  },
-  {
-    node: {
-      nodeId: "9998",
-      label: "Prueba",
-      file: {
-        id: "0",
-        name: "Prueba",
-        path: "/Prueba",
-        content: "Prueba de texto diferente",
-        idFromSolution: null,
-        editableMethods: null,
-      },
-      children: [],
-    },
-    modelMonacoEditor: null,
-  },
-];
+import { AlertDialog } from "../components/AlertDialog";
+import Typography from "@mui/material/Typography";
+import SaveIcon from "@mui/icons-material/Save";
+import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
+import Button from "@mui/material/Button";
+import FolderZipIcon from "@mui/icons-material/FolderZip";
 
 export function EditorPage() {
   const location = useLocation();
+  const [openSaveDialog, setOpenSaveDialog] = React.useState(false);
   const loginStatus: LoginTypes = useContext(LoginContext);
   const navigate = useNavigate();
   const [exerciseName, setExerciseName] = useState<string>();
   const [exerciseId, setExerciseId] = useState<string>();
   const [batteryName, setBatteryName] = useState<string>();
   const [templateFiles, setFreshFiles] = useState<ExerciseFile[]>();
-  const [tabs, setTabs] = useState<MyTab[]>(initialTabs);
+  const [tabs, setTabs] = useState<MyTab[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
   const [parentsIdList, setParentsIdList] = useState<string[]>([]);
   const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
+  const [autosave, setAutosave] = useState<boolean>(true);
+  const [isButtonSmall, setIsButtonSmall] = useState<boolean>(false);
   const [fileTree, setFileTree] = useState<TreeStructure>();
   const [editorValue, setEditorValue] = useState<string>();
   const [rootNode, setRootNode] = useState<MyTreeNode>({
@@ -83,6 +54,14 @@ export function EditorPage() {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const restrictions: RangeRestrictionObject[] = [];
 
+  const handleDialogClose = () => {
+    setOpenSaveDialog(false);
+  };
+
+  const handleDialogOpen = () => {
+    setOpenSaveDialog(true);
+  };
+
   const handleTabClick = (event: React.SyntheticEvent, index: number) => {
     setActiveTab(index);
   };
@@ -92,6 +71,11 @@ export function EditorPage() {
     if (index > -1) {
       newTabs.splice(index, 1);
     }
+
+    if (activeTab === tabs.length - 1 && activeTab > 0) {
+      setActiveTab(activeTab - 1);
+    }
+
     setTabs(newTabs);
   };
 
@@ -100,15 +84,15 @@ export function EditorPage() {
   };
 
   function handleEditorDidMount(
-    editor: editor.IStandaloneCodeEditor,
+    codeEditor: editor.IStandaloneCodeEditor,
     monaco: Monaco
   ) {
-    editorRef.current = editor;
+    editorRef.current = codeEditor;
 
     const constrainedInstance = constrainedEditor(monaco);
-    const model = editor.getModel();
+    const model = codeEditor.getModel();
 
-    constrainedInstance.initializeIn(editor);
+    constrainedInstance.initializeIn(codeEditor);
     // restrictions.push({
     //   range: [1, 1, 2, 10],
     //   allowMultiline: true,
@@ -261,28 +245,45 @@ export function EditorPage() {
         setFileTree(myTree);
         setParentsIdList(parentNodeIdList);
       } catch (error: any) {
-        /*TODO: queda pendiente ver qué hacer si el ejercicio no existe, literalmente poner texto
-        de ejemplo diciendo que seleccionemos un objeto en el árbol de ficheros*/
+        console.log("Network error");
       }
     };
     fetchData();
   }, [location.pathname]);
 
+  const handleAllotmentChange = (sizes: number[]) => {
+    sizes[2] < 250 ? setIsButtonSmall(true) : setIsButtonSmall(false);
+  };
+
   return (
     <>
-      <MyBreadcrumbs exerciseName={exerciseName} batteryName={batteryName} />
+      <AlertDialog open={openSaveDialog} handleClose={handleDialogClose} />
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <MyBreadcrumbs exerciseName={exerciseName} batteryName={batteryName} />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            marginRight: "25px",
+            marginTop: "15px",
+          }}
+        >
+          <SaveIcon sx={{ mr: 0.5 }} fontSize="medium" />
+          <Typography variant="button">
+            <strong>AUTOSAVE</strong>
+          </Typography>
+          <Switch defaultChecked />
+        </Box>
+      </Box>
       <Box className="editor-page">
-        <Allotment>
-          <Allotment.Pane snap>
+        <Allotment onChange={handleAllotmentChange}>
+          <Allotment.Pane minSize={150} snap>
             <Box>{rootNode?.label}</Box>
           </Allotment.Pane>
           <Box padding="0px 20px 0px 20px">
             <Allotment.Pane visible snap>
               <MonacoEditor
-                defaultValue={
-                  tabs[activeTab]?.node.file?.content ?? "Loading..."
-                }
-                path={tabs[activeTab]?.node.file?.path ?? "/Instructions"}
+                path={tabs[activeTab]?.node.file?.path ?? "/"}
                 tabs={tabs}
                 activeTab={activeTab}
                 onTabClick={handleTabClick}
@@ -301,6 +302,22 @@ export function EditorPage() {
                 label={rootNode?.label}
                 children={rootNode?.children}
               />
+              <Box
+                className="download-buttons"
+                sx={{
+                  flexDirection: isButtonSmall ? "column" : "row",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  startIcon={<DownloadOutlinedIcon />}
+                >
+                  <Typography variant="button">Download File</Typography>
+                </Button>
+                <Button variant="contained" startIcon={<FolderZipIcon />}>
+                  Download All
+                </Button>
+              </Box>
             </Box>
           </Allotment.Pane>
         </Allotment>

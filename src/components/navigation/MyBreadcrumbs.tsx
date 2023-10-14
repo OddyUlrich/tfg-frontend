@@ -55,7 +55,7 @@ export function MyBreadcrumbs(props: MyBreadcrumbsProps) {
   }
 
   return (
-    <Box sx={{ marginLeft: "25px", marginTop: "15px" }}>
+    <Box sx={{ marginLeft: "25px", marginTop: "10px" }}>
       <Breadcrumbs separator="›" aria-label="breadcrumb">
         <Link
           sx={{ display: "flex", alignItems: "center" }}

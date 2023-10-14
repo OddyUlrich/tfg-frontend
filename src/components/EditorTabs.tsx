@@ -33,12 +33,18 @@ export const EditorTabs: React.FC<TabsProps> = ({
     >
       {myTabs.map((tab, index) => (
         <Tab
-          sx={{ border: 1, borderBottom: 0, borderRadius: "6px 6px 0 0" }}
+          sx={{
+            border: 1,
+            borderBottom: 0,
+            borderRadius: "6px 6px 0 0",
+            padding: "8px 12px",
+          }}
           key={tab.node.label}
           label={
             <span>
               {tab.node.label}
               <IconButton
+                className="editor-close-button"
                 component="div"
                 title={"Close tab"}
                 onClick={() => onCloseClick(index)}
