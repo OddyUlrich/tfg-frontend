@@ -1,4 +1,4 @@
-import { MyTreeNode } from "./Types";
+import { ExerciseFile, MyTreeNode } from "./Types";
 
 export class TreeStructure {
   private root: MyTreeNode | null;
@@ -15,13 +15,20 @@ export class TreeStructure {
     }
   }
 
-  preOrderTraversal(callback: (node: MyTreeNode) => void) {
+  filterLeafNodes(list: Array<ExerciseFile>) {
     const traverse = (node: MyTreeNode | null) => {
       if (node) {
-        callback(node);
-        node.children.forEach((child) => {
-          traverse(child);
-        });
+        if (
+          node.children.length === 0 &&
+          node.file?.editableMethods &&
+          node.file.editableMethods.length > 0
+        ) {
+          list.push(node.file);
+        } else {
+          node.children.forEach((child) => {
+            traverse(child);
+          });
+        }
       }
     };
 

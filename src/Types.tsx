@@ -56,6 +56,7 @@ export type EditorData = {
   filesForDisplay: ExerciseFile[];
   templateFiles: ExerciseFile[];
   solutions: Solution[];
+  currentSolution: string;
   exercise: EditorExercise;
 };
 

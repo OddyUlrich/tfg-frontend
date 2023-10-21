@@ -27,6 +27,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import Button from "@mui/material/Button";
 import FolderZipIcon from "@mui/icons-material/FolderZip";
+import SendIcon from "@mui/icons-material/Send";
 
 export function EditorPage() {
   const location = useLocation();
@@ -35,8 +36,11 @@ export function EditorPage() {
   const navigate = useNavigate();
   const [exerciseName, setExerciseName] = useState<string>();
   const [exerciseId, setExerciseId] = useState<string>();
+  const [currentSolutionId, setCurrentSolutionId] = useState<string | null>(
+    null
+  );
   const [batteryName, setBatteryName] = useState<string>();
-  const [templateFiles, setFreshFiles] = useState<ExerciseFile[]>();
+  const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>();
   const [tabs, setTabs] = useState<MyTab[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
   const [parentsIdList, setParentsIdList] = useState<string[]>([]);
@@ -62,11 +66,68 @@ export function EditorPage() {
     setOpenSaveDialog(true);
   };
 
+  const handleManualSave = () => {
+    const displayFiles: Array<ExerciseFile> = [];
+    fileTree?.filterLeafNodes(displayFiles);
+
+    editor.getModels().forEach((model) => {
+      console.log("PRUEBA: " + model.uri);
+    });
+
+    const saveData = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/solutions/save", {
+          method: "PUT",
+          body: JSON.stringify({
+            filesForDisplay: displayFiles,
+            exerciseId: exerciseId,
+            solution: currentSolutionId,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          const errorExercise: ErrorSpring = await response.json();
+          throw new Error("Error from backend - " + errorExercise.message);
+        }
+
+        //TODO AQUI VA LA RESPUESTA OK
+        //TODO SNACKBAR AVISANDO DE QUE TODOS LOS CAMBIOS SE HAN GUARDADO CON ÉXITO
+      } catch (error: any) {
+        console.log("Network error");
+      }
+    };
+    saveData();
+  };
+
+  const handleAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAutosave(event.target.checked);
+  };
+
+  //Auto-save function every X seconds
+  useEffect(() => {
+    const saveTimeout = setTimeout(() => {
+      if (unsavedChanges) {
+        //saveChangesToServer(editorValue);
+        setUnsavedChanges(false);
+      }
+    }, 3000); // Wait 3 seconds of inactivity before saving
+
+    return () => clearTimeout(saveTimeout);
+  }, [editorValue, unsavedChanges]);
+
   const handleTabClick = (event: React.SyntheticEvent, index: number) => {
     setActiveTab(index);
   };
 
-  const handleCloseTab = (index: number) => {
+  const handleCloseTab = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
     const newTabs = [...tabs];
     if (index > -1) {
       newTabs.splice(index, 1);
@@ -146,17 +207,9 @@ export function EditorPage() {
     setUnsavedChanges(false);
   };
 
-  //Auto-save function every X seconds
-  useEffect(() => {
-    const saveTimeout = setTimeout(() => {
-      if (unsavedChanges) {
-        //saveChangesToServer(editorValue);
-        setUnsavedChanges(false);
-      }
-    }, 3000); // Wait 3 seconds of inactivity before saving
-
-    return () => clearTimeout(saveTimeout);
-  }, [editorValue, unsavedChanges]);
+  const handleSubmit = () => {
+    //TODO ENVIAR NODOS DEL ÁRBOL (SOLO DE SOLUCIÓN)
+  };
 
   //Fetching files for the editor to show and setting up states and file tree
   useEffect(() => {
@@ -183,7 +236,8 @@ export function EditorPage() {
         setExerciseName(data.exercise.name);
         setExerciseId(data.exercise.id);
         setBatteryName(data.exercise.nameFromBattery);
-        setFreshFiles(data.templateFiles);
+        setTemplateFiles(data.templateFiles);
+        setCurrentSolutionId(data.currentSolution);
 
         const filesForDisplay = data.filesForDisplay;
 
@@ -252,7 +306,7 @@ export function EditorPage() {
   }, [location.pathname]);
 
   const handleAllotmentChange = (sizes: number[]) => {
-    sizes[2] < 250 ? setIsButtonSmall(true) : setIsButtonSmall(false);
+    sizes[2] < 325 ? setIsButtonSmall(true) : setIsButtonSmall(false);
   };
 
   return (
@@ -265,20 +319,41 @@ export function EditorPage() {
             display: "flex",
             alignItems: "center",
             marginRight: "25px",
-            marginTop: "15px",
+            marginTop: "10px",
           }}
         >
+          <Button
+            sx={{ marginRight: "20px" }}
+            color="secondary"
+            variant="contained"
+            onClick={handleManualSave}
+          >
+            <Typography variant="button">
+              <strong>SAVE ALL</strong>
+            </Typography>
+          </Button>
           <SaveIcon sx={{ mr: 0.5 }} fontSize="medium" />
           <Typography variant="button">
             <strong>AUTOSAVE</strong>
           </Typography>
-          <Switch defaultChecked />
+          <Switch onChange={handleAutosave} checked={autosave} />
         </Box>
       </Box>
       <Box className="editor-page">
         <Allotment onChange={handleAllotmentChange}>
           <Allotment.Pane minSize={150} snap>
             <Box>{rootNode?.label}</Box>
+
+            <Button
+              onClick={handleSubmit}
+              color="success"
+              variant="contained"
+              endIcon={<SendIcon />}
+            >
+              <Typography variant="button">
+                <strong>Submit solution</strong>
+              </Typography>
+            </Button>
           </Allotment.Pane>
           <Box padding="0px 20px 0px 20px">
             <Allotment.Pane visible snap>
@@ -293,7 +368,7 @@ export function EditorPage() {
               />
             </Allotment.Pane>
           </Box>
-          <Allotment.Pane preferredSize="25%" minSize={100} snap>
+          <Allotment.Pane preferredSize="25%" minSize={150} snap>
             <Box className="fileTree">
               <FileTree
                 onNodeSelect={handleNodeSelect}

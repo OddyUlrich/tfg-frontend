@@ -63,12 +63,13 @@ export const FileTree: FC<FileTreeProps> = ({
       defaultEndIcon={<InsertDriveFile />}
       sx={{
         display: "flex",
-        justifyContent: "center",
         height: "100%",
         width: "100%",
         flexGrow: 1,
         overflowY: "auto",
         overflowX: "hidden",
+        marginLeft: "30px",
+        marginTop: "30px",
       }}
     >
       <MyTreeItem nodeId={nodeId} label={label} children={children} />

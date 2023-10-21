@@ -18,7 +18,7 @@ interface MonacoEditorProps {
   tabs: MyTab[];
   activeTab: number;
   onTabClick: (event: React.SyntheticEvent, index: number) => void;
-  onCloseClick: (index: number) => void;
+  onCloseClick: (event: React.MouseEvent<HTMLElement>, index: number) => void;
   onEditorDidMount: (
     editor: editor.IStandaloneCodeEditor,
     monaco: Monaco

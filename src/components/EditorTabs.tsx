@@ -13,7 +13,7 @@ interface TabsProps {
   myTabs: MyTab[];
   activeTab: number;
   onTabClick: (event: React.SyntheticEvent, index: number) => void;
-  onCloseClick: (index: number) => void;
+  onCloseClick: (event: React.MouseEvent<HTMLElement>, index: number) => void;
 }
 
 export const EditorTabs: React.FC<TabsProps> = ({
@@ -47,7 +47,9 @@ export const EditorTabs: React.FC<TabsProps> = ({
                 className="editor-close-button"
                 component="div"
                 title={"Close tab"}
-                onClick={() => onCloseClick(index)}
+                onClick={(e: React.MouseEvent<HTMLElement>) =>
+                  onCloseClick(e, index)
+                }
               >
                 <HighlightOffIcon />
               </IconButton>
