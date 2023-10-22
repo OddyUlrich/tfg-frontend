@@ -6,14 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TreeStructure.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/TreeStructure.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Types.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/EditorTabs.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/EditorTabs.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/FileTree.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/FileTree.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/EditorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/EditorPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -207,7 +200,8 @@
       <workItem from="1697498823817" duration="1415000" />
       <workItem from="1697597522139" duration="341000" />
       <workItem from="1697651664909" duration="10993000" />
-      <workItem from="1697827510266" duration="16415000" />
+      <workItem from="1697827510266" duration="16570000" />
+      <workItem from="1697914233655" duration="10564000" />
     </task>
     <servers />
   </component>

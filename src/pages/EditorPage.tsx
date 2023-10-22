@@ -70,10 +70,6 @@ export function EditorPage() {
     const displayFiles: Array<ExerciseFile> = [];
     fileTree?.filterLeafNodes(displayFiles);
 
-    editor.getModels().forEach((model) => {
-      console.log("PRUEBA: " + model.uri);
-    });
-
     const saveData = async () => {
       try {
         const response = await fetch("http://localhost:8080/solutions/save", {
@@ -81,7 +77,7 @@ export function EditorPage() {
           body: JSON.stringify({
             filesForDisplay: displayFiles,
             exerciseId: exerciseId,
-            solution: currentSolutionId,
+            solutionId: currentSolutionId,
           }),
           headers: {
             "Content-Type": "application/json",
@@ -140,7 +136,17 @@ export function EditorPage() {
     setTabs(newTabs);
   };
 
-  const handleEditorChange = (value: string | undefined) => {
+  const handleEditorChange = (content: string | undefined) => {
+    const auxTabs = [...tabs];
+    const tab = auxTabs[activeTab];
+
+    if (tab && tab.node.file && content) {
+      const path = Uri.parse(tab.node.file.path);
+      editor.getModel(path)?.setValue(content);
+      tab.node.file.content = content;
+    }
+
+    setTabs(auxTabs);
     setUnsavedChanges(false);
   };
 
@@ -187,19 +193,21 @@ export function EditorPage() {
     }
 
     const newTabs = [...tabs];
-    const model = editor.getModel(Uri.parse(selectedNode.file.path));
 
-    //If the model already exist for that file it will use it, if not, it will create a new one
     const newTab: MyTab = {
       node: selectedNode,
-      modelMonacoEditor:
-        model ??
-        editor.createModel(
-          selectedNode.file.content,
-          "java",
-          Uri.parse(selectedNode.file.path)
-        ),
     };
+
+    //If the model already exist for that file it will use it, if not, it will create a new one
+    const model = editor.getModel(Uri.parse(selectedNode.file.path));
+
+    if (!model) {
+      editor.createModel(
+        selectedNode.file.content,
+        "java",
+        Uri.parse(selectedNode.file.path)
+      );
+    }
 
     newTabs.push(newTab);
     setTabs(newTabs);

@@ -1,12 +1,10 @@
 import { MyTreeNode } from "../Types";
-import { editor } from "monaco-editor";
 import React from "react";
 import { IconButton, Tab, Tabs } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 export interface MyTab {
   node: MyTreeNode;
-  modelMonacoEditor: editor.ITextModel | null | undefined;
 }
 
 interface TabsProps {
