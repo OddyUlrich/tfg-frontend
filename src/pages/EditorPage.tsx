@@ -14,7 +14,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { Allotment } from "allotment";
 import { FileTree } from "../components/FileTree";
-import { Box, Switch } from "@mui/material";
+import { Box, CircularProgress, Switch } from "@mui/material";
 import { LoginContext } from "../Utils";
 import { TreeStructure } from "../TreeStructure";
 import { MyTab } from "../components/EditorTabs";
@@ -28,6 +28,7 @@ import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import Button from "@mui/material/Button";
 import FolderZipIcon from "@mui/icons-material/FolderZip";
 import SendIcon from "@mui/icons-material/Send";
+import { Done } from "@mui/icons-material";
 
 export function EditorPage() {
   const location = useLocation();
@@ -48,7 +49,6 @@ export function EditorPage() {
   const [autosave, setAutosave] = useState<boolean>(true);
   const [isButtonSmall, setIsButtonSmall] = useState<boolean>(false);
   const [fileTree, setFileTree] = useState<TreeStructure>();
-  const [editorValue, setEditorValue] = useState<string>();
   const [rootNode, setRootNode] = useState<MyTreeNode>({
     nodeId: "0",
     label: "Exercise",
@@ -57,6 +57,10 @@ export function EditorPage() {
   });
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const restrictions: RangeRestrictionObject[] = [];
+
+  const handleAllotmentChange = (sizes: number[]) => {
+    sizes[2] < 325 ? setIsButtonSmall(true) : setIsButtonSmall(false);
+  };
 
   const handleDialogClose = () => {
     setOpenSaveDialog(false);
@@ -69,6 +73,13 @@ export function EditorPage() {
   const handleManualSave = () => {
     const displayFiles: Array<ExerciseFile> = [];
     fileTree?.filterLeafNodes(displayFiles);
+
+    displayFiles.forEach((file) => {
+      const model = editor.getModel(Uri.parse(file.path));
+      if (model) {
+        file.content = model.getValue();
+      }
+    });
 
     const saveData = async () => {
       try {
@@ -89,6 +100,8 @@ export function EditorPage() {
           const errorExercise: ErrorSpring = await response.json();
           throw new Error("Error from backend - " + errorExercise.message);
         }
+
+        setUnsavedChanges(false);
 
         //TODO AQUI VA LA RESPUESTA OK
         //TODO SNACKBAR AVISANDO DE QUE TODOS LOS CAMBIOS SE HAN GUARDADO CON ÉXITO
@@ -113,7 +126,7 @@ export function EditorPage() {
     }, 3000); // Wait 3 seconds of inactivity before saving
 
     return () => clearTimeout(saveTimeout);
-  }, [editorValue, unsavedChanges]);
+  }, [unsavedChanges]);
 
   const handleTabClick = (event: React.SyntheticEvent, index: number) => {
     setActiveTab(index);
@@ -143,11 +156,10 @@ export function EditorPage() {
     if (tab && tab.node.file && content) {
       const path = Uri.parse(tab.node.file.path);
       editor.getModel(path)?.setValue(content);
-      tab.node.file.content = content;
     }
 
     setTabs(auxTabs);
-    setUnsavedChanges(false);
+    setUnsavedChanges(true);
   };
 
   function handleEditorDidMount(
@@ -313,9 +325,14 @@ export function EditorPage() {
     fetchData();
   }, [location.pathname]);
 
-  const handleAllotmentChange = (sizes: number[]) => {
-    sizes[2] < 325 ? setIsButtonSmall(true) : setIsButtonSmall(false);
-  };
+  let saveStatusIcon;
+  if (autosave && unsavedChanges) {
+    saveStatusIcon = <CircularProgress sx={{ marginRight: "5px" }} size={24} />;
+  } else if (autosave && !unsavedChanges) {
+    saveStatusIcon = <Done sx={{ marginRight: "5px" }} color="success" />;
+  } else {
+    saveStatusIcon = null;
+  }
 
   return (
     <>
@@ -340,6 +357,7 @@ export function EditorPage() {
               <strong>SAVE ALL</strong>
             </Typography>
           </Button>
+          {saveStatusIcon}
           <SaveIcon sx={{ mr: 0.5 }} fontSize="medium" />
           <Typography variant="button">
             <strong>AUTOSAVE</strong>
