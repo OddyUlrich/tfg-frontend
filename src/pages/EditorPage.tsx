@@ -70,7 +70,7 @@ export function EditorPage() {
     setOpenSaveDialog(true);
   };
 
-  const handleManualSave = () => {
+  const handleSave = () => {
     const displayFiles: Array<ExerciseFile> = [];
     fileTree?.filterLeafNodes(displayFiles);
 
@@ -105,22 +105,25 @@ export function EditorPage() {
 
         //TODO AQUI VA LA RESPUESTA OK
         //TODO SNACKBAR AVISANDO DE QUE TODOS LOS CAMBIOS SE HAN GUARDADO CON ÉXITO
+
       } catch (error: any) {
-        console.log("Network error");
+        if (error instanceof Error) {
+          console.log(error.message);
+        }
       }
     };
     saveData();
   };
 
-  const handleAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAutosave(event.target.checked);
+  const handleStatusAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setAutosave(event.target.checked);
   };
 
   //Auto-save function every X seconds
   useEffect(() => {
     const saveTimeout = setTimeout(() => {
       if (unsavedChanges) {
-        //saveChangesToServer(editorValue);
+        handleSave();
         setUnsavedChanges(false);
       }
     }, 3000); // Wait 3 seconds of inactivity before saving
@@ -334,6 +337,7 @@ export function EditorPage() {
     saveStatusIcon = null;
   }
 
+
   return (
     <>
       <AlertDialog open={openSaveDialog} handleClose={handleDialogClose} />
@@ -351,7 +355,7 @@ export function EditorPage() {
             sx={{ marginRight: "20px" }}
             color="secondary"
             variant="contained"
-            onClick={handleManualSave}
+            onClick={handleSave}
           >
             <Typography variant="button">
               <strong>SAVE ALL</strong>
@@ -362,7 +366,7 @@ export function EditorPage() {
           <Typography variant="button">
             <strong>AUTOSAVE</strong>
           </Typography>
-          <Switch onChange={handleAutosave} checked={autosave} />
+          <Switch onChange={handleStatusAutosave} checked={autosave} />
         </Box>
       </Box>
       <Box className="editor-page">
