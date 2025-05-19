@@ -70,16 +70,18 @@ function App() {
         });
 
         if (response.status === 401) {
+          //TODO SI EL USUARIO NO ESTÁ AUTORIZADO HABRA QUE HACER ALGO AQUI, NO SOLO RETORNAR
           setIsLoading(false);
           return;
         } else if (!response.ok) {
+
           const contentType = response.headers.get("content-type");
+          setIsLoading(false);
+
           if (contentType && contentType.indexOf("application/json") !== -1) {
             const errorExercise: ErrorSpring = await response.json();
-            setIsLoading(false);
             throw new Error("Error from backend - " + errorExercise.message);
           } else {
-            setIsLoading(false);
             throw new Error("Error from backend - " + response.status);
           }
         }
@@ -99,7 +101,7 @@ function App() {
         console.log("FETCH ERROR: " + error);
       }
     };
-    checkAuth();
+    void checkAuth();
   }, []);
 
   function handleClickTheme() {

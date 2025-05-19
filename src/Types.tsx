@@ -46,6 +46,7 @@ export type Exercise = {
   batteryName: string;
   numberErrorsSolution: number;
   statusSolution: string;
+  creationTimestamp: DateTime;
 };
 
 export type Tag = {

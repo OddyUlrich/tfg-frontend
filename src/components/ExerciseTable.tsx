@@ -17,6 +17,7 @@ import {
 } from "@mui/icons-material";
 import { ExerciseRow } from "./ExerciseRow";
 import { Exercise } from "../Types";
+import { DateTime } from "luxon";
 
 type ExerciseListProps = {
   batteryName: string;
@@ -24,7 +25,37 @@ type ExerciseListProps = {
   onFavRow: (exercise: Exercise, index: number) => void;
 };
 
+function compareCreationDate(a: Exercise, b: Exercise) {
+
+  if (DateTime.now().diff(a.creationTimestamp, 'days').days < 7) {
+    return -1;
+  }
+  if (DateTime.now().diff(b.creationTimestamp, 'days').days < 7) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function normalCompare(a: Exercise, b: Exercise) {
+
+  const orderNew = compareCreationDate(a,b);
+
+  if (orderNew !== 0) {
+    return orderNew;
+  }
+
+  return a.name.localeCompare(b.name);
+}
+
 function compareExerciseByFavorite(a: Exercise, b: Exercise) {
+
+  const orderNew = compareCreationDate(a,b);
+
+  if (orderNew !== 0) {
+    return orderNew;
+  }
+
   if (a.favorite < b.favorite) {
     return 1;
   }
@@ -42,7 +73,7 @@ function sortData(data: Exercise[], order: boolean) {
   if (order) {
     return data.sort((a, b) => compareExerciseByFavorite(a, b));
   } else {
-    return data.sort((a, b) => a.name.localeCompare(b.name));
+    return data.sort((a, b) => normalCompare(a, b));
   }
 }
 

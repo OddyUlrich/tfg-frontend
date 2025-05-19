@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import "../assets/styles.css";
 import {
-  AlertColor,
   Box,
   Card,
   CardContent,
@@ -17,12 +16,12 @@ import { Refresh } from "@mui/icons-material";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import { LoginContext } from "../Utils";
 import { useNavigate } from "react-router-dom";
+import { DateTime } from "luxon";
 
 export function StudentHome() {
   const [isLoading, setIsLoading] = useState(true);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [data, setData] = useState<Map<string, Exercise[]>>(new Map());
-  useState<AlertColor>("success");
 
   const loginStatus: LoginTypes = useContext(LoginContext);
   const navigate = useNavigate();
@@ -63,6 +62,9 @@ export function StudentHome() {
           );
 
           exercises.forEach((exercise) => {
+            //MAGIA NEGRA
+            const creationDate = exercise.creationTimestamp.toString();
+            exercise.creationTimestamp = DateTime.fromISO(creationDate);
             batteries.get(exercise.batteryName)?.push(exercise);
           });
 
@@ -78,7 +80,7 @@ export function StudentHome() {
         }
         setIsLoading(false);
       };
-      fetchExercises();
+      void fetchExercises();
     }
   }, [isLoading, loginStatus, navigate]);
 
@@ -137,7 +139,7 @@ export function StudentHome() {
         });
       }
     };
-    updateFavorite();
+    void updateFavorite();
   };
 
   let content;

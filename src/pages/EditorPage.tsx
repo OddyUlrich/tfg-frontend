@@ -70,170 +70,6 @@ export function EditorPage() {
     setOpenSaveDialog(true);
   };
 
-  const handleSave = () => {
-    const displayFiles: Array<ExerciseFile> = [];
-    fileTree?.filterLeafNodes(displayFiles);
-
-    displayFiles.forEach((file) => {
-      const model = editor.getModel(Uri.parse(file.path));
-      if (model) {
-        file.content = model.getValue();
-      }
-    });
-
-    const saveData = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/solutions/save", {
-          method: "PUT",
-          body: JSON.stringify({
-            filesForDisplay: displayFiles,
-            exerciseId: exerciseId,
-            solutionId: currentSolutionId,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          const errorExercise: ErrorSpring = await response.json();
-          throw new Error("Error from backend - " + errorExercise.message);
-        }
-
-        setUnsavedChanges(false);
-
-        //TODO AQUI VA LA RESPUESTA OK
-        //TODO SNACKBAR AVISANDO DE QUE TODOS LOS CAMBIOS SE HAN GUARDADO CON ÉXITO
-
-      } catch (error: any) {
-        if (error instanceof Error) {
-          console.log(error.message);
-        }
-      }
-    };
-    saveData();
-  };
-
-  const handleStatusAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setAutosave(event.target.checked);
-  };
-
-  //Auto-save function every X seconds
-  useEffect(() => {
-    const saveTimeout = setTimeout(() => {
-      if (unsavedChanges) {
-        handleSave();
-        setUnsavedChanges(false);
-      }
-    }, 3000); // Wait 3 seconds of inactivity before saving
-
-    return () => clearTimeout(saveTimeout);
-  }, [unsavedChanges]);
-
-  const handleTabClick = (event: React.SyntheticEvent, index: number) => {
-    setActiveTab(index);
-  };
-
-  const handleCloseTab = (
-    event: React.MouseEvent<HTMLElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-    const newTabs = [...tabs];
-    if (index > -1) {
-      newTabs.splice(index, 1);
-    }
-
-    if (activeTab === tabs.length - 1 && activeTab > 0) {
-      setActiveTab(activeTab - 1);
-    }
-
-    setTabs(newTabs);
-  };
-
-  const handleEditorChange = (content: string | undefined) => {
-    const auxTabs = [...tabs];
-    const tab = auxTabs[activeTab];
-
-    if (tab && tab.node.file && content) {
-      const path = Uri.parse(tab.node.file.path);
-      editor.getModel(path)?.setValue(content);
-    }
-
-    setTabs(auxTabs);
-    setUnsavedChanges(true);
-  };
-
-  function handleEditorDidMount(
-    codeEditor: editor.IStandaloneCodeEditor,
-    monaco: Monaco
-  ) {
-    editorRef.current = codeEditor;
-
-    const constrainedInstance = constrainedEditor(monaco);
-    const model = codeEditor.getModel();
-
-    constrainedInstance.initializeIn(codeEditor);
-    // restrictions.push({
-    //   range: [1, 1, 2, 10],
-    //   allowMultiline: true,
-    // });
-    // constrainedInstance.addRestrictionsTo(model, restrictions);
-  }
-
-  const handleNodeSelect = (
-    _event: React.SyntheticEvent,
-    nodeIds: Array<string> | string
-  ) => {
-    const selectedNodeId = Array.isArray(nodeIds) ? nodeIds[0] : nodeIds;
-    if (fileTree === undefined) {
-      /*TODO qué hacer si el arbol no se ha generado todavía? Querría decir que
-      el fetch no se ha realizado y sin embargo se ha seleccionado un nodo
-      no tiene sentido*/
-      return;
-    }
-
-    //If the selected node is not a file It does nothing
-    const selectedNode = fileTree.findNodeById(selectedNodeId);
-    if (!selectedNode?.file) {
-      return;
-    }
-
-    //If the selected node already has a corresponding tab It does nothing
-    for (const tab of tabs) {
-      if (tab.node.nodeId === selectedNodeId) {
-        return;
-      }
-    }
-
-    const newTabs = [...tabs];
-
-    const newTab: MyTab = {
-      node: selectedNode,
-    };
-
-    //If the model already exist for that file it will use it, if not, it will create a new one
-    const model = editor.getModel(Uri.parse(selectedNode.file.path));
-
-    if (!model) {
-      editor.createModel(
-        selectedNode.file.content,
-        "java",
-        Uri.parse(selectedNode.file.path)
-      );
-    }
-
-    newTabs.push(newTab);
-    setTabs(newTabs);
-
-    setUnsavedChanges(false);
-  };
-
-  const handleSubmit = () => {
-    //TODO ENVIAR NODOS DEL ÁRBOL (SOLO DE SOLUCIÓN)
-  };
-
   //Fetching files for the editor to show and setting up states and file tree
   useEffect(() => {
     const exerciseId = decodeURI(
@@ -327,6 +163,174 @@ export function EditorPage() {
     };
     fetchData();
   }, [location.pathname]);
+
+  const handleSave = () => {
+    const displayFiles: Array<ExerciseFile> = [];
+    fileTree?.filterLeafNodes(displayFiles);
+
+    displayFiles.forEach((file) => {
+      const model = editor.getModel(Uri.parse(file.path));
+      if (model) {
+        file.content = model.getValue();
+      }
+    });
+
+    const saveData = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/solutions/save", {
+          method: "PUT",
+          body: JSON.stringify({
+            filesForDisplay: displayFiles,
+            exerciseId: exerciseId,
+            solutionId: currentSolutionId,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          const errorExercise: ErrorSpring = await response.json();
+          throw new Error("Error from backend - " + errorExercise.message);
+        }
+
+        setUnsavedChanges(false);
+
+        //TODO AQUI VA LA RESPUESTA OK
+        //TODO SNACKBAR AVISANDO DE QUE TODOS LOS CAMBIOS SE HAN GUARDADO CON ÉXITO
+
+      } catch (error: any) {
+        if (error instanceof Error) {
+          console.log(error.message);
+        }
+      }
+    };
+    saveData();
+  };
+
+  const handleStatusAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setAutosave(event.target.checked);
+  };
+
+  //Auto-save function every X seconds
+  useEffect(() => {
+    const saveTimeout = setTimeout(() => {
+      if (unsavedChanges) {
+        handleSave();
+        setUnsavedChanges(false);
+      }
+    }, 3000); // Wait 3 seconds of inactivity before saving
+
+    return () => clearTimeout(saveTimeout);
+  }, [unsavedChanges]);
+
+  const handleTabClick = (event: React.SyntheticEvent, index: number) => {
+    setActiveTab(index);
+  };
+
+  const handleCloseTab = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
+    const newTabs = [...tabs];
+    if (index > -1) {
+      newTabs.splice(index, 1);
+    }
+
+    if (activeTab === tabs.length - 1 && activeTab > 0) {
+      setActiveTab(activeTab - 1);
+    }
+
+    setTabs(newTabs);
+  };
+
+  const handleEditorChange = (content: string | undefined) => {
+    //TODO REVISAR DURANTE UN TIEMPO QUE TODO FUNCIONA BIEN -> BORRAR COMENTARIOS
+    //const auxTabs = [...tabs];
+    const tab = tabs[activeTab];
+
+    if (tab && tab.node.file && content) {
+      const path = Uri.parse(tab.node.file.path);
+      editor.getModel(path)?.setValue(content);
+    }
+
+    //setTabs(auxTabs);
+    setUnsavedChanges(true);
+  };
+
+  function handleEditorDidMount(
+    codeEditor: editor.IStandaloneCodeEditor,
+    monaco: Monaco
+  ) {
+    editorRef.current = codeEditor;
+
+    const constrainedInstance = constrainedEditor(monaco);
+    const model = codeEditor.getModel();
+
+    constrainedInstance.initializeIn(codeEditor);
+    // restrictions.push({
+    //   range: [1, 1, 2, 10],
+    //   allowMultiline: true,
+    // });
+    // constrainedInstance.addRestrictionsTo(model, restrictions);
+  }
+
+  const handleNodeSelect = (
+    _event: React.SyntheticEvent,
+    nodeIds: Array<string> | string
+  ) => {
+    const selectedNodeId = Array.isArray(nodeIds) ? nodeIds[0] : nodeIds;
+
+    if (fileTree === undefined) {
+      /*TODO qué hacer si el arbol no se ha generado todavía? Querría decir que
+      el fetch no se ha realizado y sin embargo se ha seleccionado un nodo
+      no tiene sentido*/
+      return;
+    }
+
+    //If the selected node is not a file, it does nothing
+    const selectedNode = fileTree.findNodeById(selectedNodeId);
+    if (!selectedNode?.file) {
+      return;
+    }
+
+    //If the selected node already has a corresponding tab, it does nothing
+    for (const tab of tabs) {
+      if (tab.node.nodeId === selectedNodeId) {
+        return;
+      }
+    }
+
+    const newTabs = [...tabs];
+
+    const newTab: MyTab = {
+      node: selectedNode,
+    };
+
+    //If the model already exist for that file, it will use it, if not, it will create a new one
+    const model = editor.getModel(Uri.parse(selectedNode.file.path));
+
+    if (!model) {
+      editor.createModel(
+        selectedNode.file.content,
+        "java",
+        Uri.parse(selectedNode.file.path)
+      );
+    }
+
+    newTabs.push(newTab);
+    setTabs(newTabs);
+
+    setActiveTab(newTabs.length - 1);
+
+    setUnsavedChanges(false);
+  };
+
+  const handleSubmit = () => {
+    //TODO ENVIAR NODOS DEL ÁRBOL (SOLO DE SOLUCIÓN)
+  };
 
   let saveStatusIcon;
   if (autosave && unsavedChanges) {

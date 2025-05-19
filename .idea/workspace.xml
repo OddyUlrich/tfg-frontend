@@ -5,8 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Types.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ExerciseTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExerciseTable.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/EditorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/EditorPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/SignUp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SignUp.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/StudentHome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/StudentHome.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,6 +55,7 @@
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;JavaScript Debug.Debug Application.executor&quot;: &quot;Debug&quot;,
     &quot;Notification.DisplayName-DoNotAsk-Proofreading missing languages information&quot;: &quot;Proofreading missing languages information&quot;,
     &quot;Notification.DoNotAsk-Proofreading missing languages information&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
@@ -68,7 +77,7 @@
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;npm.npm start.executor&quot;: &quot;Run&quot;,
     &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;D:\\tfg-frontend\\node_modules\\prettier&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;settings.typescriptcompiler&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;Errors&quot;,
     &quot;ts.external.directory.path&quot;: &quot;G:\\tfg-frontend\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -101,7 +110,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-WS-251.23774.424" />
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-WS-251.25410.117" />
       </set>
     </attachedChunks>
   </component>
@@ -230,7 +239,14 @@
       <workItem from="1746295658523" duration="5268000" />
       <workItem from="1746304402223" duration="1668000" />
       <workItem from="1746466402580" duration="3808000" />
-      <workItem from="1746638433971" duration="7358000" />
+      <workItem from="1746638433971" duration="8004000" />
+      <workItem from="1746812454413" duration="1188000" />
+      <workItem from="1746813976376" duration="7798000" />
+      <workItem from="1747331738487" duration="431000" />
+      <workItem from="1747332182672" duration="3626000" />
+      <workItem from="1747504955297" duration="6747000" />
+      <workItem from="1747594159022" duration="1176000" />
+      <workItem from="1747677158443" duration="11098000" />
     </task>
     <servers />
   </component>

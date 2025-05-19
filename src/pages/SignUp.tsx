@@ -90,6 +90,7 @@ export default function SignUp() {
     setShowPassError(false);
     setPassMessage("");
 
+    //TODO VER QUE HACER CON ESTO
     if (!data.get("readDocument")) {
       enqueueSnackbar(
         "You must read the document and mark the checkbox to continue",
@@ -119,13 +120,17 @@ export default function SignUp() {
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.indexOf("application/json") !== -1) {
             const errorSpring: ErrorSpring = await response.json();
-            //If the response is a conflict we can/should warn the user
+
+
+            //TODO CHECK QUE ESTE MENSAJE DE ERROR LLEGA CORRECTAMENTE DESDE BACKEND, SINO EN BACKEND -> "ESTE EMAIL YA ESTA ASOCIADO A UNA CUENTA"
+            //If the response is a conflict, we should warn the user
             if (response.status === 409) {
               enqueueSnackbar(errorSpring.message, {
                 variant: "error",
               });
             }
             throw new Error("Error from backend - " + errorSpring.message);
+
           } else {
             enqueueSnackbar("Error trying to sign up, please try again", {
               variant: "error",
