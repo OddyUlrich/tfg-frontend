@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   MonacoEditor,
-  RangeRestrictionObject,
+  RangeRestrictionObject
 } from "../components/MonacoEditor";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import {
@@ -9,7 +9,7 @@ import {
   ErrorSpring,
   ExerciseFile,
   LoginTypes,
-  MyTreeNode,
+  MyTreeNode
 } from "../Types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Allotment } from "allotment";
@@ -53,7 +53,7 @@ export function EditorPage() {
     nodeId: "0",
     label: "Exercise",
     file: null,
-    children: [],
+    children: []
   });
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const restrictions: RangeRestrictionObject[] = [];
@@ -82,7 +82,7 @@ export function EditorPage() {
           "http://localhost:8080/exercises/" + exerciseId,
           {
             method: "GET",
-            credentials: "include",
+            credentials: "include"
           }
         );
 
@@ -104,7 +104,7 @@ export function EditorPage() {
           nodeId: "0",
           label: "Exercise",
           file: null,
-          children: [],
+          children: []
         };
 
         const myTree = new TreeStructure();
@@ -141,7 +141,7 @@ export function EditorPage() {
                 nodeId: (counter++).toString(),
                 label: name,
                 file: fileContent,
-                children: [],
+                children: []
               };
               myTree.addNode(newNode, parent);
               filesAndDirectories.push(name);
@@ -182,12 +182,12 @@ export function EditorPage() {
           body: JSON.stringify({
             filesForDisplay: displayFiles,
             exerciseId: exerciseId,
-            solutionId: currentSolutionId,
+            solutionId: currentSolutionId
           }),
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
-          credentials: "include",
+          credentials: "include"
         });
 
         if (!response.ok) {
@@ -210,7 +210,7 @@ export function EditorPage() {
   };
 
   const handleStatusAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setAutosave(event.target.checked);
+    setAutosave(event.target.checked);
   };
 
   //Auto-save function every X seconds
@@ -290,8 +290,9 @@ export function EditorPage() {
       return;
     }
 
-    //If the selected node is not a file, it does nothing
     const selectedNode = fileTree.findNodeById(selectedNodeId);
+
+    //If the selected node is not a file, it does nothing
     if (!selectedNode?.file) {
       return;
     }
@@ -305,11 +306,12 @@ export function EditorPage() {
 
     const newTabs = [...tabs];
 
+    //Create a new tab with the selected node to show the file
     const newTab: MyTab = {
-      node: selectedNode,
+      node: selectedNode
     };
 
-    //If the model already exist for that file, it will use it, if not, it will create a new one
+    //If the model already exist for that file, it will use it, if not, it will create a new one with the file content
     const model = editor.getModel(Uri.parse(selectedNode.file.path));
 
     if (!model) {
@@ -320,12 +322,12 @@ export function EditorPage() {
       );
     }
 
+    //Now we add the new tab in the list of tabs
     newTabs.push(newTab);
     setTabs(newTabs);
 
+    //Select this new tab to show the content instantly
     setActiveTab(newTabs.length - 1);
-
-    setUnsavedChanges(false);
   };
 
   const handleSubmit = () => {
@@ -352,7 +354,7 @@ export function EditorPage() {
             display: "flex",
             alignItems: "center",
             marginRight: "25px",
-            marginTop: "10px",
+            marginTop: "10px"
           }}
         >
           <Button
@@ -403,29 +405,36 @@ export function EditorPage() {
             </Allotment.Pane>
           </Box>
           <Allotment.Pane preferredSize="25%" minSize={150} snap>
-            <Box className="fileTree">
-              <FileTree
-                onNodeSelect={handleNodeSelect}
-                parents={parentsIdList}
-                nodeId={rootNode?.nodeId}
-                label={rootNode?.label}
-                children={rootNode?.children}
-              />
-              <Box
-                className="download-buttons"
-                sx={{
-                  flexDirection: isButtonSmall ? "column" : "row",
-                }}
+            <Box className="file-pane">
+              <Box className="file-selector"
               >
-                <Button
-                  variant="contained"
-                  startIcon={<DownloadOutlinedIcon />}
+                <FileTree
+                  onNodeSelect={handleNodeSelect}
+                  parents={parentsIdList}
+                  nodeId={rootNode?.nodeId}
+                  label={rootNode?.label}
+                  children={rootNode?.children}
+                />
+                <Box
+                  className="download-buttons"
+                  sx={{
+                    flexDirection: isButtonSmall ? "column" : "row"
+                  }}
                 >
-                  <Typography variant="button">Download File</Typography>
-                </Button>
-                <Button variant="contained" startIcon={<FolderZipIcon />}>
-                  Download All
-                </Button>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    startIcon={<DownloadOutlinedIcon />}
+                  >
+                    <Typography sx={{ fontWeight: "bold" }} variant="button">Download File</Typography>
+                  </Button>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    startIcon={<FolderZipIcon />}>
+                    <Typography sx={{ fontWeight: "bold" }} variant="button">Download All</Typography>
+                  </Button>
+                </Box>
               </Box>
             </Box>
           </Allotment.Pane>

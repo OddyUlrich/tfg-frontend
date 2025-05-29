@@ -1,5 +1,5 @@
 import { Chip, IconButton, TableCell, TableRow } from "@mui/material";
-import { Star, StarBorder } from "@mui/icons-material";
+import { Star, StarBorder, ModeEdit } from "@mui/icons-material";
 import React from "react";
 import { Exercise, Tag } from "../Types";
 import { yellow } from "@mui/material/colors";
@@ -16,13 +16,13 @@ export function ExerciseRow(props: ExerciseRowProps) {
       key={props.exercise.name}
       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
     >
-      <TableCell width="40%" component="th" scope="row">
+      <TableCell width="30%" component="th" scope="row">
         <Link
           underline="hover"
           variant="h6"
           color="inherit"
           to={{
-            pathname: `/exercises/${props.exercise.id}`,
+            pathname: `/exercises/${props.exercise.id}`
           }}
         >
           {props.exercise.name}
@@ -36,7 +36,7 @@ export function ExerciseRow(props: ExerciseRowProps) {
             sx={{
               border: 0,
               marginLeft: "5px",
-              fontWeight: "bold",
+              fontWeight: "bold"
             }}
           />
         ))}
@@ -50,7 +50,15 @@ export function ExerciseRow(props: ExerciseRowProps) {
           )}
         </IconButton>
       </TableCell>
-      <TableCell align="right">{props.exercise.statusSolution}</TableCell>
+      <TableCell width="10%" align="center">
+        <IconButton component={Link}
+          to={{ pathname: `/exercises/${props.exercise.id}`}}
+        >
+          <ModeEdit fontSize="medium" />
+
+        </IconButton>
+      </TableCell>
+      <TableCell width="10%" align="right">{props.exercise.statusSolution}</TableCell>
     </TableRow>
   );
 }

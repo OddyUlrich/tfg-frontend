@@ -12,8 +12,10 @@
     margin-top: 30px;
     margin-left: 30px;
     margin-right: 20px;
-    gap: 20px;
-    overflow-x: hidden;
+    gap: 30px;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
 }
 
 .editor {
@@ -39,13 +41,23 @@
     justify-content: center;
 }
 
-.fileTree{
+.file-pane{
+    display: flex;
     margin: auto;
+    height: 100%;
     width: 100%;
+    justify-content: center;
+}
+
+.file-selector{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
 }
 
 .MuiTabs-scrollButtons.Mui-disabled {
-    opacity: 0.3;
+    opacity: 0.5;
 }
 
 .notFound-mt {

@@ -22,20 +22,26 @@ export const EditorTabs: React.FC<TabsProps> = ({
 }) => {
   return (
     <Tabs
+      sx={{
+        border : 0,
+        minHeight: "auto",
+        paddingY: 0,
+        marginY: 0
+      }}
       value={activeTab}
       onChange={onTabClick}
       variant="scrollable"
       scrollButtons={true}
       allowScrollButtonsMobile
       aria-label="scrollable auto file tab"
-    >
+>
       {myTabs.map((tab, index) => (
         <Tab
           sx={{
             border: 1,
-            borderBottom: 0,
             borderRadius: "6px 6px 0 0",
-            padding: "8px 12px",
+            paddingX: "12px",
+            paddingY: "6px",
           }}
           key={tab.node.label}
           label={
