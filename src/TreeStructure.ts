@@ -15,7 +15,7 @@ export class TreeStructure {
     }
   }
 
-  filterLeafNodes(list: Array<ExerciseFile>) {
+  filterSolutionNodes(list: Array<ExerciseFile>) {
     const traverse = (node: MyTreeNode | null) => {
       if (node) {
         if (

@@ -92,8 +92,8 @@ export function EditorPage() {
         }
 
         const data: EditorData = await response.json();
+        setExerciseId(exerciseId);
         setExerciseName(data.exercise.name);
-        setExerciseId(data.exercise.id);
         setBatteryName(data.exercise.nameFromBattery);
         setTemplateFiles(data.templateFiles);
         setCurrentSolutionId(data.currentSolution);
@@ -161,12 +161,12 @@ export function EditorPage() {
         console.log("Network error");
       }
     };
-    fetchData();
+    void fetchData();
   }, [location.pathname]);
 
   const handleSave = () => {
     const displayFiles: Array<ExerciseFile> = [];
-    fileTree?.filterLeafNodes(displayFiles);
+    fileTree?.filterSolutionNodes(displayFiles);
 
     displayFiles.forEach((file) => {
       const model = editor.getModel(Uri.parse(file.path));
@@ -206,7 +206,7 @@ export function EditorPage() {
         }
       }
     };
-    saveData();
+    void saveData();
   };
 
   const handleStatusAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {

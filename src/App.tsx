@@ -6,7 +6,7 @@ import {
   CircularProgress,
   createTheme,
   CssBaseline,
-  ThemeProvider,
+  ThemeProvider
 } from "@mui/material";
 import { Navbar } from "./components/navigation/Navbar";
 import { SnackbarProvider } from "notistack";
@@ -23,14 +23,14 @@ import { StyledEngineProvider } from "@mui/material/styles";
 
 const darkTheme = createTheme({
   palette: {
-    mode: "dark",
-  },
+    mode: "dark"
+  }
 });
 
 const lightTheme = createTheme({
   palette: {
-    mode: "light",
-  },
+    mode: "light"
+  }
 });
 
 function App() {
@@ -53,7 +53,7 @@ function App() {
       roles,
       setRoles,
       isLogged,
-      setIsLogged,
+      setIsLogged
     }),
     [email, username, creationDate, roles, isLogged]
   );
@@ -66,7 +66,7 @@ function App() {
       try {
         const response = await fetch("http://localhost:8080/users/check", {
           method: "GET",
-          credentials: "include",
+          credentials: "include"
         });
 
         if (response.status === 401) {
@@ -135,14 +135,7 @@ function App() {
                     }
                   >
                     <Route path="/" element={<StudentHome />} />
-                    <Route
-                      path="/exercises/:exerciseId"
-                      element={
-                        <RequireAuth>
-                          <EditorPage />
-                        </RequireAuth>
-                      }
-                    />
+                    <Route path="/exercises/:exerciseId" element={<EditorPage />} />
                     <Route path="/about" element={<About />} />
                   </Route>
                   <Route

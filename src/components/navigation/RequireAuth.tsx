@@ -4,7 +4,7 @@ import { LoginTypes } from "../../Types";
 import { Navigate } from "react-router-dom";
 
 export const RequireAuth: FC<{ children: React.ReactElement }> = ({
-  children,
+  children
 }) => {
   const loginStatus: LoginTypes = useContext(LoginContext);
 
