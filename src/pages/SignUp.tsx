@@ -188,7 +188,7 @@ export default function SignUp() {
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 autoComplete="username"
                 name="username"
@@ -201,7 +201,7 @@ export default function SignUp() {
                 autoFocus
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 required
                 fullWidth
@@ -214,7 +214,7 @@ export default function SignUp() {
                 helperText={emailMessage}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 required
                 fullWidth
@@ -239,7 +239,7 @@ export default function SignUp() {
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <FormControlLabel
                 sx={{
                   ".MuiFormControlLabel-asterisk": {
@@ -283,7 +283,7 @@ export default function SignUp() {
             Sign Up
           </Button>
           <Grid container justifyContent="flex-end">
-            <Grid item>
+            <Grid>
               <Link to={{ pathname: "/login" }} variant="body2">
                 Already have an account? Sign in
               </Link>

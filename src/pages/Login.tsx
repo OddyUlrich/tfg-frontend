@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import Grid from "@mui/material/Grid";
+import Grid from '@mui/material/Grid';
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
@@ -214,12 +214,12 @@ export default function Login() {
             Sign In
           </Button>
           <Grid container>
-            <Grid item xs>
+            <Grid size={12}>
               <Link to={{ pathname: "" }} variant="body2">
                 Forgot password?
               </Link>
             </Grid>
-            <Grid item>
+            <Grid size={12}>
               <Link to={{ pathname: "/signup" }} variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>

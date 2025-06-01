@@ -1,4 +1,4 @@
-import React from "react";
+import React, { JSX } from "react";
 import { useLocation } from "react-router-dom";
 import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { Home } from "@mui/icons-material";

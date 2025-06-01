@@ -278,19 +278,18 @@ export function EditorPage() {
   }
 
   const handleNodeSelect = (
-    _event: React.SyntheticEvent,
-    nodeIds: Array<string> | string
+    _event: React.SyntheticEvent | null,
+    nodeId: string | null
   ) => {
-    const selectedNodeId = Array.isArray(nodeIds) ? nodeIds[0] : nodeIds;
 
-    if (fileTree === undefined) {
-      /*TODO qué hacer si el arbol no se ha generado todavía? Querría decir que
-      el fetch no se ha realizado y sin embargo se ha seleccionado un nodo
-      no tiene sentido*/
+    //El evento puede ser nulo porque puede no ser provocado por el usuario sino por otro componente
+    if (fileTree === undefined || nodeId === null) {
+      /*Que hacer si el evento es nulo, el nodo es nulo o el arbol no se
+      * ha generado todavia...? No podria ocurrir este evento se supone...*/
       return;
     }
 
-    const selectedNode = fileTree.findNodeById(selectedNodeId);
+    const selectedNode = fileTree.findNodeById(nodeId);
 
     //If the selected node is not a file, it does nothing
     if (!selectedNode?.file) {
@@ -299,7 +298,7 @@ export function EditorPage() {
 
     //If the selected node already has a corresponding tab, it does nothing
     for (const tab of tabs) {
-      if (tab.node.nodeId === selectedNodeId) {
+      if (tab.node.nodeId === nodeId) {
         return;
       }
     }

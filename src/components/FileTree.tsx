@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from "react";
 import { SvgIcon, SvgIconProps } from "@mui/material";
-import { TreeView } from "@mui/lab";
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import MyTreeItem from "./MyTreeItem";
 import { InsertDriveFile } from "@mui/icons-material";
 import { MyTreeNode } from "../Types";
@@ -25,8 +25,8 @@ function PlusSquare(props: SvgIconProps) {
 
 export interface FileTreeProps {
   onNodeSelect: (
-    event: React.SyntheticEvent,
-    nodeIds: Array<string> | string
+    event: React.SyntheticEvent | null,
+    nodeIds: string | null
   ) => void;
   parents: string[];
   nodeId: string;
@@ -43,7 +43,7 @@ export const FileTree: FC<FileTreeProps> = ({
 }) => {
   const [expanded, setExpanded] = React.useState<string[]>([]);
 
-  const handleToggle = (_event: React.SyntheticEvent, nodeIds: string[]) => {
+  const handleToggle = (_event: React.SyntheticEvent | null, nodeIds: string[]) => {
     setExpanded(nodeIds);
   };
 
@@ -52,15 +52,16 @@ export const FileTree: FC<FileTreeProps> = ({
   }, [parents]);
 
   return (
-    <TreeView
+    <SimpleTreeView
       aria-label="customized"
-      multiSelect={false}
-      expanded={expanded}
-      onNodeSelect={onNodeSelect}
-      onNodeToggle={handleToggle}
-      defaultCollapseIcon={<MinusSquare />}
-      defaultExpandIcon={<PlusSquare />}
-      defaultEndIcon={<InsertDriveFile />}
+      expandedItems={expanded}
+      onSelectedItemsChange={onNodeSelect}
+      onExpandedItemsChange={handleToggle}
+      slots={{
+          collapseIcon: MinusSquare,
+          expandIcon: PlusSquare,
+          endIcon: InsertDriveFile
+    }}
       sx={{
         display: "flex",
         height: "100%",
@@ -73,6 +74,6 @@ export const FileTree: FC<FileTreeProps> = ({
       }}
     >
       <MyTreeItem nodeId={nodeId} label={label} children={children} />
-    </TreeView>
+    </SimpleTreeView>
   );
 };

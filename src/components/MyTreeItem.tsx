@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { styled } from "@mui/material/styles";
-import TreeItem, { treeItemClasses, TreeItemProps } from "@mui/lab/TreeItem";
+import { TreeItem, treeItemClasses, TreeItemProps } from "@mui/x-tree-view/TreeItem";
 import { alpha, Collapse } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import { useSpring, animated } from "@react-spring/web";
@@ -12,32 +12,29 @@ interface MyTreeItemProps {
   children: MyTreeNode[];
 }
 
-function TransitionComponent(props: TransitionProps) {
+const AnimatedCollapse = animated(Collapse);
+
+function TransitionComponent(props: TransitionProps & { children?: React.ReactNode }) {
   const style = useSpring({
-    from: {
-      opacity: 0,
-    },
-    to: {
-      opacity: props.in ? 1 : 0,
-    },
+    opacity: props.in ? 1 : 0,
   });
 
   return (
-    <animated.div style={style}>
-      <Collapse {...props} />
-    </animated.div>
+    <AnimatedCollapse {...props} style={style}>
+      {props.children}
+    </AnimatedCollapse>
   );
 }
 
 const StyledTreeItem = styled((props: TreeItemProps) => (
-  <TreeItem {...props} TransitionComponent={TransitionComponent} />
+  <TreeItem {...props} slots={{groupTransition: TransitionComponent}} />
 ))(({ theme }) => ({
   [`& .${treeItemClasses.iconContainer}`]: {
     "& .close": {
       opacity: 0.3,
     },
   },
-  [`& .${treeItemClasses.group}`]: {
+  [`& .${treeItemClasses.groupTransition}`]: {
     marginLeft: 15,
     paddingLeft: 18,
     borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
@@ -46,7 +43,7 @@ const StyledTreeItem = styled((props: TreeItemProps) => (
 
 const MyTreeItem: FC<MyTreeItemProps> = ({ nodeId, label, children }) => {
   return (
-    <StyledTreeItem nodeId={nodeId} label={label}>
+    <StyledTreeItem itemId={nodeId} label={label}>
       {children &&
         children.map((child) => (
           <MyTreeItem
