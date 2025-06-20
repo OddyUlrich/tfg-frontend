@@ -51,7 +51,7 @@ export function ExerciseRow(props: ExerciseRowProps) {
         </IconButton>
       </TableCell>
       <TableCell width="10%" align="center">
-        <IconButton component={Link} to={{ pathname: `/exercises/${props.exercise.id}` }}>
+        <IconButton component={Link} to={{ pathname: `/exercises/edit/${props.exercise.id}` }}>
           <ModeEdit fontSize="medium" />
         </IconButton>
       </TableCell>

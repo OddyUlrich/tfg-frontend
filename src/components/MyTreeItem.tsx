@@ -34,9 +34,14 @@ const StyledTreeItem = styled((props: TreeItemProps) => (
       opacity: 0.3,
     },
   },
+  [`& .${treeItemClasses.content}`]: {
+    paddingLeft: 0,
+    paddingTop: 0,
+    paddingBottom: 4,
+  },
   [`& .${treeItemClasses.groupTransition}`]: {
-    marginLeft: 15,
-    paddingLeft: 18,
+    paddingLeft: 28,
+    marginLeft: 7,
     borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
   },
 }));

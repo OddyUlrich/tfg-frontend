@@ -214,12 +214,12 @@ export default function Login() {
             Sign In
           </Button>
           <Grid container>
-            <Grid size={12}>
+            <Grid size={4} sx={{ display: "flex", justifyContent: "flex-start" }}>
               <Link to={{ pathname: "" }} variant="body2">
                 Forgot password?
               </Link>
             </Grid>
-            <Grid size={12}>
+            <Grid size={8} sx={{ display: "flex", justifyContent: "flex-end" }}>
               <Link to={{ pathname: "/signup" }} variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>

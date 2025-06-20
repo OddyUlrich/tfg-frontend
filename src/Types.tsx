@@ -53,7 +53,12 @@ export type Tag = {
   name: string;
 };
 
-export type EditorData = {
+export type EditorExerciseData = {
+  exercise: EditorExercise;
+  files: ExerciseFile[];
+};
+
+export type CodeEditorData = {
   filesForDisplay: ExerciseFile[];
   templateFiles: ExerciseFile[];
   solutions: Solution[];
@@ -65,7 +70,7 @@ export type ExerciseFile = {
   id: string;
   name: string;
   path: string;
-  content: string;
+  text: string;
   idFromSolution: string | null;
   editableMethods: EditableMethod[] | null;
 };
@@ -81,12 +86,12 @@ export type Solution = {
 export type EditorExercise = {
   id: string;
   name: string;
-  statement: string;
-  rules: string[];
-  successCondition: string;
-  tags: Tag[];
   idFromBattery: string;
   nameFromBattery: string;
+  statement: string;
+  rules: string[];
+  tags: Tag[];
+  successCondition: string;
 };
 
 export type EditableMethod = {

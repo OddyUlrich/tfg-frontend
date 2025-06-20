@@ -11,7 +11,7 @@ import {
 import { Navbar } from "./components/navigation/Navbar";
 import { SnackbarProvider } from "notistack";
 import { NotFound } from "./pages/NotFound";
-import { EditorPage } from "./pages/EditorPage";
+import { CodeEditorPage } from "./pages/CodeEditorPage";
 import Login from "./pages/Login";
 import { LoginContext } from "./Utils";
 import { RequireAuth } from "./components/navigation/RequireAuth";
@@ -20,6 +20,7 @@ import { DateTime } from "luxon";
 import SignUp from "./pages/SignUp";
 import { AlreadyAuth } from "./components/navigation/AlreadyAuth";
 import { StyledEngineProvider } from "@mui/material/styles";
+import { ExerciseEditor } from "./pages/ExerciseEditor";
 
 const darkTheme = createTheme({
   palette: {
@@ -135,7 +136,8 @@ function App() {
                     }
                   >
                     <Route path="/" element={<StudentHome />} />
-                    <Route path="/exercises/:exerciseId" element={<EditorPage />} />
+                    <Route path="/exercises/:exerciseId" element={<CodeEditorPage />} />
+                    <Route path="/exercises/edit/:exerciseId" element={<ExerciseEditor />} />
                     <Route path="/about" element={<About />} />
                   </Route>
                   <Route

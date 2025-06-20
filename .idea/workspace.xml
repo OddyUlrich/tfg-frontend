@@ -5,15 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/FileTree.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/FileTree.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Types.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ExerciseRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExerciseRow.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/navigation/MyBreadcrumbs.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/navigation/MyBreadcrumbs.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/EditorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/EditorPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/EditorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Login.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/SignUp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SignUp.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,37 +58,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "JavaScript Debug.Debug Application.executor": "Debug",
-    "Notification.DisplayName-DoNotAsk-Proofreading missing languages information": "Proofreading missing languages information",
-    "Notification.DoNotAsk-Proofreading missing languages information": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "Prueba-Mui-7",
-    "ignore.virus.scanning.warn.message": "true",
-    "jsx.switch.disabled": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "G:/tfg-frontend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.standard": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.standard": "",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_interpreter_path": "node",
-    "nodejs_package_manager_path": "npm",
-    "npm.npm start.executor": "Run",
-    "prettierjs.PrettierConfiguration.Package": "D:\\tfg-frontend\\node_modules\\prettier",
-    "settings.editor.selected.configurable": "Errors",
-    "ts.external.directory.path": "G:\\tfg-frontend\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;JavaScript Debug.Debug Application.executor&quot;: &quot;Debug&quot;,
+    &quot;Notification.DisplayName-DoNotAsk-Proofreading missing languages information&quot;: &quot;Proofreading missing languages information&quot;,
+    &quot;Notification.DoNotAsk-Proofreading missing languages information&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Prueba-Mui-7&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;jsx.switch.disabled&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;G:/tfg-frontend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.npm start.executor&quot;: &quot;Run&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;D:\\tfg-frontend\\node_modules\\prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;Errors&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;G:\\tfg-frontend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\tfg-frontend\src\pages" />
@@ -114,7 +117,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-WS-251.25410.117" />
+        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-WS-251.26094.131" />
       </set>
     </attachedChunks>
   </component>
@@ -260,6 +263,10 @@
       <workItem from="1748550971640" duration="298000" />
       <workItem from="1748713874099" duration="3357000" />
       <workItem from="1748810288962" duration="7791000" />
+      <workItem from="1750094074501" duration="698000" />
+      <workItem from="1750095777405" duration="2423000" />
+      <workItem from="1750442016220" duration="20000" />
+      <workItem from="1750442052070" duration="9997000" />
     </task>
     <servers />
   </component>

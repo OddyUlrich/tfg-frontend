@@ -5,7 +5,7 @@ import {
 } from "../components/MonacoEditor";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import {
-  EditorData,
+  CodeEditorData,
   ErrorSpring,
   ExerciseFile,
   LoginTypes,
@@ -30,7 +30,7 @@ import FolderZipIcon from "@mui/icons-material/FolderZip";
 import SendIcon from "@mui/icons-material/Send";
 import { Done } from "@mui/icons-material";
 
-export function EditorPage() {
+export function CodeEditorPage() {
   const location = useLocation();
   const [openSaveDialog, setOpenSaveDialog] = React.useState(false);
   const loginStatus: LoginTypes = useContext(LoginContext);
@@ -91,7 +91,7 @@ export function EditorPage() {
           throw new Error("Error from backend - " + errorExercise.message);
         }
 
-        const data: EditorData = await response.json();
+        const data: CodeEditorData = await response.json();
         setExerciseId(exerciseId);
         setExerciseName(data.exercise.name);
         setBatteryName(data.exercise.nameFromBattery);
@@ -171,7 +171,7 @@ export function EditorPage() {
     displayFiles.forEach((file) => {
       const model = editor.getModel(Uri.parse(file.path));
       if (model) {
-        file.content = model.getValue();
+        file.text = model.getValue();
       }
     });
 
@@ -296,14 +296,16 @@ export function EditorPage() {
       return;
     }
 
+
+    const newTabs = [...tabs];
+
     //If the selected node already has a corresponding tab, it does nothing
-    for (const tab of tabs) {
-      if (tab.node.nodeId === nodeId) {
+    for (let i=0; i < tabs.length; i++) {
+      if (tabs[i].node.nodeId === nodeId){
+        setActiveTab(i);
         return;
       }
     }
-
-    const newTabs = [...tabs];
 
     //Create a new tab with the selected node to show the file
     const newTab: MyTab = {
@@ -314,8 +316,9 @@ export function EditorPage() {
     const model = editor.getModel(Uri.parse(selectedNode.file.path));
 
     if (!model) {
+
       editor.createModel(
-        selectedNode.file.content,
+        selectedNode.file.text,
         "java",
         Uri.parse(selectedNode.file.path)
       );
@@ -416,22 +419,21 @@ export function EditorPage() {
                 />
                 <Box
                   className="download-buttons"
-                  sx={{
-                    flexDirection: isButtonSmall ? "column" : "row"
-                  }}
                 >
                   <Button
+                    sx={{borderRadius: "5px"}}
                     color="primary"
                     variant="contained"
                     startIcon={<DownloadOutlinedIcon />}
                   >
-                    <Typography sx={{ fontWeight: "bold" }} variant="button">Download File</Typography>
+                    <Typography sx={{ fontWeight: "bold" }} variant="button">{!isButtonSmall ? "Download File" : "File"}</Typography>
                   </Button>
                   <Button
+                    sx={{borderRadius: "5px"}}
                     color="primary"
                     variant="contained"
                     startIcon={<FolderZipIcon />}>
-                    <Typography sx={{ fontWeight: "bold" }} variant="button">Download All</Typography>
+                    <Typography sx={{ fontWeight: "bold" }} variant="button"> {!isButtonSmall ? "Download All" : "All"}</Typography>
                   </Button>
                 </Box>
               </Box>
