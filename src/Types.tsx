@@ -49,10 +49,6 @@ export type Exercise = {
   creationTimestamp: DateTime;
 };
 
-export type Tag = {
-  name: string;
-};
-
 export type EditorExerciseData = {
   exercise: EditorExercise;
   files: ExerciseFile[];
@@ -75,12 +71,9 @@ export type ExerciseFile = {
   editableMethods: EditableMethod[] | null;
 };
 
-export type Solution = {
-  id: string;
+export type EditableMethod = {
   name: string;
-  lastUpdate: DateTime;
-  status: solutionStatus;
-  numberErrors: number;
+  line: number;
 };
 
 export type EditorExercise = {
@@ -94,9 +87,21 @@ export type EditorExercise = {
   successCondition: string;
 };
 
-export type EditableMethod = {
+export type Rule = {
+  id: number;
   name: string;
-  line: number;
+}
+
+export type Tag = {
+  name: string;
+};
+
+export type Solution = {
+  id: string;
+  name: string;
+  lastUpdate: DateTime;
+  status: solutionStatus;
+  numberErrors: number;
 };
 
 enum solutionStatus {

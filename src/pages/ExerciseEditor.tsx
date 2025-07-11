@@ -1,11 +1,20 @@
 import { FileTree } from "../components/FileTree";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Box } from "@mui/material";
-import { EditorExerciseData, ErrorSpring, ExerciseFile, MyTreeNode, Tag } from "../Types";
+import { EditorExerciseData, ErrorSpring, ExerciseFile, LoginTypes, MyTreeNode, Tag } from "../Types";
 import { TreeStructure } from "../TreeStructure";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import { LoginContext } from "../Utils";
+import TextField from "@mui/material/TextField";
+import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
+import CustomTransferList from "../components/TransferList";
 
 export function ExerciseEditor() {
+
+  const navigate = useNavigate();
+  const loginStatus: LoginTypes = useContext(LoginContext);
 
   const [exerciseId, setExerciseId] = useState<string>();
   const [exerciseName, setExerciseName] = useState<string>();
@@ -15,6 +24,9 @@ export function ExerciseEditor() {
   const [rules, setRules] = useState<string[]>();
   const [tags, setTags] = useState<Tag[]>();
   const [successCondition, setSuccessCondition] = useState<string>();
+
+  const [showStatementError, setShowStatementError] = React.useState(false);
+  const [statementMessage, setStatementMessage] = React.useState("");
 
   //const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>();
 
@@ -26,7 +38,6 @@ export function ExerciseEditor() {
     file: null,
     children: []
   });
-
 
   const location = useLocation();
 
@@ -46,7 +57,10 @@ export function ExerciseEditor() {
           }
         );
 
-        if (!response.ok) {
+        if (response.status === 403) {
+          loginStatus.setIsLogged(false);
+          navigate("/login");
+        } else if (!response.ok) {
           const errorExercise: ErrorSpring = await response.json();
           throw new Error("Error from backend - " + errorExercise.message);
         }
@@ -126,25 +140,108 @@ export function ExerciseEditor() {
       }
     };
     void fetchData();
-  },[location.pathname]);
-
-  const handleNodeSelect = ()=> {
-    return null;
-  }
+  }, [location.pathname]);
 
 
   return (
-    <Box className="file-pane">
-      <Box className="file-selector"
-      >
-        <FileTree
-          onNodeSelect={handleNodeSelect}
-          parents={parentsIdList}
-          nodeId={rootNode?.nodeId}
-          label={rootNode?.label}
-          children={rootNode?.children}
-        />
-      </Box>
-    </Box>);
+    <>
+      <MyBreadcrumbs exerciseName={exerciseName} batteryName={batteryName} />
+      <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 4 }}>
+        <Container component="main" maxWidth="sm">
+          <Typography variant="h6">
+            Nombre del ejercicio
+          </Typography>
+          <TextField
+            sx={{ marginTop: 1 }}
+            margin="normal"
+            variant={"outlined"}
+            required
+            fullWidth
+            multiline={true}
+            id="ExerciseName"
+            label="Name"
+            name="ExerciseName"
+            autoComplete="ExerciseName"
+            error={showStatementError}
+            helperText={statementMessage}
+            autoFocus
+          />
 
+          <Typography sx={{ display: "flex", justifyContent: "space-between", marginTop: 4 }} variant="h6">
+            Enunciado del ejercicio
+          </Typography>
+          <TextField
+            sx={{ marginTop: 1 }}
+            margin="normal"
+            variant={"outlined"}
+            required
+            fullWidth
+            multiline={true}
+            id="Statement"
+            label="Statement"
+            name="Statement"
+            autoComplete="Statement"
+            error={showStatementError}
+            helperText={statementMessage}
+            autoFocus
+          />
+        </Container>
+
+        <Container component="main" maxWidth="lg">
+          <Box sx={{ display: "flex", gap: 4, marginTop: 4, justifyContent: "space-between" }}>
+            <Box>
+              <Typography sx={{ marginTop: 4, marginBottom: 1 }} variant="h6">
+                Archivos
+              </Typography>
+              <Box
+                sx={{
+                  border: "2px dashed #ccc",
+                  borderRadius: 2,
+                  paddingLeft: 2,
+                  paddingRight: 6,
+                  paddingTop: 1,
+                  paddingBottom: 4,
+                  color: "#888",
+                  cursor: "pointer",
+                  transition: "border 0.3s",
+                  "&:hover": {
+                    borderColor: "#1976d2"
+                  }
+                }}>
+
+                <FileTree
+                  expand={false}
+                  onNodeSelect={() => null}
+                  parents={parentsIdList}
+                  nodeId={rootNode?.nodeId}
+                  label={rootNode?.label}
+                  children={rootNode?.children}
+                />
+              </Box>
+            </Box>
+
+            <Box>
+              <Typography sx={{ marginTop: 4, marginBottom: 1}} variant="h6">
+                Reglas
+              </Typography>
+
+              <Box
+                sx={{
+                  border: "2px groove #ccc",
+                  borderRadius: 2,
+                  padding: 4,
+                  color: "#888",
+                  cursor: "pointer"
+                }}>
+
+                <CustomTransferList></CustomTransferList>
+
+              </Box>
+            </Box>
+          </Box>
+        </Container>
+
+      </Box>
+    </>
+  );
 }

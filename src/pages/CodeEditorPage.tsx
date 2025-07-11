@@ -48,7 +48,7 @@ export function CodeEditorPage() {
   const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
   const [autosave, setAutosave] = useState<boolean>(true);
   const [isButtonSmall, setIsButtonSmall] = useState<boolean>(false);
-  const [fileTree, setFileTree] = useState<TreeStructure>();
+  const [fileTree, setfileTree] = useState<TreeStructure>();
   const [rootNode, setRootNode] = useState<MyTreeNode>({
     nodeId: "0",
     label: "Exercise",
@@ -155,7 +155,7 @@ export function CodeEditorPage() {
         });
 
         setRootNode(root);
-        setFileTree(myTree);
+        setfileTree(myTree);
         setParentsIdList(parentNodeIdList);
       } catch (error: any) {
         console.log("Network error");

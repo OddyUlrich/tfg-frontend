@@ -24,6 +24,7 @@ function PlusSquare(props: SvgIconProps) {
 }
 
 export interface FileTreeProps {
+  expand?: boolean;
   onNodeSelect: (
     event: React.SyntheticEvent | null,
     nodeIds: string | null
@@ -35,6 +36,7 @@ export interface FileTreeProps {
 }
 
 export const FileTree: FC<FileTreeProps> = ({
+  expand = true,
   onNodeSelect,
   parents,
   nodeId,
@@ -44,7 +46,7 @@ export const FileTree: FC<FileTreeProps> = ({
   const [expanded, setExpanded] = React.useState<string[]>([]);
 
   const handleToggle = (_event: React.SyntheticEvent | null, nodeIds: string[]) => {
-    setExpanded(nodeIds);
+    if (expand) setExpanded(nodeIds);
   };
 
   useEffect(() => {

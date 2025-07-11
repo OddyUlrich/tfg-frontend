@@ -136,6 +136,8 @@ function App() {
                     }
                   >
                     <Route path="/" element={<StudentHome />} />
+
+                    {/*TODO opbligar a estar logueado para entrar en estas páginas*/}
                     <Route path="/exercises/:exerciseId" element={<CodeEditorPage />} />
                     <Route path="/exercises/edit/:exerciseId" element={<ExerciseEditor />} />
                     <Route path="/about" element={<About />} />
