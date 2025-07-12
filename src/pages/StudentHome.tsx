@@ -65,6 +65,7 @@ export function StudentHome() {
             //The automatic parse doesn't know this is a DateTime, so it just parses it as String, so I parse it myself
             const creationDate = exercise.creationTimestamp.toString();
             exercise.creationTimestamp = DateTime.fromISO(creationDate);
+
             batteries.get(exercise.batteryName)?.push(exercise);
           });
 

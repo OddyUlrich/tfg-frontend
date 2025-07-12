@@ -1,16 +1,28 @@
-import { Chip, IconButton, TableCell, TableRow } from "@mui/material";
-import { Star, StarBorder, ModeEdit } from "@mui/icons-material";
+import { Box, Chip, IconButton, TableCell, TableRow } from "@mui/material";
+import { Star, StarBorder, NewReleases, ModeEdit } from "@mui/icons-material";
 import React from "react";
 import { Exercise, Tag } from "../Types";
 import { yellow } from "@mui/material/colors";
 import { Link } from "./navigation/Link";
+import { DateTime } from "luxon";
 
 type ExerciseRowProps = {
   exercise: Exercise;
   onFav: () => void;
 };
 
+
+
 export function ExerciseRow(props: ExerciseRowProps) {
+
+  let content = null;
+
+  if (DateTime.now().diff(props.exercise.creationTimestamp, 'days').days < 7) {
+    content = <NewReleases sx={{ verticalAlign: 'middle' }} color={"primary"}/>
+  }else{
+    content = null;
+  }
+
   return (
     <TableRow
       key={props.exercise.name}
@@ -25,7 +37,10 @@ export function ExerciseRow(props: ExerciseRowProps) {
             pathname: `/exercises/${props.exercise.id}`
           }}
         >
-          {props.exercise.name}
+          <Box display="flex" alignItems="center" gap={1}>
+            {props.exercise.name}
+            {content}
+          </Box>
         </Link>
       </TableCell>
       <TableCell width="30%" align="center">

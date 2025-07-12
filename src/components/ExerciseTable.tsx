@@ -27,22 +27,28 @@ type ExerciseListProps = {
 
 function compareCreationDate(a: Exercise, b: Exercise) {
 
-  if (DateTime.now().diff(a.creationTimestamp, 'days').days < 7) {
-    return -1;
+  const tiempo = a.creationTimestamp.diff(b.creationTimestamp, 'milliseconds');
+
+  if (tiempo.milliseconds > 0){
+    return (-1)
   }
-  if (DateTime.now().diff(b.creationTimestamp, 'days').days < 7) {
-    return 1;
+  if (tiempo.milliseconds < 0){
+    return 1
   }
 
-  return 0;
+  return 0
 }
 
 function normalCompare(a: Exercise, b: Exercise) {
 
-  const orderNew = compareCreationDate(a,b);
+  const now = DateTime.now();
 
-  if (orderNew !== 0) {
-    return orderNew;
+  if (now.diff(a.creationTimestamp, 'days').days < 7 || now.diff(b.creationTimestamp, 'days').days < 7){
+    const comparison = compareCreationDate(a,b);
+
+    if (comparison !== 0){
+      return comparison;
+    }
   }
 
   return a.name.localeCompare(b.name);
@@ -50,27 +56,27 @@ function normalCompare(a: Exercise, b: Exercise) {
 
 function compareExerciseByFavorite(a: Exercise, b: Exercise) {
 
-  const orderNew = compareCreationDate(a,b);
+  const now = DateTime.now();
 
-  if (orderNew !== 0) {
-    return orderNew;
+  if (now.diff(a.creationTimestamp, 'days').days < 7 || now.diff(b.creationTimestamp, 'days').days < 7){
+    const comparison = compareCreationDate(a,b);
+
+    if (comparison !== 0){
+      return comparison;
+    }
   }
 
   if (a.favorite < b.favorite) {
     return 1;
   }
   if (a.favorite > b.favorite) {
-    return -1;
+    return (-1);
   }
   return a.name.localeCompare(b.name);
 }
 
-/*TODO poner que en el comparar normal una función donde salgan de primero los
-   ejercicios con tiempo inferior a 7 días desde su creación, si no es el caso
-   entonces simplemente salen por orden alfabético, normal.*/
-
-function sortData(data: Exercise[], order: boolean) {
-  if (order) {
+function sortData(data: Exercise[], orderByFav: boolean) {
+  if (orderByFav) {
     return data.sort((a, b) => compareExerciseByFavorite(a, b));
   } else {
     return data.sort((a, b) => normalCompare(a, b));
@@ -79,7 +85,7 @@ function sortData(data: Exercise[], order: boolean) {
 
 export function ExerciseTable(props: ExerciseListProps) {
   const [open, setOpen] = useState(true);
-  const [orderFav, setOrderFav] = useState(false);
+  const [orderFav, setorderFav] = useState(false);
 
   const sortedData = useMemo(
     () => sortData(props.exercises, orderFav),
@@ -91,7 +97,7 @@ export function ExerciseTable(props: ExerciseListProps) {
   };
 
   const handleOrder = () => {
-    setOrderFav(!orderFav);
+    setorderFav(!orderFav);
   };
 
   const batterySection = props.batteryName?.split(" ").join("-");
