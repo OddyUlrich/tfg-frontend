@@ -1,6 +1,6 @@
-import { FileTree } from "../components/FileTree";
+import { createTree, FileTree } from "../components/FileTree";
 import React, { useContext, useEffect, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, IconButton, List, ListItem } from "@mui/material";
 import { EditorExerciseData, ErrorSpring, ExerciseFile, LoginTypes, MyTreeNode, Tag } from "../Types";
 import { TreeStructure } from "../TreeStructure";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -10,6 +10,13 @@ import { LoginContext } from "../Utils";
 import TextField from "@mui/material/TextField";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import CustomTransferList from "../components/TransferList";
+import { MyDropzone } from "../components/MyDropzone";
+import MyTreeItem from "../components/MyTreeItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Divider from "@mui/material/Divider";
+import { Add } from "@mui/icons-material";
 
 export function ExerciseEditor() {
 
@@ -85,62 +92,29 @@ export function ExerciseEditor() {
           children: []
         };
 
-        const myTree = new TreeStructure();
-        myTree.addNode(root);
-
-        const filesAndDirectories: string[] = [];
-        const parentNodeIdList: string[] = ["0"];
-        let counter = 1;
-
-        //Recorremos todos los archivos que se van a mostrar
-        files?.forEach((file) => {
-          let parentName = "Exercise";
-          let parent: MyTreeNode | null;
-          let fileContent: ExerciseFile | null = null;
-
-          //Dividimos los paths de cada fichero para crear los nodos de un arbol
-          const pathNames = file.path.split("/");
-          pathNames.forEach((name, index) => {
-            /*El primer nombre de la ruta siempre tendrá como padre el nodo Root
-             * en caso contrario el anterior nodo será el padre del actual*/
-            if (index === 0) {
-              parent = root;
-            } else {
-              parent = myTree.findNodeByLabel(parentName);
-              /*Si estamos en el nombre de la ruta correspondiente a un archivo
-               * asignamos el contenido del archivo a la propiedad content del nodo*/
-              if (index === pathNames.length - 1) {
-                fileContent = file;
-              }
-            }
-
-            if (!filesAndDirectories.includes(name)) {
-              const newNode: MyTreeNode = {
-                nodeId: (counter++).toString(),
-                label: name,
-                file: fileContent,
-                children: []
-              };
-              myTree.addNode(newNode, parent);
-              filesAndDirectories.push(name);
-              if (parent && !parentNodeIdList.includes(parent.nodeId)) {
-                parentNodeIdList.push(parent.nodeId);
-              }
-            }
-            parentName = name;
-            fileContent = null;
-          });
-        });
-
+        let myTree = new TreeStructure();
         setRootNode(root);
-        setFileTree(myTree);
+
+        //Nodos a expandir (padres)
+        const parentNodeIdList: string[] = ["0"];
+
+        //Nodos del arbol
+
+        myTree = createTree(myTree, files, root, parentNodeIdList);
+
         setParentsIdList(parentNodeIdList);
+        setFileTree(myTree);
+
       } catch (error: any) {
         console.log("Network error");
       }
     };
     void fetchData();
   }, [location.pathname]);
+
+  function addBattery() {
+    console.log("hola");
+  }
 
 
   return (
@@ -193,52 +167,88 @@ export function ExerciseEditor() {
               <Typography sx={{ marginTop: 4, marginBottom: 1 }} variant="h6">
                 Archivos
               </Typography>
+
               <Box
                 sx={{
-                  border: "2px dashed #ccc",
+                  border: "2px solid #ccc",
                   borderRadius: 2,
-                  paddingLeft: 2,
-                  paddingRight: 6,
+                  paddingLeft: 4,
+                  paddingRight: 4,
                   paddingTop: 1,
                   paddingBottom: 4,
-                  color: "#888",
-                  cursor: "pointer",
-                  transition: "border 0.3s",
-                  "&:hover": {
-                    borderColor: "#1976d2"
-                  }
+                  cursor: "pointer"
                 }}>
 
                 <FileTree
-                  expand={false}
+                  expand={true}
                   onNodeSelect={() => null}
                   parents={parentsIdList}
                   nodeId={rootNode?.nodeId}
                   label={rootNode?.label}
                   children={rootNode?.children}
                 />
+                <MyDropzone />
               </Box>
+
             </Box>
 
             <Box>
-              <Typography sx={{ marginTop: 4, marginBottom: 1}} variant="h6">
+              <Typography sx={{ marginTop: 4, marginBottom: 1 }} variant="h6">
                 Reglas
               </Typography>
 
-              <Box
-                sx={{
-                  border: "2px groove #ccc",
-                  borderRadius: 2,
-                  padding: 4,
-                  color: "#888",
-                  cursor: "pointer"
-                }}>
+              <Box width={600}
+                   sx={{
+                     border: "2px groove #ccc",
+                     borderRadius: 2,
+                     padding: 4,
+                     color: "#888",
+                     cursor: "pointer"
+                   }}>
 
-                <CustomTransferList></CustomTransferList>
+                <CustomTransferList />
+              </Box>
 
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 10, justifyContent: "space-between"}}>
+                <Typography variant="h6">
+                  Batería de Ejercicios
+                </Typography>
+
+                <IconButton color="primary" onClick={addBattery}>
+                  <Add />
+                </IconButton>
+
+              </Box>
+              <Box width={50} sx={{
+                border: "2px groove #ccc",
+                borderRadius: 2,
+                padding: 4,
+                marginTop: 0,
+                cursor: "pointer", width: "100%", bgcolor: "background.paper"
+              }}>
+                <nav aria-label="Batterys">
+                  <List>
+                    <ListItem disablePadding>
+                      <ListItemButton>
+                        <ListItemText primary="Batería de Herencia" />
+                      </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemButton>
+                        <ListItemText primary="Batería de Poliformismo" />
+                      </ListItemButton>
+                    </ListItem>
+                  </List>
+                </nav>
               </Box>
             </Box>
           </Box>
+        </Container>
+
+
+        <Container component="main" maxWidth="sm">
+
+
         </Container>
 
       </Box>

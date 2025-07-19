@@ -13,7 +13,7 @@ import {
 } from "../Types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Allotment } from "allotment";
-import { FileTree } from "../components/FileTree";
+import { createTree, FileTree } from "../components/FileTree";
 import { Box, CircularProgress, Switch } from "@mui/material";
 import { LoginContext } from "../Utils";
 import { TreeStructure } from "../TreeStructure";
@@ -110,53 +110,15 @@ export function CodeEditorPage() {
         const myTree = new TreeStructure();
         myTree.addNode(root);
 
-        const filesAndDirectories: string[] = [];
+        //Nodos a expandir (padres)
         const parentNodeIdList: string[] = ["0"];
-        let counter = 1;
 
-        //Recorremos todos los archivos que se van a mostrar
-        filesForDisplay?.forEach((file) => {
-          let parentName = "Exercise";
-          let parent: MyTreeNode | null;
-          let fileContent: ExerciseFile | null = null;
-
-          //Dividimos los paths de cada fichero para crear los nodos de un arbol
-          const pathNames = file.path.split("/");
-          pathNames.forEach((name, index) => {
-            /*El primer nombre de la ruta siempre tendrá como padre el nodo Root
-             * en caso contrario el anterior nodo será el padre del actual*/
-            if (index === 0) {
-              parent = root;
-            } else {
-              parent = myTree.findNodeByLabel(parentName);
-              /*Si estamos en el nombre de la ruta correspondiente a un archivo
-               * asignamos el contenido del archivo a la propiedad content del nodo*/
-              if (index === pathNames.length - 1) {
-                fileContent = file;
-              }
-            }
-
-            if (!filesAndDirectories.includes(name)) {
-              const newNode: MyTreeNode = {
-                nodeId: (counter++).toString(),
-                label: name,
-                file: fileContent,
-                children: []
-              };
-              myTree.addNode(newNode, parent);
-              filesAndDirectories.push(name);
-              if (parent && !parentNodeIdList.includes(parent.nodeId)) {
-                parentNodeIdList.push(parent.nodeId);
-              }
-            }
-            parentName = name;
-            fileContent = null;
-          });
-        });
+        createTree(myTree, filesForDisplay, root, parentNodeIdList);
 
         setRootNode(root);
         setfileTree(myTree);
         setParentsIdList(parentNodeIdList);
+
       } catch (error: any) {
         console.log("Network error");
       }

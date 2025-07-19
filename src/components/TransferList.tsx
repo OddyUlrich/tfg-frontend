@@ -71,12 +71,18 @@ export default function TransferList() {
         <CardHeader
           sx={{ px: 2, py: 1 }}
           title={title}
+          slotProps={{
+            title: {
+              sx: { textAlign: 'center' },
+              variant: 'h6',
+              fontWeight: 'bold',
+            }
+          }}
         />
         <Divider />
         <List
           sx={{
-            width: 240,
-            height: 230,
+            height: 250,
             bgcolor: 'background.paper',
             overflow: 'auto',
           }}
