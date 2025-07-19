@@ -23,11 +23,23 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="06bc746fa997b4a4a889e86b6a6b0e5c83145144" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "OddyUlrich"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/OddyUlrich/tfg-frontend.git",
+    "accountId": "65bcae3f-e7ec-4119-a400-aaeffa108cf5"
+  }
+}]]></component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -267,6 +279,7 @@
       <workItem from="1752910992451" duration="32000" />
       <workItem from="1752911037637" duration="9109000" />
       <workItem from="1752941554182" duration="8407000" />
+      <workItem from="1752951631524" duration="62000" />
     </task>
     <servers />
   </component>

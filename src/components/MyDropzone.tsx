@@ -67,7 +67,7 @@ export function MyDropzone() {
   ) : null;
 
 
-  //Final branch
+  //Final
 
   return (
     <>
