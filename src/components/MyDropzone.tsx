@@ -52,8 +52,6 @@ export function MyDropzone() {
     }
   }, [fileRejections]);
 
-  //Prueba
-
   const acceptedFileMessage = acceptedFiles.map(file => (
     <>
       <li key={file.path}>
@@ -65,9 +63,6 @@ export function MyDropzone() {
   const fileRejectionMessage = fileRejections.length > 0 ? (
     <p style={{ color: '#ff6666' }}>Solo un archivo en extensión .zip</p>
   ) : null;
-
-
-  //Final
 
   return (
     <>
