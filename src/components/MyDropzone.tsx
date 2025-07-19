@@ -52,6 +52,8 @@ export function MyDropzone() {
     }
   }, [fileRejections]);
 
+  //Prueba
+
   const acceptedFileMessage = acceptedFiles.map(file => (
     <>
       <li key={file.path}>
