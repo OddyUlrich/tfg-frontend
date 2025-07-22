@@ -29,6 +29,7 @@ import Button from "@mui/material/Button";
 import FolderZipIcon from "@mui/icons-material/FolderZip";
 import SendIcon from "@mui/icons-material/Send";
 import { Done } from "@mui/icons-material";
+import { enqueueSnackbar } from "notistack";
 
 export function CodeEditorPage() {
   const location = useLocation();
@@ -126,7 +127,7 @@ export function CodeEditorPage() {
     void fetchData();
   }, [location.pathname]);
 
-  const handleSave = () => {
+  const handleSave = (buttonPressed: boolean) => {
     const displayFiles: Array<ExerciseFile> = [];
     fileTree?.filterSolutionNodes(displayFiles);
 
@@ -162,6 +163,13 @@ export function CodeEditorPage() {
         //TODO AQUI VA LA RESPUESTA OK
         //TODO SNACKBAR AVISANDO DE QUE TODOS LOS CAMBIOS SE HAN GUARDADO CON ÉXITO
 
+        if (buttonPressed) {
+          enqueueSnackbar("Se ha guardado todo correctamente", {
+            variant: "success"
+          });
+        }
+
+
       } catch (error: any) {
         if (error instanceof Error) {
           console.log(error.message);
@@ -175,17 +183,19 @@ export function CodeEditorPage() {
     setAutosave(event.target.checked);
   };
 
-  //Auto-save function every X seconds
+  //Auto-save function every X seconds if autosave is active and there is changes
   useEffect(() => {
+    if (!autosave || !unsavedChanges) return;
+    
     const saveTimeout = setTimeout(() => {
       if (unsavedChanges) {
-        handleSave();
+        handleSave(false);
         setUnsavedChanges(false);
       }
     }, 3000); // Wait 3 seconds of inactivity before saving
 
     return () => clearTimeout(saveTimeout);
-  }, [unsavedChanges]);
+  }, [unsavedChanges, autosave, handleSave]);
 
   const handleTabClick = (event: React.SyntheticEvent, index: number) => {
     setActiveTab(index);
@@ -196,6 +206,8 @@ export function CodeEditorPage() {
     index: number
   ) => {
     event.stopPropagation();
+
+
     const newTabs = [...tabs];
     if (index > -1) {
       newTabs.splice(index, 1);
@@ -209,16 +221,12 @@ export function CodeEditorPage() {
   };
 
   const handleEditorChange = (content: string | undefined) => {
-    //TODO REVISAR DURANTE UN TIEMPO QUE TODO FUNCIONA BIEN -> BORRAR COMENTARIOS
-    //const auxTabs = [...tabs];
     const tab = tabs[activeTab];
 
     if (tab && tab.node.file && content) {
       const path = Uri.parse(tab.node.file.path);
       editor.getModel(path)?.setValue(content);
     }
-
-    //setTabs(auxTabs);
     setUnsavedChanges(true);
   };
 
@@ -262,8 +270,8 @@ export function CodeEditorPage() {
     const newTabs = [...tabs];
 
     //If the selected node already has a corresponding tab, it does nothing
-    for (let i=0; i < tabs.length; i++) {
-      if (tabs[i].node.nodeId === nodeId){
+    for (let i = 0; i < tabs.length; i++) {
+      if (tabs[i].node.nodeId === nodeId) {
         setActiveTab(i);
         return;
       }
@@ -325,7 +333,7 @@ export function CodeEditorPage() {
             sx={{ marginRight: "20px" }}
             color="secondary"
             variant="contained"
-            onClick={handleSave}
+            onClick={() => handleSave(true)}
           >
             <Typography variant="button">
               <strong>SAVE ALL</strong>
@@ -383,19 +391,21 @@ export function CodeEditorPage() {
                   className="download-buttons"
                 >
                   <Button
-                    sx={{borderRadius: "5px"}}
+                    sx={{ borderRadius: "5px" }}
                     color="primary"
                     variant="contained"
                     startIcon={<DownloadOutlinedIcon />}
                   >
-                    <Typography sx={{ fontWeight: "bold" }} variant="button">{!isButtonSmall ? "Download File" : "File"}</Typography>
+                    <Typography sx={{ fontWeight: "bold" }}
+                                variant="button">{!isButtonSmall ? "Download File" : "File"}</Typography>
                   </Button>
                   <Button
-                    sx={{borderRadius: "5px"}}
+                    sx={{ borderRadius: "5px" }}
                     color="primary"
                     variant="contained"
                     startIcon={<FolderZipIcon />}>
-                    <Typography sx={{ fontWeight: "bold" }} variant="button"> {!isButtonSmall ? "Download All" : "All"}</Typography>
+                    <Typography sx={{ fontWeight: "bold" }}
+                                variant="button"> {!isButtonSmall ? "Download All" : "All"}</Typography>
                   </Button>
                 </Box>
               </Box>

@@ -5,10 +5,12 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
 
 interface AlertDialogProps {
   open: boolean;
-  handleClose: () => void;
+  handleClose: (save: boolean) => void;
 }
 
 export const AlertDialog: React.FC<AlertDialogProps> = ({
@@ -32,9 +34,11 @@ export const AlertDialog: React.FC<AlertDialogProps> = ({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>No, don't save</Button>
-          <Button onClick={handleClose} autoFocus>
-            Yes, Save
+          <Button onClick={() => handleClose(false)}>
+            No, don't save
+          </Button>
+          <Button onClick={() => handleClose(true)} autoFocus>
+            Yes, save
           </Button>
         </DialogActions>
       </Dialog>

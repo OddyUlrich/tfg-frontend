@@ -52,6 +52,8 @@ export type Exercise = {
 export type EditorExerciseData = {
   exercise: EditorExercise;
   files: ExerciseFile[];
+  batteries: BatteryExercise[];
+  tags: Tag[];
 };
 
 export type CodeEditorData = {
@@ -93,6 +95,10 @@ export type Rule = {
 }
 
 export type Tag = {
+  name: string;
+};
+
+export type BatteryExercise = {
   name: string;
 };
 

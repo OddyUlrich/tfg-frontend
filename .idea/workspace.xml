@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="" />
+    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/AddBatteryDialog.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Types.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/AlertDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AlertDialog.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MyDropzone.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MyDropzone.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/TransferList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TransferList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,18 +37,18 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "OddyUlrich"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;OddyUlrich&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/OddyUlrich/tfg-frontend.git",
-    "accountId": "65bcae3f-e7ec-4119-a400-aaeffa108cf5"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/OddyUlrich/tfg-frontend.git&quot;,
+    &quot;accountId&quot;: &quot;65bcae3f-e7ec-4119-a400-aaeffa108cf5&quot;
   }
-}]]></component>
+}</component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -279,7 +288,11 @@
       <workItem from="1752910992451" duration="32000" />
       <workItem from="1752911037637" duration="9109000" />
       <workItem from="1752941554182" duration="8407000" />
-      <workItem from="1752951631524" duration="62000" />
+      <workItem from="1752951631524" duration="344000" />
+      <workItem from="1752951987905" duration="18000" />
+      <workItem from="1753032876038" duration="5631000" />
+      <workItem from="1753203993900" duration="5953000" />
+      <workItem from="1753210691981" duration="5971000" />
     </task>
     <servers />
   </component>

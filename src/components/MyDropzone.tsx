@@ -1,21 +1,17 @@
 import React, { useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { Box } from "@mui/material";
-import Button from "@mui/material/Button";
-import FolderZipIcon from "@mui/icons-material/FolderZip";
-import SendIcon from "@mui/icons-material/Send";
-import Typography from "@mui/material/Typography";
 import { enqueueSnackbar } from "notistack";
 
-export function MyDropzone() {
+type DropzoneProps = {
+  handleDrop: (acceptedFiles: File[]) => void;
+}
+
+export function MyDropzone({handleDrop}: DropzoneProps) {
 
   const [openDialog, setOpenDialog] = React.useState(false);
   const [droppedFiles, setDroppedFiles] = React.useState<File[]>([]);
   const [selectedFolder, setSelectedFolder] = React.useState<string | null>(null);
-
-  const accept = useCallback((acceptedFiles: File[]) => {
-    console.log("acceptedFiles", acceptedFiles);
-  }, []);
 
   const {
     acceptedFiles,
@@ -29,17 +25,13 @@ export function MyDropzone() {
       "application/zip": [".zip"],
       "application/7ZIP": [".7z"]
     },
-    onDrop: accept
+    onDropAccepted: handleDrop
   });
-
-  const handleSubmit = () => {
-    //No se
-  };
 
   useEffect(() => {
     if (acceptedFiles.length === 1) {
       enqueueSnackbar("Se ha subido el archivo correctamente", {
-        variant: "success",
+        variant: "success"
       });
     }
   }, [acceptedFiles]);
@@ -47,21 +39,24 @@ export function MyDropzone() {
   useEffect(() => {
     if (fileRejections.length >= 1) {
       enqueueSnackbar("No se puede subir más de 1 archivo .zip", {
-        variant: "error",
+        variant: "error"
       });
     }
   }, [fileRejections]);
 
-  const acceptedFileMessage = acceptedFiles.map(file => (
-    <>
+  const acceptedFileMessage = (
+    <ul>
+      {acceptedFiles.map(file => (
       <li key={file.path}>
-        {file.path} - {(file.size / 1048576).toFixed(1)} MB
+        <p style={{ color: "#4caf50" }}>{file.path} - {(file.size / 1048576).toFixed(1)} MB</p>
       </li>
-    </>
-  ));
+      ))}
+    </ul>
+  );
+
 
   const fileRejectionMessage = fileRejections.length > 0 ? (
-    <p style={{ color: '#ff6666' }}>Solo un archivo en extensión .zip</p>
+    <p style={{ color: "#ff6666" }}>Solo un archivo en extensión .zip</p>
   ) : null;
 
   return (
@@ -84,7 +79,7 @@ export function MyDropzone() {
         <input {...getInputProps()} />
         {
           isDragActive ?
-            <p>Suelta el archivo .zip aqui</p> :
+            <> <p>Suelta el archivo .zip aqui</p> <br/> <br/> </>:
             <Box>
               <p style={{ whiteSpace: "pre-line" }}>
                 Arrastra y suelta el archivo .zip aquí o haz clic para seleccionar
@@ -93,25 +88,9 @@ export function MyDropzone() {
               <p>Máximo 16 MB</p>
             </Box>
         }
-        <aside>
-          <ul>{acceptedFileMessage}</ul>
+          {acceptedFileMessage}
           {fileRejectionMessage}
-        </aside>
       </Box>
-
-
-      <Button
-        sx={{ marginTop: 2, marginBottom: 0 }}
-        startIcon={<FolderZipIcon />}
-        onClick={handleSubmit}
-        color="success"
-        variant="contained"
-        endIcon={<SendIcon />}
-      >
-        <Typography variant="button">
-          <strong>Subir archivos</strong>
-        </Typography>
-      </Button>
     </>
   );
 }

@@ -1,7 +1,15 @@
 import { createTree, FileTree } from "../components/FileTree";
-import React, { useContext, useEffect, useState } from "react";
-import { Box, IconButton, List, ListItem } from "@mui/material";
-import { EditorExerciseData, ErrorSpring, ExerciseFile, LoginTypes, MyTreeNode, Tag } from "../Types";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { Box, Chip, IconButton, List, ListItem } from "@mui/material";
+import {
+  BatteryExercise,
+  EditorExerciseData,
+  ErrorSpring,
+  ExerciseFile,
+  LoginTypes,
+  MyTreeNode,
+  Tag
+} from "../Types";
 import { TreeStructure } from "../TreeStructure";
 import { useLocation, useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
@@ -11,17 +19,17 @@ import TextField from "@mui/material/TextField";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import CustomTransferList from "../components/TransferList";
 import { MyDropzone } from "../components/MyDropzone";
-import MyTreeItem from "../components/MyTreeItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
 import { Add } from "@mui/icons-material";
+import { AddBatteryDialog } from "../components/AddBatteryDialog";
 
 export function ExerciseEditor() {
 
   const navigate = useNavigate();
   const loginStatus: LoginTypes = useContext(LoginContext);
+
+  const [openBatteryDialog, setOpenBatteryDialog] = React.useState(false);
 
   const [exerciseId, setExerciseId] = useState<string>();
   const [exerciseName, setExerciseName] = useState<string>();
@@ -32,11 +40,33 @@ export function ExerciseEditor() {
   const [tags, setTags] = useState<Tag[]>();
   const [successCondition, setSuccessCondition] = useState<string>();
 
+  const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>();
+  const [allTags, setAllTags] = useState<Tag[]>();
+  const [allExerciseBatteries, setAllExerciseBatteries] = useState<BatteryExercise[]>();
+
+  const [selectedBatteryExercise, setSelectedBatteryExercise] = useState<BatteryExercise>();
+
   const [showStatementError, setShowStatementError] = React.useState(false);
   const [statementMessage, setStatementMessage] = React.useState("");
 
-  //const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>();
+  const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
 
+  /* Function that sets the accepted files variable if length is not 0 and are
+  accepted beforehand with acceptedFiles from MyDropzone (it checks if there is
+  1 or more files automatically).
+  If we needed the rejected files, we would use another variable*/
+
+  const accept = (acceptedFiles: File[]) => {
+
+    if (acceptedFiles.length === 0) {
+      setUploadedFile(null);
+    } else {
+      setUploadedFile(acceptedFiles[0]);
+    }
+  };
+
+
+  //Variables for treefile management
   const [parentsIdList, setParentsIdList] = useState<string[]>([]);
   const [fileTree, setFileTree] = useState<TreeStructure>();
   const [rootNode, setRootNode] = useState<MyTreeNode>({
@@ -45,6 +75,32 @@ export function ExerciseEditor() {
     file: null,
     children: []
   });
+
+
+
+  // Functions to control the addBatteryDialog
+
+  const handleDialogClose = (confirmed: boolean, inputValue? : string) => {
+
+    console.log(confirmed, inputValue);
+
+    if (confirmed && inputValue){
+      console.log("El usuario escribió: ", inputValue);
+    }else{
+      console.log("Cancelado");
+    }
+
+    setOpenBatteryDialog(false);
+  };
+
+  const handleDialogOpen = () => {
+    setOpenBatteryDialog(true);
+  };
+
+
+
+
+  //Use effect to get the exercise data when editing an exercise
 
   const location = useLocation();
 
@@ -83,7 +139,11 @@ export function ExerciseEditor() {
         setTags(data.exercise.tags);
         setSuccessCondition(data.exercise.successCondition);
 
-        const files = data.files;
+        setAllExerciseBatteries(data.batteries);
+        setAllTags(data.tags);
+
+        const newTemplateFiles = data.files;
+        setTemplateFiles(newTemplateFiles);
 
         const root: MyTreeNode | null = {
           nodeId: "0",
@@ -99,8 +159,7 @@ export function ExerciseEditor() {
         const parentNodeIdList: string[] = ["0"];
 
         //Nodos del arbol
-
-        myTree = createTree(myTree, files, root, parentNodeIdList);
+        myTree = createTree(myTree, newTemplateFiles, root, parentNodeIdList);
 
         setParentsIdList(parentNodeIdList);
         setFileTree(myTree);
@@ -112,13 +171,21 @@ export function ExerciseEditor() {
     void fetchData();
   }, [location.pathname]);
 
-  function addBattery() {
-    console.log("hola");
-  }
 
+  //HANDLERS
+
+  const handleExerciseBatteryClick = (battery: BatteryExercise ) => {
+    setSelectedBatteryExercise(battery);
+  };
+
+  const handleSubmitFile = () => {
+    //No se
+  };
 
   return (
     <>
+      <AddBatteryDialog open={openBatteryDialog} handleClose={handleDialogClose} />
+
       <MyBreadcrumbs exerciseName={exerciseName} batteryName={batteryName} />
       <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 4 }}>
         <Container component="main" maxWidth="sm">
@@ -162,7 +229,7 @@ export function ExerciseEditor() {
         </Container>
 
         <Container component="main" maxWidth="lg">
-          <Box sx={{ display: "flex", gap: 4, marginTop: 4, justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", gap: 8 , marginTop: 4, justifyContent: "space-between" }}>
             <Box>
               <Typography sx={{ marginTop: 4, marginBottom: 1 }} variant="h6">
                 Archivos
@@ -180,17 +247,35 @@ export function ExerciseEditor() {
                 }}>
 
                 <FileTree
-                  expand={true}
+                  expand={false}
                   onNodeSelect={() => null}
                   parents={parentsIdList}
                   nodeId={rootNode?.nodeId}
                   label={rootNode?.label}
                   children={rootNode?.children}
                 />
-                <MyDropzone />
-              </Box>
+                <MyDropzone handleDrop={accept} />
 
+
+                {/*
+                <Button
+                  sx={{ marginTop: 2, marginBottom: 0 }}
+                  startIcon={<FolderZipIcon />}
+                  onClick={handleSubmitFile}
+                  color="success"
+                  variant="contained"
+                  endIcon={<SendIcon />}
+                >
+                  <Typography variant="button">
+                    <strong>Subir archivos</strong>
+                  </Typography>
+                </Button>
+                */}
+
+
+              </Box>
             </Box>
+
 
             <Box>
               <Typography sx={{ marginTop: 4, marginBottom: 1 }} variant="h6">
@@ -209,35 +294,50 @@ export function ExerciseEditor() {
                 <CustomTransferList />
               </Box>
 
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 10, justifyContent: "space-between"}}>
+
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 10, justifyContent: "space-between" }}>
                 <Typography variant="h6">
                   Batería de Ejercicios
                 </Typography>
-
-                <IconButton color="primary" onClick={addBattery}>
+                <Box sx={{ display: "flex"}}>
+                  <Typography variant="h6">
+                    {"Selected: "}
+                  </Typography>
+                  <Chip key={selectedBatteryExercise?.name} label={selectedBatteryExercise?.name} />
+                </Box>
+                <IconButton color="primary" onClick={handleDialogOpen}>
                   <Add />
                 </IconButton>
 
               </Box>
-              <Box width={50} sx={{
-                border: "2px groove #ccc",
-                borderRadius: 2,
-                padding: 4,
-                marginTop: 0,
-                cursor: "pointer", width: "100%", bgcolor: "background.paper"
-              }}>
+              <Box
+                width={50}
+                sx={{
+                  border: "2px groove #ccc",
+                  borderRadius: 2,
+                  padding: 2,
+                  marginTop: 0,
+                  cursor: "pointer",
+                  width: "100%",
+                  bgcolor: "background.paper"
+                }}
+              >
                 <nav aria-label="Batterys">
-                  <List>
-                    <ListItem disablePadding>
-                      <ListItemButton>
-                        <ListItemText primary="Batería de Herencia" />
-                      </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding>
-                      <ListItemButton>
-                        <ListItemText primary="Batería de Poliformismo" />
-                      </ListItemButton>
-                    </ListItem>
+                  <List
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(3, 1fr)",
+                      gap: 1
+                    }}
+                  >
+                    {Array.from(allExerciseBatteries ?? []).map((battery) => (
+                      <ListItem key={battery.name} sx={{ margin: 0, padding: 0, width: "200px" }}>
+                        <ListItemButton onClick={() => handleExerciseBatteryClick(battery)}>
+                          <ListItemText primary={battery.name} />
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
                   </List>
                 </nav>
               </Box>

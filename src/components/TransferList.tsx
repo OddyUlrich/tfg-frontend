@@ -1,163 +1,147 @@
 import * as React from 'react';
-import Grid from '@mui/material/Grid';
-import List from '@mui/material/List';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Checkbox from '@mui/material/Checkbox';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import { Rule } from '../Types';
+import {
+  Box,
+  Chip,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
+  Typography,
+  TextField
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
-export default function TransferList() {
-  const [checkedLeft, setCheckedLeft] = React.useState<Rule[]>([]);
-  const [checkedRight, setCheckedRight] = React.useState<Rule[]>([]);
-  const [right, setRight] = React.useState<{ rule: Rule; count: number }[]>([]);
-  const [left] = React.useState<Rule[]>([
-    { id: 0, name: 'Bucle For' },
-    { id: 1, name: 'Bucle While' },
-    { id: 2, name: 'Int' },
-    { id: 3, name: 'Double' },
-  ]);
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
-  const handleToggle = (
-    rule: Rule,
-    checkedList: Rule[],
-    setCheckedList: React.Dispatch<React.SetStateAction<Rule[]>>
-  ) => () => {
-    const isChecked = checkedList.some((r) => r.id === rule.id);
-    if (isChecked) {
-      setCheckedList(checkedList.filter((r) => r.id !== rule.id));
-    } else {
-      setCheckedList([...checkedList, rule]);
-    }
-  };
+const names = [
+  "Bucle for",
+  "Bucle while",
+  "Bucle do-while",
+  "int",
+  "float",
+  "double",
+  "string",
 
-  const handleCheckedRight = () => {
-    const newRight = [...right];
+];
 
-    checkedLeft.forEach((rule) => {
-      const existing = newRight.find((item) => item.rule.id === rule.id);
-      if (existing) {
-        existing.count += 1;
-      } else {
-        newRight.push({ rule, count: 1 });
-      }
+interface Selection {
+  name: string;
+  count: number;
+  alias: string;
+}
+
+export default function MultipleSelectWithCounts() {
+  const [selections, setSelections] = React.useState<Selection[]>([]);
+
+  const handleChange = (event: SelectChangeEvent<string[]>) => {
+    const {
+      target: { value },
+    } = event;
+
+    const selectedNames = typeof value === 'string' ? value.split(',') : value;
+
+    setSelections((prev) => {
+      return selectedNames.map((name) => {
+        const existing = prev.find((s) => s.name === name);
+        return {
+          name,
+          count: existing?.count ?? 1,
+          alias: existing?.alias ?? ''
+        };
+      });
     });
-    setRight(newRight);
-    setCheckedLeft([]);
   };
 
-  const handleCheckedLeft = () => {
-    const newRight = right.filter(
-      (item) => !checkedRight.some((r) => r.id === item.rule.id)
-    );
-    setRight(newRight);
-    setCheckedRight([]);
-  };
-
-  const customList = (
-    title: React.ReactNode,
-    rules: readonly Rule[] | { rule: Rule; count: number }[],
-    checkedList: Rule[],
-    setCheckedList: React.Dispatch<React.SetStateAction<Rule[]>>,
-    isRightList?: boolean
-  ) => {
-    const isRight = isRightList ?? false;
-    return (
-      <Card>
-        <CardHeader
-          sx={{ px: 2, py: 1 }}
-          title={title}
-          slotProps={{
-            title: {
-              sx: { textAlign: 'center' },
-              variant: 'h6',
-              fontWeight: 'bold',
-            }
-          }}
-        />
-        <Divider />
-        <List
-          sx={{
-            height: 250,
-            bgcolor: 'background.paper',
-            overflow: 'auto',
-          }}
-          dense
-          component="div"
-          role="list"
-        >
-          {(isRight ? (rules as { rule: Rule; count: number }[]) : (rules as Rule[])).map((item) => {
-
-            let rule: Rule;
-            if ('rule' in item) {
-              rule = item.rule;
-            } else {
-              rule = item;
-            }
-
-            const labelId = `transfer-list-item-${rule.id}-label`;
-            const isChecked = checkedList.some((r) => r.id === rule.id);
-
-            return (
-              <ListItemButton
-                key={rule.id}
-                role="listitem"
-                onClick={handleToggle(rule, checkedList, setCheckedList)}
-              >
-                <ListItemIcon>
-                  <Checkbox
-                    checked={isChecked}
-                    tabIndex={-1}
-                    disableRipple
-                    slotProps={{
-                      input: {
-                        'aria-labelledby': labelId,
-                      },
-                    }}
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  id={labelId}
-                  primary={`${rule.name}${isRight ? ` x${(item as { rule: Rule; count: number }).count}` : ''}`}
-                />
-              </ListItemButton>
-            );
-          })}
-        </List>
-      </Card>
+  const handleCountChange = (name: string, count: number) => {
+    setSelections((prev) =>
+      prev.map((s) => (s.name === name ? { ...s, count } : s))
     );
   };
+
+  const handleAliasChange = (name: string, alias: string) => {
+    setSelections((prev) =>
+      prev.map((s) => (s.name === name ? { ...s, alias } : s))
+    );
+  };
+
+  const selectedNames = selections.map((s) => s.name);
 
   return (
-    <Grid container spacing={2} sx={{ justifyContent: 'center', alignItems: 'center' }}>
-      <Grid>{customList('Reglas posibles', left, checkedLeft, setCheckedLeft)}</Grid>
-      <Grid>
-        <Grid container direction="column" sx={{ alignItems: 'center' }}>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
-            onClick={handleCheckedRight}
-            disabled={checkedLeft.length === 0}
-          >
-            &gt;
-          </Button>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
-            onClick={handleCheckedLeft}
-            disabled={checkedRight.length === 0}
-          >
-            &lt;
-          </Button>
-        </Grid>
-      </Grid>
-      <Grid>{customList('Reglas elegidas', right, checkedRight, setCheckedRight, true)}</Grid>
-    </Grid>
+    <Box sx={{ m: 2, width: 500 }}>
+      <FormControl fullWidth>
+        <InputLabel id="multi-select-label">Seleccionar nombres</InputLabel>
+        <Select
+          labelId="multi-select-label"
+          multiple
+          value={selectedNames}
+          onChange={handleChange}
+          input={<OutlinedInput label="Seleccionar nombres" />}
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {selected.map((name) => {
+                const item = selections.find((s) => s.name === name);
+                return (
+                  <Chip
+                    key={name}
+                    label={`${item?.alias || name} x${item?.count ?? 1}`}
+                  />
+                );
+              })}
+            </Box>
+          )}
+          MenuProps={MenuProps}
+        >
+          {names.map((name) => (
+            <MenuItem key={name} value={name}>
+              {name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {selections.length > 0 && (
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="subtitle1">Detalles por nombre:</Typography>
+          {selections.map((sel) => (
+            <Box
+              key={sel.name}
+              sx={{ display: 'flex', alignItems: 'center', mt: 1, gap: 2 }}
+            >
+              <Typography sx={{ width: 130 }}>{sel.name}</Typography>
+
+              <Select<number>
+                size="small"
+                value={sel.count}
+                onChange={(e) => handleCountChange(sel.name, e.target.value)}
+              >
+                {[1, 2, 3, 4, 5].map((count) => (
+                  <MenuItem key={count} value={count}>
+                    {count}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <TextField
+                size="small"
+                label="Alias"
+                value={sel.alias}
+                onChange={(e) => handleAliasChange(sel.name, e.target.value)}
+              />
+            </Box>
+          ))}
+        </Box>
+      )}
+    </Box>
   );
 }
