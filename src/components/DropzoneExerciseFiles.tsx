@@ -7,11 +7,7 @@ type DropzoneProps = {
   handleDrop: (acceptedFiles: File[]) => void;
 }
 
-export function MyDropzone({handleDrop}: DropzoneProps) {
-
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [droppedFiles, setDroppedFiles] = React.useState<File[]>([]);
-  const [selectedFolder, setSelectedFolder] = React.useState<string | null>(null);
+export function DropzoneExerciseFiles({handleDrop}: DropzoneProps) {
 
   const {
     acceptedFiles,
@@ -38,7 +34,7 @@ export function MyDropzone({handleDrop}: DropzoneProps) {
 
   useEffect(() => {
     if (fileRejections.length >= 1) {
-      enqueueSnackbar("No se puede subir más de 1 archivo .zip", {
+      enqueueSnackbar("Solo se puede subir un único archivo .zip", {
         variant: "error"
       });
     }

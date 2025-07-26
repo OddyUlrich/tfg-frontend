@@ -5,18 +5,25 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
+import { useEffect } from "react";
 
 interface AlertDialogProps {
   open: boolean;
-  handleClose: (save: boolean) => void;
+  handleClose: (confirmed: boolean, inputValue?: string) => void;
 }
 
-export const AlertDialog: React.FC<AlertDialogProps> = ({
-  open,
-  handleClose,
-}) => {
+export const AddBatteryDialog: React.FC<AlertDialogProps> = ({open, handleClose}) => {
+
+  const [batteryName, setBatteryName] = React.useState("");
+
+  useEffect(() => {
+    if (!open) {
+      setBatteryName("");
+    }
+  }, [open]);
+
+
   return (
     <div>
       <Dialog
@@ -24,21 +31,39 @@ export const AlertDialog: React.FC<AlertDialogProps> = ({
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="sm"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Save before closing?"}
+          {"Añadir nueva batería"}
         </DialogTitle>
+
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Do you want to save the file before closing it?
+            ¿Qué batería quieres añadir?
           </DialogContentText>
+          <TextField
+            sx={{ marginTop: 4, width: "100%" }}
+            margin="normal"
+            variant={"outlined"}
+            required
+            fullWidth
+            id="batteryName"
+            label="Name"
+            name="batteryName"
+            autoComplete="batteryName"
+            autoFocus
+            value={batteryName}
+            onChange={(e) => setBatteryName(e.target.value)}
+          />
         </DialogContent>
+
         <DialogActions>
           <Button onClick={() => handleClose(false)}>
-            No, don't save
+            Cancelar
           </Button>
-          <Button onClick={() => handleClose(true)} autoFocus>
-            Yes, save
+          <Button onClick={() => handleClose(true, batteryName)} autoFocus>
+            Añadir
           </Button>
         </DialogActions>
       </Dialog>

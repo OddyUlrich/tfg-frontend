@@ -13,17 +13,13 @@ interface AlertDialogProps {
   handleClose: (confirmed: boolean, inputValue?: string) => void;
 }
 
-export const AddBatteryDialog: React.FC<AlertDialogProps> = ({
-                                                          open,
-                                                          handleClose,
-                                                        }) => {
+export const AddTagDialog: React.FC<AlertDialogProps> = ({open, handleClose}) => {
 
-  const [batteryName, setBatteryName] = React.useState("");
-
+  const [tagName, setTagName] = React.useState("");
 
   useEffect(() => {
     if (!open) {
-      setBatteryName("");
+      setTagName("");
     }
   }, [open]);
 
@@ -57,15 +53,16 @@ export const AddBatteryDialog: React.FC<AlertDialogProps> = ({
             name="batteryName"
             autoComplete="batteryName"
             autoFocus
-            value={batteryName}
-            onChange={(e) => setBatteryName(e.target.value)}
+            value={tagName}
+            onChange={(e) => setTagName(e.target.value)}
           />
         </DialogContent>
+
         <DialogActions>
           <Button onClick={() => handleClose(false)}>
             Cancelar
           </Button>
-          <Button onClick={() => handleClose(true, batteryName)} autoFocus>
+          <Button onClick={() => handleClose(true, tagName)} autoFocus>
             Añadir
           </Button>
         </DialogActions>

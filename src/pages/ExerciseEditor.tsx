@@ -10,7 +10,7 @@ import {
   MyTreeNode,
   Tag
 } from "../Types";
-import { TreeStructure } from "../TreeStructure";
+import { freeTree, TreeStructure } from "../TreeStructure";
 import { useLocation, useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -18,19 +18,28 @@ import { LoginContext } from "../Utils";
 import TextField from "@mui/material/TextField";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import CustomTransferList from "../components/TransferList";
-import { MyDropzone } from "../components/MyDropzone";
+import { DropzoneExerciseFiles } from "../components/DropzoneExerciseFiles";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import { Add } from "@mui/icons-material";
-import { AddBatteryDialog } from "../components/AddBatteryDialog";
+import { AddBatteryDialog } from "../components/Dialogs/AddBatteryDialog";
+import JSZip from "jszip";
+import { AddTagDialog } from "../components/Dialogs/AddTagDialog";
 
 export function ExerciseEditor() {
 
   const navigate = useNavigate();
   const loginStatus: LoginTypes = useContext(LoginContext);
 
+  //Dialogs for new content
   const [openBatteryDialog, setOpenBatteryDialog] = React.useState(false);
+  const [openTagDialog, setOpenTagDialog] = React.useState(false);
 
+  //Breadcrumbs data
+  const [exerciseNameBreadcrumb, setExerciseNameBreadcrumb] = useState<string>();
+  const [batteryNameBreadcrumb, setBatteryNameBreadcrumb] = useState<string>();
+
+  //Exercise data
   const [exerciseId, setExerciseId] = useState<string>();
   const [exerciseName, setExerciseName] = useState<string>();
   const [batteryId, setBatteryId] = useState<string>();
@@ -39,34 +48,18 @@ export function ExerciseEditor() {
   const [rules, setRules] = useState<string[]>();
   const [tags, setTags] = useState<Tag[]>();
   const [successCondition, setSuccessCondition] = useState<string>();
-
   const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>();
+
+  //All tags and batteries for selection
   const [allTags, setAllTags] = useState<Tag[]>();
   const [allExerciseBatteries, setAllExerciseBatteries] = useState<BatteryExercise[]>();
-
-  const [selectedBatteryExercise, setSelectedBatteryExercise] = useState<BatteryExercise>();
 
   const [showStatementError, setShowStatementError] = React.useState(false);
   const [statementMessage, setStatementMessage] = React.useState("");
 
   const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
 
-  /* Function that sets the accepted files variable if length is not 0 and are
-  accepted beforehand with acceptedFiles from MyDropzone (it checks if there is
-  1 or more files automatically).
-  If we needed the rejected files, we would use another variable*/
-
-  const accept = (acceptedFiles: File[]) => {
-
-    if (acceptedFiles.length === 0) {
-      setUploadedFile(null);
-    } else {
-      setUploadedFile(acceptedFiles[0]);
-    }
-  };
-
-
-  //Variables for treefile management
+    //Variables for treefile management
   const [parentsIdList, setParentsIdList] = useState<string[]>([]);
   const [fileTree, setFileTree] = useState<TreeStructure>();
   const [rootNode, setRootNode] = useState<MyTreeNode>({
@@ -77,10 +70,8 @@ export function ExerciseEditor() {
   });
 
 
-
   // Functions to control the addBatteryDialog
-
-  const handleDialogClose = (confirmed: boolean, inputValue? : string) => {
+  const handleBatteryDialogClose = (confirmed: boolean, inputValue? : string) => {
 
     console.log(confirmed, inputValue);
 
@@ -93,11 +84,78 @@ export function ExerciseEditor() {
     setOpenBatteryDialog(false);
   };
 
-  const handleDialogOpen = () => {
+  const handleBatteryDialogOpen = () => {
     setOpenBatteryDialog(true);
   };
 
+  const handleTagDialogOpen = () => {
+    setOpenTagDialog(true);
+  };
 
+  // Functions to control the addBatteryDialog
+  const handleTagDialogClose = (confirmed: boolean, inputValue? : string) => {
+
+    console.log(confirmed, inputValue);
+
+    if (confirmed && inputValue){
+      console.log("El usuario escribió: ", inputValue);
+    }else{
+      console.log("Cancelado");
+    }
+
+    setOpenBatteryDialog(false);
+  };
+
+
+  /* Function that sets the accepted files variable if length is not 0 and are
+  accepted beforehand with acceptedFiles from DropzoneExerciseFiles (it checks if there is
+  1 or more files automatically).
+  If we needed the rejected files, we would use another variable*/
+
+  const accept = async (acceptedFiles: File[]) => {
+
+    //TODO atento a que cuando se suban los archivos si es nulo entonces es que el usuario no ha subido archivos, ¿avisarle con un dialog?
+    if (acceptedFiles.length === 0) {
+      setUploadedFile(null);
+    } else {
+      setUploadedFile(acceptedFiles[0]);
+      let counter = 1;
+
+      const filesForDisplay:ExerciseFile[] = [];
+
+      const zip = await JSZip.loadAsync(acceptedFiles[0]);
+
+      for (const path of Object.keys(zip.files)) {
+        const file = zip.files[path];
+
+        //Checks if it is not a folder
+        if (!file.dir) {
+          const content = await file.async("text");
+
+          const pathNames = path.split("/");
+          const name = pathNames[pathNames.length - 1];
+
+          const exerciseFile:ExerciseFile = {id: counter.toString(), name: name, path: path, text: content, idFromSolution: null, editableMethods: null};
+
+          filesForDisplay.push(exerciseFile);
+          counter++;
+        }
+      }
+
+
+      //If there was a tree previously we clean it
+      freeTree(rootNode);
+
+      //Nodos a expandir (padres, empezamos por el nodo root)
+      const parentNodeIdList: string[] = ["0"];
+
+      //Create a new tree
+      const newTree = createTree(fileTree ?? new TreeStructure(), filesForDisplay, rootNode, parentNodeIdList);
+      setFileTree(newTree);
+      setParentsIdList(parentNodeIdList);
+
+    }
+  };
 
 
   //Use effect to get the exercise data when editing an exercise
@@ -130,6 +188,7 @@ export function ExerciseEditor() {
 
         const data: EditorExerciseData = await response.json();
 
+        //If we are editing we see the data and set it
         setExerciseId(exerciseId);
         setExerciseName(data.exercise.name);
         setBatteryId(data.exercise.idFromBattery);
@@ -138,6 +197,10 @@ export function ExerciseEditor() {
         setRules(data.exercise.rules);
         setTags(data.exercise.tags);
         setSuccessCondition(data.exercise.successCondition);
+
+        //Setting breadcrumb data
+        setExerciseNameBreadcrumb(data.exercise.name);
+        setBatteryNameBreadcrumb(data.exercise.nameFromBattery);
 
         setAllExerciseBatteries(data.batteries);
         setAllTags(data.tags);
@@ -155,14 +218,15 @@ export function ExerciseEditor() {
         let myTree = new TreeStructure();
         setRootNode(root);
 
-        //Nodos a expandir (padres)
+        //Nodos a expandir (padres, empezamos por el nodo root)
         const parentNodeIdList: string[] = ["0"];
 
         //Nodos del arbol
         myTree = createTree(myTree, newTemplateFiles, root, parentNodeIdList);
-
-        setParentsIdList(parentNodeIdList);
         setFileTree(myTree);
+
+        //Nodos a expandir (padres) una vez terminado el arbol
+        setParentsIdList(parentNodeIdList);
 
       } catch (error: any) {
         console.log("Network error");
@@ -175,7 +239,18 @@ export function ExerciseEditor() {
   //HANDLERS
 
   const handleExerciseBatteryClick = (battery: BatteryExercise ) => {
-    setSelectedBatteryExercise(battery);
+    setBatteryName(battery.name);
+  };
+
+  const handleTagClick = (tagMarcada: Tag ) => {
+
+    if (tags && tags.some(tag => tag.name === tagMarcada.name)){
+      const newTags = tags.filter(tag => tag.name !== tagMarcada.name)
+      setTags(newTags);
+    }else{
+      const newTags = [...(tags ?? []), tagMarcada];
+      setTags(newTags);
+    }
   };
 
   const handleSubmitFile = () => {
@@ -184,14 +259,13 @@ export function ExerciseEditor() {
 
   return (
     <>
-      <AddBatteryDialog open={openBatteryDialog} handleClose={handleDialogClose} />
+      <AddBatteryDialog open={openBatteryDialog} handleClose={handleBatteryDialogClose} />
+      <AddTagDialog open={openTagDialog} handleClose={handleTagDialogClose} />
 
-      <MyBreadcrumbs exerciseName={exerciseName} batteryName={batteryName} />
+
+      <MyBreadcrumbs exerciseName={exerciseNameBreadcrumb} batteryName={batteryNameBreadcrumb} />
       <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 4 }}>
         <Container component="main" maxWidth="sm">
-          <Typography variant="h6">
-            Nombre del ejercicio
-          </Typography>
           <TextField
             sx={{ marginTop: 1 }}
             margin="normal"
@@ -200,17 +274,17 @@ export function ExerciseEditor() {
             fullWidth
             multiline={true}
             id="ExerciseName"
-            label="Name"
+            label="Nombre del ejercicio"
             name="ExerciseName"
             autoComplete="ExerciseName"
+            value={exerciseName}
+            onChange={(e => {setExerciseName(e.target.value)})}
             error={showStatementError}
             helperText={statementMessage}
             autoFocus
+            slotProps={{ inputLabel: { shrink: true } }}
           />
 
-          <Typography sx={{ display: "flex", justifyContent: "space-between", marginTop: 4 }} variant="h6">
-            Enunciado del ejercicio
-          </Typography>
           <TextField
             sx={{ marginTop: 1 }}
             margin="normal"
@@ -219,17 +293,19 @@ export function ExerciseEditor() {
             fullWidth
             multiline={true}
             id="Statement"
-            label="Statement"
+            label="Enunciado del ejercicio"
             name="Statement"
             autoComplete="Statement"
+            value={statement}
+            onChange={(e => {setStatement(e.target.value)})}
             error={showStatementError}
             helperText={statementMessage}
-            autoFocus
+
           />
         </Container>
 
         <Container component="main" maxWidth="lg">
-          <Box sx={{ display: "flex", gap: 8 , marginTop: 4, justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", gap: 8 , marginTop: 4 }}>
             <Box>
               <Typography sx={{ marginTop: 4, marginBottom: 1 }} variant="h6">
                 Archivos
@@ -247,15 +323,14 @@ export function ExerciseEditor() {
                 }}>
 
                 <FileTree
-                  expand={false}
+                  expand={true}
                   onNodeSelect={() => null}
                   parents={parentsIdList}
                   nodeId={rootNode?.nodeId}
                   label={rootNode?.label}
                   children={rootNode?.children}
                 />
-                <MyDropzone handleDrop={accept} />
-
+                <DropzoneExerciseFiles handleDrop={accept} />
 
                 {/*
                 <Button
@@ -271,7 +346,6 @@ export function ExerciseEditor() {
                   </Typography>
                 </Button>
                 */}
-
 
               </Box>
             </Box>
@@ -296,6 +370,8 @@ export function ExerciseEditor() {
 
 
               <Box
+                width={700}
+                maxWidth={700}
                 sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 10, justifyContent: "space-between" }}>
                 <Typography variant="h6">
                   Batería de Ejercicios
@@ -304,15 +380,16 @@ export function ExerciseEditor() {
                   <Typography variant="h6">
                     {"Selected: "}
                   </Typography>
-                  <Chip key={selectedBatteryExercise?.name} label={selectedBatteryExercise?.name} />
+                  <Chip key={batteryName} label={batteryName} />
                 </Box>
-                <IconButton color="primary" onClick={handleDialogOpen}>
+                <IconButton color="primary" onClick={handleBatteryDialogOpen}>
                   <Add />
                 </IconButton>
 
               </Box>
               <Box
-                width={50}
+                width={750}
+                maxWidth={750}
                 sx={{
                   border: "2px groove #ccc",
                   borderRadius: 2,
@@ -333,7 +410,7 @@ export function ExerciseEditor() {
                   >
                     {Array.from(allExerciseBatteries ?? []).map((battery) => (
                       <ListItem key={battery.name} sx={{ margin: 0, padding: 0, width: "200px" }}>
-                        <ListItemButton onClick={() => handleExerciseBatteryClick(battery)}>
+                        <ListItemButton sx={{backgroundColor: batteryName === battery.name ? 'rgba(255, 255, 255, 0.1)' : 'transparent'}} onClick={() => handleExerciseBatteryClick(battery)}>
                           <ListItemText primary={battery.name} />
                         </ListItemButton>
                       </ListItem>
@@ -341,7 +418,64 @@ export function ExerciseEditor() {
                   </List>
                 </nav>
               </Box>
+
+              <Box
+                width={600}
+                maxWidth={600}
+                sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 10, justifyContent: "space-between" }}>
+                <Typography variant="h6">
+                  Tags
+                </Typography>
+                <Box sx={{ display: "flex"}}>
+                  <Typography variant="h6">
+                    {"Selected: "}
+                  </Typography>
+                  {Array.from(tags ?? []).map((tag) => (
+                    <Chip key={tag.name} label={tag.name}/>
+                  ))}
+                </Box>
+                <IconButton color="primary" onClick={handleTagDialogOpen}>
+                  <Add />
+                </IconButton>
+
+              </Box>
+              <Box
+                width={600}
+                maxWidth={600}
+                sx={{
+                  border: "2px groove #ccc",
+                  borderRadius: 2,
+                  padding: 2,
+                  marginTop: 0,
+                  cursor: "pointer",
+                  width: "100%",
+                  bgcolor: "background.paper"
+                }}
+              >
+                <nav aria-label="Tags">
+                  <List
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(3, 1fr)",
+                      gap: 1
+                    }}
+                  >
+                    {Array.from(allTags ?? []).map((tag) => (
+                      <ListItem key={tag.name} sx={{ margin: 0, padding: 0, width: "200px" }}>
+                        <ListItemButton sx={{backgroundColor: tags && tags.some(knownTags => knownTags.name === tag.name) ?
+                            'rgba(255, 255, 255, 0.1)' :
+                            'transparent'
+                        }} onClick={() => handleTagClick(tag)}>
+                          <ListItemText primary={tag.name} />
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                  </List>
+                </nav>
+              </Box>
             </Box>
+
+
           </Box>
         </Container>
 

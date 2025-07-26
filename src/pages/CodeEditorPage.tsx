@@ -21,7 +21,7 @@ import { MyTab } from "../components/EditorTabs";
 import { editor, Uri } from "monaco-editor";
 import { Monaco } from "@monaco-editor/react";
 import { constrainedEditor } from "constrained-editor-plugin";
-import { AlertDialog } from "../components/AlertDialog";
+import { AlertDialog } from "../components/Dialogs/AlertDialog";
 import Typography from "@mui/material/Typography";
 import SaveIcon from "@mui/icons-material/Save";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
@@ -247,12 +247,14 @@ export function CodeEditorPage() {
     // constrainedInstance.addRestrictionsTo(model, restrictions);
   }
 
+  //Function for handling the event of selecting a node from the tree
   const handleNodeSelect = (
     _event: React.SyntheticEvent | null,
     nodeId: string | null
   ) => {
 
-    //El evento puede ser nulo porque puede no ser provocado por el usuario sino por otro componente
+    //We don't check the event cause this function could be called by a component and not the user
+
     if (fileTree === undefined || nodeId === null) {
       /*Que hacer si el evento es nulo, el nodo es nulo o el arbol no se
       * ha generado todavia...? No podria ocurrir este evento se supone...*/
@@ -302,6 +304,7 @@ export function CodeEditorPage() {
     setActiveTab(newTabs.length - 1);
   };
 
+  //Upload the solution files to get a correction and a number of errors
   const handleSubmit = () => {
     //TODO ENVIAR NODOS DEL ÁRBOL (SOLO DE SOLUCIÓN)
   };
@@ -381,6 +384,7 @@ export function CodeEditorPage() {
               <Box className="file-selector"
               >
                 <FileTree
+                  expand={true}
                   onNodeSelect={handleNodeSelect}
                   parents={parentsIdList}
                   nodeId={rootNode?.nodeId}

@@ -39,7 +39,7 @@ export interface FileTreeProps {
 }
 
 export const FileTree: FC<FileTreeProps> = ({
-                                              expand = true,
+                                              expand,
                                               onNodeSelect,
                                               parents,
                                               nodeId,

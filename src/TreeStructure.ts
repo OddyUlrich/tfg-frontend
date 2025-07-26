@@ -73,3 +73,12 @@ export class TreeStructure {
     return foundNode;
   }
 }
+
+export function freeTree(nodo: MyTreeNode) {
+  for (const hijo of nodo.children) {
+    freeTree(hijo); // recursively removes all the nodes from the tree
+  }
+
+  nodo.children.length = 0; // cleans the array (frees references)
+  nodo.file = null;         // also frees the file
+}
