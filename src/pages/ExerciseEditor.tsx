@@ -88,11 +88,7 @@ export function ExerciseEditor() {
     setOpenBatteryDialog(true);
   };
 
-  const handleTagDialogOpen = () => {
-    setOpenTagDialog(true);
-  };
-
-  // Functions to control the addBatteryDialog
+  // Functions to control the addTagDialog
   const handleTagDialogClose = (confirmed: boolean, inputValue? : string) => {
 
     console.log(confirmed, inputValue);
@@ -103,7 +99,11 @@ export function ExerciseEditor() {
       console.log("Cancelado");
     }
 
-    setOpenBatteryDialog(false);
+    setOpenTagDialog(false);
+  };
+
+  const handleTagDialogOpen = () => {
+    setOpenTagDialog(true);
   };
 
 
@@ -376,9 +376,9 @@ export function ExerciseEditor() {
                 <Typography variant="h6">
                   Batería de Ejercicios
                 </Typography>
-                <Box sx={{ display: "flex"}}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <Typography variant="h6">
-                    {"Selected: "}
+                    {"Selected:"}
                   </Typography>
                   <Chip key={batteryName} label={batteryName} />
                 </Box>
@@ -426,7 +426,7 @@ export function ExerciseEditor() {
                 <Typography variant="h6">
                   Tags
                 </Typography>
-                <Box sx={{ display: "flex"}}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <Typography variant="h6">
                     {"Selected: "}
                   </Typography>

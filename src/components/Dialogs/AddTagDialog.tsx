@@ -35,12 +35,12 @@ export const AddTagDialog: React.FC<AlertDialogProps> = ({open, handleClose}) =>
         maxWidth="sm"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Añadir nueva batería"}
+          {"Añadir nueva etiqueta"}
         </DialogTitle>
 
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            ¿Qué batería quieres añadir?
+            ¿Qué etiqueta quieres añadir?
           </DialogContentText>
           <TextField
             sx={{ marginTop: 4, width: "100%" }}
@@ -48,10 +48,10 @@ export const AddTagDialog: React.FC<AlertDialogProps> = ({open, handleClose}) =>
             variant={"outlined"}
             required
             fullWidth
-            id="batteryName"
+            id="tagName"
             label="Name"
-            name="batteryName"
-            autoComplete="batteryName"
+            name="tagName"
+            autoComplete="tagName"
             autoFocus
             value={tagName}
             onChange={(e) => setTagName(e.target.value)}

@@ -141,7 +141,7 @@ export function CodeEditorPage() {
     const saveData = async () => {
       try {
         const response = await fetch("http://localhost:8080/solutions/save", {
-          method: "PUT",
+          method: "POST",
           body: JSON.stringify({
             filesForDisplay: displayFiles,
             exerciseId: exerciseId,
@@ -183,20 +183,6 @@ export function CodeEditorPage() {
     setAutosave(event.target.checked);
   };
 
-  //Auto-save function every X seconds if autosave is active and there is changes
-  useEffect(() => {
-    if (!autosave || !unsavedChanges) return;
-    
-    const saveTimeout = setTimeout(() => {
-      if (unsavedChanges) {
-        handleSave(false);
-        setUnsavedChanges(false);
-      }
-    }, 3000); // Wait 3 seconds of inactivity before saving
-
-    return () => clearTimeout(saveTimeout);
-  }, [unsavedChanges, autosave, handleSave]);
-
   const handleTabClick = (event: React.SyntheticEvent, index: number) => {
     setActiveTab(index);
   };
@@ -220,6 +206,8 @@ export function CodeEditorPage() {
     setTabs(newTabs);
   };
 
+  const saveTimeout = useRef<NodeJS.Timeout | null>(null);
+
   const handleEditorChange = (content: string | undefined) => {
     const tab = tabs[activeTab];
 
@@ -227,8 +215,30 @@ export function CodeEditorPage() {
       const path = Uri.parse(tab.node.file.path);
       editor.getModel(path)?.setValue(content);
     }
+
     setUnsavedChanges(true);
+
+    if (!autosave) return;
+
+    if (saveTimeout.current) {
+      clearTimeout(saveTimeout.current);
+    }
+
+    saveTimeout.current = setTimeout(() => {
+      handleSave(false);
+    }, 3000);
+
   };
+
+  //Clean-up function so no timeout lasts even in page changes
+  useEffect(() => {
+    return () => {
+      if (saveTimeout.current) {
+        clearTimeout(saveTimeout.current);
+      }
+    };
+  }, []);
+
 
   function handleEditorDidMount(
     codeEditor: editor.IStandaloneCodeEditor,
