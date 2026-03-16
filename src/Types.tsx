@@ -91,6 +91,7 @@ export type EditorExercise = {
 
 export type Rule = {
   id: number;
+  type: string
   name: string;
 }
 

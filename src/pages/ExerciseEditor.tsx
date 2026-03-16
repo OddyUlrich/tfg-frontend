@@ -305,7 +305,7 @@ export function ExerciseEditor() {
         </Container>
 
         <Container component="main" maxWidth="lg">
-          <Box sx={{ display: "flex", gap: 8 , marginTop: 4 }}>
+          <Box sx={{ display: "flex", gap: 8 , marginTop: 2 }}>
             <Box>
               <Typography sx={{ marginTop: 4, marginBottom: 1 }} variant="h6">
                 Archivos
@@ -356,7 +356,7 @@ export function ExerciseEditor() {
                 Reglas
               </Typography>
 
-              <Box width={600}
+              <Box width={700}
                    sx={{
                      border: "2px groove #ccc",
                      borderRadius: 2,
@@ -452,26 +452,24 @@ export function ExerciseEditor() {
                   bgcolor: "background.paper"
                 }}
               >
-                <nav aria-label="Tags">
-                  <List
-                    sx={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(3, 1fr)",
-                      gap: 1
-                    }}
-                  >
-                    {Array.from(allTags ?? []).map((tag) => (
-                      <ListItem key={tag.name} sx={{ margin: 0, padding: 0, width: "200px" }}>
-                        <ListItemButton sx={{backgroundColor: tags && tags.some(knownTags => knownTags.name === tag.name) ?
-                            'rgba(255, 255, 255, 0.1)' :
-                            'transparent'
-                        }} onClick={() => handleTagClick(tag)}>
-                          <ListItemText primary={tag.name} />
-                        </ListItemButton>
-                      </ListItem>
-                    ))}
-                  </List>
-                </nav>
+                <List
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gap: 1
+                  }}
+                >
+                  {Array.from(allTags ?? []).map((tag) => (
+                    <ListItem key={tag.name} sx={{ margin: 0, padding: 0, width: "200px" }}>
+                      <ListItemButton sx={{backgroundColor: tags && tags.some(knownTags => knownTags.name === tag.name) ?
+                          'rgba(255, 255, 255, 0.1)' :
+                          'transparent'
+                      }} onClick={() => handleTagClick(tag)}>
+                        <ListItemText primary={tag.name} />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
               </Box>
             </Box>
 

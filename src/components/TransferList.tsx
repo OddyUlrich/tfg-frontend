@@ -1,147 +1,193 @@
 import * as React from 'react';
-import {
-  Box,
-  Chip,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  SelectChangeEvent,
-  Typography,
-  TextField
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Checkbox from '@mui/material/Checkbox';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import { Rule } from "../Types";
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
+function not(a: Rule[], b: Map<number, string>) {
+  const filteredRules: Rule[] = [];
 
-const names = [
-  "Bucle for",
-  "Bucle while",
-  "Bucle do-while",
-  "int",
-  "float",
-  "double",
-  "string",
+  a.forEach((rule) => {
+    if (!b.has(rule.id)) {
+      filteredRules.push({id: rule.id, type: rule.type, name: rule.name});
+    }
+  });
 
-];
-
-interface Selection {
-  name: string;
-  count: number;
-  alias: string;
+  return filteredRules;
 }
 
-export default function MultipleSelectWithCounts() {
-  const [selections, setSelections] = React.useState<Selection[]>([]);
 
-  const handleChange = (event: SelectChangeEvent<string[]>) => {
-    const {
-      target: { value },
-    } = event;
+function intersection<T>(
+  checkedIds: readonly number[],
+  items: T[],
+  getId: (item: T) => number,
+  getValue: (item: T) => string
+): Map<number, string> {
+  const filteredMap = new Map<number, string>();
 
-    const selectedNames = typeof value === 'string' ? value.split(',') : value;
+  items.forEach((item) => {
+    const id = getId(item);
+    if (checkedIds.includes(id)) {
+      filteredMap.set(id, getValue(item));
+    }
+  });
 
-    setSelections((prev) => {
-      return selectedNames.map((name) => {
-        const existing = prev.find((s) => s.name === name);
-        return {
-          name,
-          count: existing?.count ?? 1,
-          alias: existing?.alias ?? ''
-        };
-      });
-    });
-  };
+  return filteredMap;
+}
 
-  const handleCountChange = (name: string, count: number) => {
-    setSelections((prev) =>
-      prev.map((s) => (s.name === name ? { ...s, count } : s))
+export default function TransferList() {
+  const idCounter = React.useRef(4);
+
+  const [checked, setChecked] = React.useState<readonly number[]>([]);
+  const [right, setRight] = React.useState<Rule[]>([]);
+  const [left, setLeft] = React.useState<Map<number, string>>(
+    new Map([
+      [0, "Bucle for"],
+      [1, "Bucle while"],
+      [2, "int"],
+      [3, "double"]
+    ])
+  );
+
+  const leftChecked = intersection(checked, [...left.entries()], ([id, ]) => id, ([, value]) => value);
+  const rightChecked = intersection(checked, right, (rule) => rule.id, (rule) => rule.type);
+
+  const handleToggle = (id: number) => () => {
+
+    //Si ese id existe, lo eliminamos de la lista "checked", si no existe, lo agregamos
+    setChecked(prev =>
+      prev.includes(id)
+        ? prev.filter(x => x !== id)
+        : [...prev, id]
     );
   };
 
-  const handleAliasChange = (name: string, alias: string) => {
-    setSelections((prev) =>
-      prev.map((s) => (s.name === name ? { ...s, alias } : s))
-    );
+  const handleCheckedRight = () => {
+
+    //TODO cuando presionamos el botón de mover a la izquierda recorremos los que se van a pasar y, con varios dialog, les añadimos nombre a cada uno, si cancela, no se pasa la variable. Usar switch-case para Int, double, etc (revisar tipos)
+    // Utilizar un for, while, for-each, un interator, etc (en una variable en concreto o donde sea).
+    // Utilizar un determinado tipo de dato numérico (int, double, float, ...?).
+    // Utilizar excepciones o una excepción en concreto (if Exception: ¿tipo y nombre?).
+
+
+    const newRight: Rule[] = [...right];
+
+    [...leftChecked.values()].forEach((value) => newRight.push({id: idCounter.current++, type: value, name: "prueba"}));
+    setRight(newRight);
   };
 
-  const selectedNames = selections.map((s) => s.name);
+
+  const handleCheckedLeft = () => {
+    setRight(not(right, rightChecked));
+
+    setChecked(prev => prev.filter(id => !rightChecked.has(id)));
+  };
+
+  const leftList = (items: Map<number,string>) => (
+    <Paper sx={{ width: 250, height: 230, overflow: 'auto' }}>
+      <List dense component="div" role="list">
+        {[...items.entries()].map(([id, value]) => {
+          const labelId = `transfer-list-item-${value}-label`;
+
+          return (
+            <ListItemButton
+              key={id}
+              role="listitem"
+              onClick={handleToggle(id)}
+              disableRipple
+            >
+              <ListItemIcon>
+                <Checkbox
+                  checked={leftChecked.has(id)}
+                  tabIndex={-1}
+                  disableRipple
+                  slotProps={{
+                    input: {
+                      'aria-labelledby': labelId,
+                    },
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText id={labelId} primary={value} />
+            </ListItemButton>
+          );
+        })}
+      </List>
+    </Paper>
+  );
+
+  const rightList = (items: Rule[]) => (
+    <Paper sx={{ width: 250, height: 230, overflow: 'auto' }}>
+      <List dense component="div" role="list">
+        {[...items].map((rule) => {
+          const labelId = `transfer-list-item-${rule.type}-${rule.name}-label`;
+          const completeName = `${rule.type} - ${rule.name}`;
+
+          return (
+            <ListItemButton
+              key={rule.id}
+              role="listitem"
+              onClick={handleToggle(rule.id)}
+              disableRipple
+            >
+              <ListItemIcon>
+                <Checkbox
+                  checked={rightChecked.has(rule.id)}
+                  tabIndex={-1}
+                  disableRipple
+                  slotProps={{
+                    input: {
+                      'aria-labelledby': labelId,
+                    },
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText id={labelId} primary={completeName} />
+            </ListItemButton>
+          );
+        })}
+      </List>
+    </Paper>
+  );
 
   return (
-    <Box sx={{ m: 2, width: 500 }}>
-      <FormControl fullWidth>
-        <InputLabel id="multi-select-label">Seleccionar nombres</InputLabel>
-        <Select
-          labelId="multi-select-label"
-          multiple
-          value={selectedNames}
-          onChange={handleChange}
-          input={<OutlinedInput label="Seleccionar nombres" />}
-          renderValue={(selected) => (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected.map((name) => {
-                const item = selections.find((s) => s.name === name);
-                return (
-                  <Chip
-                    key={name}
-                    label={`${item?.alias || name} x${item?.count ?? 1}`}
-                  />
-                );
-              })}
-            </Box>
-          )}
-          MenuProps={MenuProps}
-        >
-          {names.map((name) => (
-            <MenuItem key={name} value={name}>
-              {name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+    <Grid
+      container
+      spacing={2}
+      sx={{ height: 230, justifyContent: 'center', alignItems: 'center' }}
+    >
+      <Grid>{leftList(left)}</Grid>
+      <Grid>
+        <Grid container direction="column" sx={{ alignItems: 'center' }}>
 
-      {selections.length > 0 && (
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle1">Detalles por nombre:</Typography>
-          {selections.map((sel) => (
-            <Box
-              key={sel.name}
-              sx={{ display: 'flex', alignItems: 'center', mt: 1, gap: 2 }}
-            >
-              <Typography sx={{ width: 130 }}>{sel.name}</Typography>
-
-              <Select<number>
-                size="small"
-                value={sel.count}
-                onChange={(e) => handleCountChange(sel.name, e.target.value)}
-              >
-                {[1, 2, 3, 4, 5].map((count) => (
-                  <MenuItem key={count} value={count}>
-                    {count}
-                  </MenuItem>
-                ))}
-              </Select>
-
-              <TextField
-                size="small"
-                label="Alias"
-                value={sel.alias}
-                onChange={(e) => handleAliasChange(sel.name, e.target.value)}
-              />
-            </Box>
-          ))}
-        </Box>
-      )}
-    </Box>
+          <Button
+            sx={{ my: 0.5, py: 0.1, px: 1.5, lineHeight: 1, minWidth: 'unset', minHeight: 'unset', fontSize: '2rem'}}
+            variant="outlined"
+            size="small"
+            onClick={handleCheckedRight}
+            disabled={leftChecked.size === 0}
+            aria-label="move selected right"
+          >
+            +
+          </Button>
+          <Button
+            sx={{ my: 0.5, py: 0.1, px: 2, lineHeight: 1, minWidth: 'unset', minHeight: 'unset', fontSize: '2rem'}}
+            variant="outlined"
+            size="small"
+            onClick={handleCheckedLeft}
+            disabled={rightChecked.size === 0}
+            aria-label="move selected left"
+          >
+            -
+          </Button>
+        </Grid>
+      </Grid>
+      <Grid>{rightList(right)}</Grid>
+    </Grid>
   );
 }
