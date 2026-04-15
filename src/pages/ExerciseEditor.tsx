@@ -23,8 +23,8 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import { Add } from "@mui/icons-material";
 import { AddBatteryDialog } from "../components/Dialogs/AddBatteryDialog";
-import JSZip from "jszip";
 import { AddTagDialog } from "../components/Dialogs/AddTagDialog";
+import JSZip from "jszip";
 
 export function ExerciseEditor() {
 
@@ -91,8 +91,6 @@ export function ExerciseEditor() {
   // Functions to control the addTagDialog
   const handleTagDialogClose = (confirmed: boolean, inputValue? : string) => {
 
-    console.log(confirmed, inputValue);
-
     if (confirmed && inputValue){
       console.log("El usuario escribió: ", inputValue);
     }else{
@@ -108,8 +106,8 @@ export function ExerciseEditor() {
 
 
   /* Function that sets the accepted files variable if length is not 0 and are
-  accepted beforehand with acceptedFiles from DropzoneExerciseFiles (it checks if there is
-  1 or more files automatically).
+  accepted beforehand with acceptedFiles from DropzoneExerciseFiles (it checks
+  if there is 1 or more files automatically).
   If we needed the rejected files, we would use another variable*/
 
   const accept = async (acceptedFiles: File[]) => {
@@ -163,6 +161,8 @@ export function ExerciseEditor() {
   const location = useLocation();
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const exerciseId = decodeURI(
       location.pathname.slice(location.pathname.lastIndexOf("/") + 1)
     );
@@ -174,13 +174,15 @@ export function ExerciseEditor() {
           "http://localhost:8080/exercises/edit/" + exerciseId,
           {
             method: "GET",
-            credentials: "include"
+            credentials: "include",
+            signal: controller.signal,
           }
         );
 
         if (response.status === 403) {
           loginStatus.setIsLogged(false);
           navigate("/login");
+          return;
         } else if (!response.ok) {
           const errorExercise: ErrorSpring = await response.json();
           throw new Error("Error from backend - " + errorExercise.message);
@@ -229,10 +231,19 @@ export function ExerciseEditor() {
         setParentsIdList(parentNodeIdList);
 
       } catch (error: any) {
-        console.log("Network error");
+          if (error.name !== "AbortError") {
+            console.log("Network error");
+          }
       }
+
     };
     void fetchData();
+
+    // CLEANUP
+    return () => {
+      controller.abort();
+    };
+
   }, [location.pathname]);
 
 
@@ -261,7 +272,6 @@ export function ExerciseEditor() {
     <>
       <AddBatteryDialog open={openBatteryDialog} handleClose={handleBatteryDialogClose} />
       <AddTagDialog open={openTagDialog} handleClose={handleTagDialogClose} />
-
 
       <MyBreadcrumbs exerciseName={exerciseNameBreadcrumb} batteryName={batteryNameBreadcrumb} />
       <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 4 }}>
@@ -365,7 +375,7 @@ export function ExerciseEditor() {
                      cursor: "pointer"
                    }}>
 
-                <CustomTransferList />
+                <CustomTransferList/>
               </Box>
 
 
@@ -440,8 +450,8 @@ export function ExerciseEditor() {
 
               </Box>
               <Box
-                width={600}
-                maxWidth={600}
+                width={800}
+                maxWidth={800}
                 sx={{
                   border: "2px groove #ccc",
                   borderRadius: 2,

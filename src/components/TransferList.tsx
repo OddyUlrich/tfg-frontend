@@ -8,6 +8,8 @@ import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import { Rule } from "../Types";
+import { AddRuleDialog } from "./Dialogs/addRuleDialog";
+import { useEffect } from "react";
 
 function not(a: Rule[], b: Map<number, string>) {
   const filteredRules: Rule[] = [];
@@ -43,6 +45,17 @@ function intersection<T>(
 export default function TransferList() {
   const idCounter = React.useRef(4);
 
+  //Dialog
+  const [OpenRuleDialog, setOpenRuleDialog] = React.useState(false);
+
+  //Dialog's variables
+  const [varRuleType, setVarRuleTypeDialog] = React.useState("");
+  const [varTemporalName, setVarTemporalName] = React.useState("");
+
+  const [pendingRules, setPendingRules] = React.useState<string[]>([]);
+  const [currentRule, setCurrentRule] = React.useState<string | null>(null);
+
+  //Variables
   const [checked, setChecked] = React.useState<readonly number[]>([]);
   const [right, setRight] = React.useState<Rule[]>([]);
   const [left, setLeft] = React.useState<Map<number, string>>(
@@ -57,6 +70,42 @@ export default function TransferList() {
   const leftChecked = intersection(checked, [...left.entries()], ([id, ]) => id, ([, value]) => value);
   const rightChecked = intersection(checked, right, (rule) => rule.id, (rule) => rule.type);
 
+
+  //We open a dialog to process the addition of a new rule for each time "currentRule" changes
+  useEffect(() => {
+    if (currentRule) {
+      handleRuleDialogOpen(currentRule);
+    }
+  }, [currentRule]);
+
+
+  // Functions to control the addTagDialog
+  const handleRuleDialogClose = (confirmed: boolean, inputValue? : string) => {
+
+    if (confirmed && inputValue && currentRule) {
+      setRight(prev => [
+        ...prev,
+        {
+          id: idCounter.current++,
+          type: currentRule,
+          name: inputValue
+        }
+      ]);
+    }
+
+    const next = pendingRules.slice(1);
+
+    //currentRule changes and we eliminate the processed rule from the <strong>{varType}</strong>Pending List
+    setPendingRules(next);
+    setCurrentRule(next[0] ?? null);
+    setOpenRuleDialog(false);
+  };
+
+  const handleRuleDialogOpen = (varType: string) => {
+    setOpenRuleDialog(true);
+    setVarRuleTypeDialog(varType)
+  };
+
   const handleToggle = (id: number) => () => {
 
     //Si ese id existe, lo eliminamos de la lista "checked", si no existe, lo agregamos
@@ -69,16 +118,17 @@ export default function TransferList() {
 
   const handleCheckedRight = () => {
 
-    //TODO cuando presionamos el botón de mover a la izquierda recorremos los que se van a pasar y, con varios dialog, les añadimos nombre a cada uno, si cancela, no se pasa la variable. Usar switch-case para Int, double, etc (revisar tipos)
+
+    //TODO añadir los tipos faltantes:
     // Utilizar un for, while, for-each, un interator, etc (en una variable en concreto o donde sea).
     // Utilizar un determinado tipo de dato numérico (int, double, float, ...?).
     // Utilizar excepciones o una excepción en concreto (if Exception: ¿tipo y nombre?).
 
 
-    const newRight: Rule[] = [...right];
+    const values = [...leftChecked.values()];
+    setPendingRules(values);
+    setCurrentRule(values[0] ?? null);
 
-    [...leftChecked.values()].forEach((value) => newRight.push({id: idCounter.current++, type: value, name: "prueba"}));
-    setRight(newRight);
   };
 
 
@@ -156,38 +206,41 @@ export default function TransferList() {
   );
 
   return (
-    <Grid
-      container
-      spacing={2}
-      sx={{ height: 230, justifyContent: 'center', alignItems: 'center' }}
-    >
-      <Grid>{leftList(left)}</Grid>
-      <Grid>
-        <Grid container direction="column" sx={{ alignItems: 'center' }}>
 
-          <Button
-            sx={{ my: 0.5, py: 0.1, px: 1.5, lineHeight: 1, minWidth: 'unset', minHeight: 'unset', fontSize: '2rem'}}
-            variant="outlined"
-            size="small"
-            onClick={handleCheckedRight}
-            disabled={leftChecked.size === 0}
-            aria-label="move selected right"
-          >
-            +
-          </Button>
-          <Button
-            sx={{ my: 0.5, py: 0.1, px: 2, lineHeight: 1, minWidth: 'unset', minHeight: 'unset', fontSize: '2rem'}}
-            variant="outlined"
-            size="small"
-            onClick={handleCheckedLeft}
-            disabled={rightChecked.size === 0}
-            aria-label="move selected left"
-          >
-            -
-          </Button>
+    <>
+      <AddRuleDialog open={OpenRuleDialog} handleClose={handleRuleDialogClose} varType={varRuleType}/><Grid
+          container
+          spacing={2}
+          sx={{ height: 230, justifyContent: 'center', alignItems: 'center' }}
+      >
+      <Grid>{leftList(left)}</Grid>
+        <Grid>
+            <Grid container direction="column" sx={{ alignItems: 'center' }}>
+
+                <Button
+                    sx={{ my: 0.5, py: 0.1, px: 1.5, lineHeight: 1, minWidth: 'unset', minHeight: 'unset', fontSize: '2rem' }}
+                    variant="outlined"
+                    size="small"
+                    onClick={handleCheckedRight}
+                    disabled={leftChecked.size === 0}
+                    aria-label="move selected right"
+                >
+                    +
+                </Button>
+                <Button
+                    sx={{ my: 0.5, py: 0.1, px: 2, lineHeight: 1, minWidth: 'unset', minHeight: 'unset', fontSize: '2rem' }}
+                    variant="outlined"
+                    size="small"
+                    onClick={handleCheckedLeft}
+                    disabled={rightChecked.size === 0}
+                    aria-label="move selected left"
+                >
+                    -
+                </Button>
+            </Grid>
         </Grid>
+        <Grid>{rightList(right)}</Grid>
       </Grid>
-      <Grid>{rightList(right)}</Grid>
-    </Grid>
+    </>
   );
 }

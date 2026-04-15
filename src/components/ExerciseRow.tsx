@@ -19,8 +19,6 @@ export function ExerciseRow(props: ExerciseRowProps) {
 
   if (DateTime.now().diff(props.exercise.creationTimestamp, 'days').days < 7) {
     content = <NewReleases sx={{ verticalAlign: 'middle' }} color={"primary"}/>
-  }else{
-    content = null;
   }
 
   return (
