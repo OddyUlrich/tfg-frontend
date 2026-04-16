@@ -49,11 +49,14 @@ export type Exercise = {
   creationTimestamp: DateTime;
 };
 
+export type EditorCommonExerciseData = {
+  batteries: BatteryExercise[];
+  tags: Tag[];
+};
+
 export type EditorExerciseData = {
   exercise: EditorExercise;
   files: ExerciseFile[];
-  batteries: BatteryExercise[];
-  tags: Tag[];
 };
 
 export type CodeEditorData = {

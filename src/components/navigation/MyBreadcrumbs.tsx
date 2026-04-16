@@ -4,9 +4,10 @@ import { Box, Breadcrumbs, Typography } from "@mui/material";
 import { Home } from "@mui/icons-material";
 import { Link } from "./Link";
 
-const breadcrumbNameMap: { [key: string]: string } = {
-  "/about": "About",
-  "/exercises": "",
+const breadcrumbNameMap: { [key: string]: { label: string, to?: string };} = {
+  exercises: { label: "Exercises", to: "/"},
+  new: { label: "New", to: "/"},
+  about: { label: "About", to: "/about" },
 };
 
 interface MyBreadcrumbsProps {
@@ -17,7 +18,7 @@ interface MyBreadcrumbsProps {
 export function MyBreadcrumbs(props: MyBreadcrumbsProps) {
   let content: JSX.Element[];
   const location = useLocation();
-  const pathnames = location.pathname.split("/").filter((x) => x);
+  const pathnames = location.pathname.split("/").filter((x) => x && x !== "exercises");
 
   if (props.exerciseName && props.batteryName) {
     const batterySection = props.batteryName.split(" ").join("-");
@@ -37,21 +38,26 @@ export function MyBreadcrumbs(props: MyBreadcrumbsProps) {
         {props.exerciseName}
       </Typography>,
     ];
-  } else {
+
+  } else if (!props.batteryName && !props.exerciseName && pathnames.length > 0) {
     content = pathnames.map((value, index) => {
       const last = index === pathnames.length - 1;
-      const to = `/${pathnames.slice(0, index + 1).join("/")}`;
+      const to = breadcrumbNameMap[value]?.to ?? `/${pathnames.slice(0, index + 1).join("/")}`;
+      const label = breadcrumbNameMap[value]?.label ?? value;
 
       return last ? (
         <Typography color="text.primary" key={to}>
-          {breadcrumbNameMap[to]}
+          {label}
         </Typography>
       ) : (
         <Link underline="hover" color="inherit" to={to} key={to}>
-          {breadcrumbNameMap[to]}
+          {label}
         </Link>
       );
     });
+
+  }else{
+    return null;
   }
 
   return (

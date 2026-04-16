@@ -12,11 +12,12 @@ import {
 import { ExerciseTable } from "../components/ExerciseTable";
 import { ErrorSpring, Exercise, LoginTypes } from "../Types";
 import { enqueueSnackbar } from "notistack";
-import { Refresh } from "@mui/icons-material";
+import { Add, Forum, Refresh } from "@mui/icons-material";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import { LoginContext } from "../Utils";
 import { useNavigate } from "react-router-dom";
 import { DateTime } from "luxon";
+import { Link } from "../components/navigation/Link";
 
 export function StudentHome() {
   const [isLoading, setIsLoading] = useState(true);
@@ -172,11 +173,31 @@ export function StudentHome() {
   } else {
     content = (
       <Stack sx={{ width: "75%" }}>
-        <Box justifyContent="left" display="flex">
-          <IconButton color="primary" onClick={refresh}>
-            <Refresh />
-            <Typography marginLeft="6px"> Reload</Typography>
-          </IconButton>
+        <Box display="flex">
+          <Box justifyContent="left" display="flex" sx={{ flexGrow: 1 }}>
+            <IconButton color="primary" onClick={refresh}>
+              <Refresh />
+              <Typography marginLeft="6px"> Reload</Typography>
+            </IconButton>
+          </Box>
+          <Box sx={{marginBottom: 1}} justifyContent="right" display="flex">
+            <IconButton
+              component={Link}
+              to="/exercises/new"
+              color="primary"
+              size="small"
+              sx={{
+                border: "1px solid",
+                borderColor: "primary.main",
+                borderRadius: "8px",
+                padding: "6px 12px",
+              }}
+            >
+              <Typography variant="button" color="primary">
+                New Exercise
+              </Typography>
+            </IconButton>
+          </Box>
         </Box>
         <Card sx={{ padding: "1%" }}>
           <CardContent>

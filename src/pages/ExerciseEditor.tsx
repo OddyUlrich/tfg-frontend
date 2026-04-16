@@ -1,8 +1,8 @@
 import { createTree, FileTree } from "../components/FileTree";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {useContext, useEffect, useState } from "react";
 import { Box, Chip, IconButton, List, ListItem } from "@mui/material";
 import {
-  BatteryExercise,
+  BatteryExercise, EditorCommonExerciseData,
   EditorExerciseData,
   ErrorSpring,
   ExerciseFile,
@@ -11,7 +11,7 @@ import {
   Tag
 } from "../Types";
 import { freeTree, TreeStructure } from "../TreeStructure";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { LoginContext } from "../Utils";
@@ -40,7 +40,6 @@ export function ExerciseEditor() {
   const [batteryNameBreadcrumb, setBatteryNameBreadcrumb] = useState<string>();
 
   //Exercise data
-  const [exerciseId, setExerciseId] = useState<string>();
   const [exerciseName, setExerciseName] = useState<string>();
   const [batteryId, setBatteryId] = useState<string>();
   const [batteryName, setBatteryName] = useState<string>();
@@ -112,7 +111,6 @@ export function ExerciseEditor() {
 
   const accept = async (acceptedFiles: File[]) => {
 
-    //TODO atento a que cuando se suban los archivos si es nulo entonces es que el usuario no ha subido archivos, ¿avisarle con un dialog?
     if (acceptedFiles.length === 0) {
       setUploadedFile(null);
     } else {
@@ -140,7 +138,6 @@ export function ExerciseEditor() {
         }
       }
 
-
       //If there was a tree previously we clean it
       freeTree(rootNode);
 
@@ -156,21 +153,54 @@ export function ExerciseEditor() {
   };
 
 
-  //Use effect to get the exercise data when editing an exercise
-
   const location = useLocation();
 
+  /*We extract the parameter of this route to check if we must fetch an spicific
+   exercise data for edit mode or only the data needed for creation */
+  const {exerciseId} = useParams();
+
+  //Use effect to get the exercise data when creating/editing an exercise
   useEffect(() => {
     const controller = new AbortController();
 
-    const exerciseId = decodeURI(
-      location.pathname.slice(location.pathname.lastIndexOf("/") + 1)
-    );
-
-    const fetchData = async () => {
+    const fetchCommonData = async () => {
       try {
 
-        const response = await fetch(
+        const responseCommonData = await fetch(
+          "http://localhost:8080/exercises/commonData",
+          {
+            method: "GET",
+            credentials: "include",
+            signal: controller.signal,
+          }
+        );
+
+        if (responseCommonData.status === 403) {
+          loginStatus.setIsLogged(false);
+          navigate("/login");
+          return;
+        } else if ( !responseCommonData.ok) {
+          const errorExercise: ErrorSpring = await responseCommonData.json();
+          throw new Error("Error from common exercise data on backend - " + errorExercise.message);
+        }
+
+        const commonData: EditorCommonExerciseData = await responseCommonData.json();
+
+        //Common data for all exercises, the list of all batteries and tags
+        setAllExerciseBatteries(commonData.batteries);
+        setAllTags(commonData.tags);
+
+        } catch (error: any) {
+          if (error.name !== "AbortError") {
+            console.log("Network error");
+          }
+        }
+      }
+
+    const fetchExerciseData = async () => {
+      try {
+
+        const responseExerciseData = await fetch(
           "http://localhost:8080/exercises/edit/" + exerciseId,
           {
             method: "GET",
@@ -179,35 +209,31 @@ export function ExerciseEditor() {
           }
         );
 
-        if (response.status === 403) {
+        if (responseExerciseData.status === 403) {
           loginStatus.setIsLogged(false);
           navigate("/login");
           return;
-        } else if (!response.ok) {
-          const errorExercise: ErrorSpring = await response.json();
-          throw new Error("Error from backend - " + errorExercise.message);
+        } else if ( !responseExerciseData.ok) {
+          const errorExercise: ErrorSpring = await responseExerciseData.json();
+          throw new Error("Error from exercise data on backend - " + errorExercise.message);
         }
 
-        const data: EditorExerciseData = await response.json();
+        const exerciseData: EditorExerciseData = await responseExerciseData.json();
 
         //If we are editing we see the data and set it
-        setExerciseId(exerciseId);
-        setExerciseName(data.exercise.name);
-        setBatteryId(data.exercise.idFromBattery);
-        setBatteryName(data.exercise.nameFromBattery);
-        setStatement(data.exercise.statement);
-        setRules(data.exercise.rules);
-        setTags(data.exercise.tags);
-        setSuccessCondition(data.exercise.successCondition);
+        setExerciseName(exerciseData.exercise.name);
+        setBatteryId(exerciseData.exercise.idFromBattery);
+        setBatteryName(exerciseData.exercise.nameFromBattery);
+        setStatement(exerciseData.exercise.statement);
+        setRules(exerciseData.exercise.rules);
+        setTags(exerciseData.exercise.tags);
+        setSuccessCondition(exerciseData.exercise.successCondition);
 
         //Setting breadcrumb data
-        setExerciseNameBreadcrumb(data.exercise.name);
-        setBatteryNameBreadcrumb(data.exercise.nameFromBattery);
+        setExerciseNameBreadcrumb(exerciseData.exercise.name);
+        setBatteryNameBreadcrumb(exerciseData.exercise.nameFromBattery);
 
-        setAllExerciseBatteries(data.batteries);
-        setAllTags(data.tags);
-
-        const newTemplateFiles = data.files;
+        const newTemplateFiles = exerciseData.files;
         setTemplateFiles(newTemplateFiles);
 
         const root: MyTreeNode | null = {
@@ -237,7 +263,12 @@ export function ExerciseEditor() {
       }
 
     };
-    void fetchData();
+
+    void fetchCommonData();
+
+    if (exerciseId){
+      void fetchExerciseData();
+    }
 
     // CLEANUP
     return () => {
@@ -273,7 +304,11 @@ export function ExerciseEditor() {
       <AddBatteryDialog open={openBatteryDialog} handleClose={handleBatteryDialogClose} />
       <AddTagDialog open={openTagDialog} handleClose={handleTagDialogClose} />
 
-      <MyBreadcrumbs exerciseName={exerciseNameBreadcrumb} batteryName={batteryNameBreadcrumb} />
+      <MyBreadcrumbs
+        exerciseName={exerciseNameBreadcrumb}
+        batteryName={batteryNameBreadcrumb}
+      />
+
       <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 4 }}>
         <Container component="main" maxWidth="sm">
           <TextField
