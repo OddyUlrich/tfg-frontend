@@ -1,13 +1,13 @@
 import { Box, Chip, IconButton, TableCell, TableRow } from "@mui/material";
 import { Star, StarBorder, NewReleases, ModeEdit } from "@mui/icons-material";
 import React from "react";
-import { Exercise, Tag } from "../Types";
+import { ExerciseHome, Tag } from "../Types";
 import { yellow } from "@mui/material/colors";
 import { Link } from "./navigation/Link";
 import { DateTime } from "luxon";
 
 type ExerciseRowProps = {
-  exercise: Exercise;
+  exercise: ExerciseHome;
   onFav: () => void;
 };
 

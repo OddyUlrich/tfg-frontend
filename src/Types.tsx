@@ -38,7 +38,7 @@ export interface MyTreeNode {
   children: MyTreeNode[];
 }
 
-export type Exercise = {
+export type ExerciseHome = {
   id: string;
   name: string;
   tags: Tag[];

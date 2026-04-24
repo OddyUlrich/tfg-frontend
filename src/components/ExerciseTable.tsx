@@ -16,16 +16,16 @@ import {
   RadioButtonUnchecked,
 } from "@mui/icons-material";
 import { ExerciseRow } from "./ExerciseRow";
-import { Exercise } from "../Types";
+import { ExerciseHome } from "../Types";
 import { DateTime } from "luxon";
 
 type ExerciseListProps = {
   batteryName: string;
-  exercises: Exercise[];
-  onFavRow: (exercise: Exercise, index: number) => void;
+  exercises: ExerciseHome[];
+  onFavRow: (exercise: ExerciseHome, index: number) => void;
 };
 
-function compareCreationDate(a: Exercise, b: Exercise) {
+function compareCreationDate(a: ExerciseHome, b: ExerciseHome) {
 
   const tiempo = a.creationTimestamp.diff(b.creationTimestamp, 'milliseconds');
 
@@ -39,7 +39,7 @@ function compareCreationDate(a: Exercise, b: Exercise) {
   return 0
 }
 
-function normalCompare(a: Exercise, b: Exercise) {
+function normalCompare(a: ExerciseHome, b: ExerciseHome) {
 
   const now = DateTime.now();
 
@@ -54,7 +54,7 @@ function normalCompare(a: Exercise, b: Exercise) {
   return a.name.localeCompare(b.name);
 }
 
-function compareExerciseByFavorite(a: Exercise, b: Exercise) {
+function compareExerciseByFavorite(a: ExerciseHome, b: ExerciseHome) {
 
   const now = DateTime.now();
 
@@ -75,7 +75,7 @@ function compareExerciseByFavorite(a: Exercise, b: Exercise) {
   return a.name.localeCompare(b.name);
 }
 
-function sortData(data: Exercise[], orderByFav: boolean) {
+function sortData(data: ExerciseHome[], orderByFav: boolean) {
   if (orderByFav) {
     return data.sort((a, b) => compareExerciseByFavorite(a, b));
   } else {
@@ -128,7 +128,7 @@ export function ExerciseTable(props: ExerciseListProps) {
         <TableContainer component={Paper}>
           <Table aria-label="exercises">
             <TableBody>
-              {sortedData.map((row: Exercise, index) => (
+              {sortedData.map((row: ExerciseHome, index) => (
                 <ExerciseRow
                   key={row.name}
                   exercise={row}

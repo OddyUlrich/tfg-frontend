@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ExerciseTable } from "../components/ExerciseTable";
-import { ErrorSpring, Exercise, LoginTypes } from "../Types";
+import { ErrorSpring, ExerciseHome, LoginTypes } from "../Types";
 import { enqueueSnackbar } from "notistack";
 import { Add, Forum, Refresh } from "@mui/icons-material";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
@@ -22,7 +22,7 @@ import { Link } from "../components/navigation/Link";
 export function StudentHome() {
   const [isLoading, setIsLoading] = useState(true);
   const [globalError, setGlobalError] = useState<string | null>(null);
-  const [data, setData] = useState<Map<string, Exercise[]>>(new Map());
+  const [data, setData] = useState<Map<string, ExerciseHome[]>>(new Map());
 
   const loginStatus: LoginTypes = useContext(LoginContext);
   const navigate = useNavigate();
@@ -56,9 +56,9 @@ export function StudentHome() {
             }
           }
 
-          const exercises: Exercise[] = await response.json();
+          const exercises: ExerciseHome[] = await response.json();
 
-          const batteries = new Map<string, Exercise[]>(
+          const batteries = new Map<string, ExerciseHome[]>(
             exercises.map((exercise) => [exercise.batteryName, []])
           );
 
@@ -86,7 +86,7 @@ export function StudentHome() {
     }
   }, [isLoading, loginStatus, navigate]);
 
-  const handleFavRow = (exercise: Exercise, index: number) => {
+  const handleFavRow = (exercise: ExerciseHome, index: number) => {
     const updateFavorite = async () => {
       try {
         const response = await fetch(

@@ -1,6 +1,6 @@
 import { createTree, FileTree } from "../components/FileTree";
 import React, {useContext, useEffect, useState } from "react";
-import { Box, Chip, IconButton, List, ListItem } from "@mui/material";
+import { Box, IconButton, List, ListItem, Tooltip } from "@mui/material";
 import {
   BatteryExercise, EditorCommonExerciseData,
   EditorExerciseData,
@@ -11,7 +11,7 @@ import {
   Tag
 } from "../Types";
 import { freeTree, TreeStructure } from "../TreeStructure";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { LoginContext } from "../Utils";
@@ -21,7 +21,7 @@ import CustomTransferList from "../components/TransferList";
 import { DropzoneExerciseFiles } from "../components/DropzoneExerciseFiles";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import { Add } from "@mui/icons-material";
+import { Add, Info } from "@mui/icons-material";
 import { AddBatteryDialog } from "../components/Dialogs/AddBatteryDialog";
 import { AddTagDialog } from "../components/Dialogs/AddTagDialog";
 import JSZip from "jszip";
@@ -47,7 +47,13 @@ export function ExerciseEditor() {
   const [rules, setRules] = useState<string[]>();
   const [tags, setTags] = useState<Tag[]>();
   const [successCondition, setSuccessCondition] = useState<string>();
+
   const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>();
+
+  /*We extract the parameter of this route to check if we must fetch an specific
+  exercise data for edit mode or only the data needed for creation */
+  const { exerciseId } = useParams<{exerciseId: string}>();
+  const isEdit = !!exerciseId;
 
   //All tags and batteries for selection
   const [allTags, setAllTags] = useState<Tag[]>();
@@ -56,9 +62,7 @@ export function ExerciseEditor() {
   const [showStatementError, setShowStatementError] = React.useState(false);
   const [statementMessage, setStatementMessage] = React.useState("");
 
-  const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
-
-    //Variables for treefile management
+  //Variables for treefile management
   const [parentsIdList, setParentsIdList] = useState<string[]>([]);
   const [fileTree, setFileTree] = useState<TreeStructure>();
   const [rootNode, setRootNode] = useState<MyTreeNode>({
@@ -68,6 +72,7 @@ export function ExerciseEditor() {
     children: []
   });
 
+  const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
 
   // Functions to control the addBatteryDialog
   const handleBatteryDialogClose = (confirmed: boolean, inputValue? : string) => {
@@ -86,6 +91,7 @@ export function ExerciseEditor() {
   const handleBatteryDialogOpen = () => {
     setOpenBatteryDialog(true);
   };
+  // Ending of functions to control the addBateryDialog
 
   // Functions to control the addTagDialog
   const handleTagDialogClose = (confirmed: boolean, inputValue? : string) => {
@@ -102,7 +108,7 @@ export function ExerciseEditor() {
   const handleTagDialogOpen = () => {
     setOpenTagDialog(true);
   };
-
+  // Ending of functions to control the addTagDialog
 
   /* Function that sets the accepted files variable if length is not 0 and are
   accepted beforehand with acceptedFiles from DropzoneExerciseFiles (it checks
@@ -152,22 +158,16 @@ export function ExerciseEditor() {
     }
   };
 
-
-  const location = useLocation();
-
-  /*We extract the parameter of this route to check if we must fetch an spicific
-   exercise data for edit mode or only the data needed for creation */
-  const {exerciseId} = useParams();
-
   //Use effect to get the exercise data when creating/editing an exercise
   useEffect(() => {
+
     const controller = new AbortController();
 
-    const fetchCommonData = async () => {
+    const fetchBatteriesAndTags = async () => {
       try {
 
-        const responseCommonData = await fetch(
-          "http://localhost:8080/exercises/commonData",
+        const responseTags = await fetch(
+          "http://localhost:8080/tags",
           {
             method: "GET",
             credentials: "include",
@@ -175,24 +175,39 @@ export function ExerciseEditor() {
           }
         );
 
-        if (responseCommonData.status === 403) {
+        const responseBatteries = await fetch(
+          "http://localhost:8080/exerciseBatteries",
+          {
+            method: "GET",
+            credentials: "include",
+            signal: controller.signal,
+          }
+        );
+
+        if (responseTags.status === 403 || responseBatteries.status === 403) {
           loginStatus.setIsLogged(false);
           navigate("/login");
           return;
-        } else if ( !responseCommonData.ok) {
-          const errorExercise: ErrorSpring = await responseCommonData.json();
-          throw new Error("Error from common exercise data on backend - " + errorExercise.message);
+
+        } else if (!responseTags.ok) {
+          const errorExercise: ErrorSpring = await responseTags.json();
+          throw new Error("Error from tags data on backend - Error " + errorExercise.status + ": " + errorExercise.message);
+
+        }else if (!responseBatteries.ok){
+          const errorExercise: ErrorSpring = await responseBatteries.json();
+          throw new Error("Error from exercise batteries  data on backend - Error " + errorExercise.status + ": " + errorExercise.message);
         }
 
-        const commonData: EditorCommonExerciseData = await responseCommonData.json();
-
         //Common data for all exercises, the list of all batteries and tags
-        setAllExerciseBatteries(commonData.batteries);
-        setAllTags(commonData.tags);
+        const batteries = await responseBatteries.json();
+        setAllExerciseBatteries(batteries);
+
+        const tags = await responseTags.json();
+        setAllTags(tags);
 
         } catch (error: any) {
           if (error.name !== "AbortError") {
-            console.log("Network error");
+            console.log("Network error: " + error.message);
           }
         }
       }
@@ -201,7 +216,7 @@ export function ExerciseEditor() {
       try {
 
         const responseExerciseData = await fetch(
-          "http://localhost:8080/exercises/edit/" + exerciseId,
+          "http://localhost:8080/exercises/" + exerciseId,
           {
             method: "GET",
             credentials: "include",
@@ -215,7 +230,7 @@ export function ExerciseEditor() {
           return;
         } else if ( !responseExerciseData.ok) {
           const errorExercise: ErrorSpring = await responseExerciseData.json();
-          throw new Error("Error from exercise data on backend - " + errorExercise.message);
+          throw new Error("Error from exercise data on backend - Error " + errorExercise.status + ": " + errorExercise.message);
         }
 
         const exerciseData: EditorExerciseData = await responseExerciseData.json();
@@ -258,15 +273,15 @@ export function ExerciseEditor() {
 
       } catch (error: any) {
           if (error.name !== "AbortError") {
-            console.log("Network error");
+            console.log("Network error: " + error.message);
           }
       }
 
     };
 
-    void fetchCommonData();
+    void fetchBatteriesAndTags();
 
-    if (exerciseId){
+    if (isEdit){
       void fetchExerciseData();
     }
 
@@ -275,7 +290,7 @@ export function ExerciseEditor() {
       controller.abort();
     };
 
-  }, [location.pathname]);
+  }, []);
 
 
   //HANDLERS
@@ -295,8 +310,46 @@ export function ExerciseEditor() {
     }
   };
 
-  const handleSubmitFile = () => {
-    //No se
+  const handleSubmit = () => {
+    const controller = new AbortController();
+
+    const method = isEdit ? "PATCH" : "POST"
+
+    /*if (isEdit){
+      PATCH - edit.fetch
+    }else{
+      POST - new.fetch
+    }*/
+
+    try {
+
+      /*if (exerciseId){}
+      const responseExerciseData = await fetch(
+        "http://localhost:8080/exercises/edit/" + exerciseId,
+        {
+          method: "GET",
+          credentials: "include",
+          signal: controller.signal,
+        }
+      );
+
+      const exerciseData: EditorExerciseData = await responseExerciseData.json();
+
+      //If we are editing we see the data and set it
+      setExerciseName(exerciseData.exercise.name);
+      setBatteryId(exerciseData.exercise.idFromBattery);
+      setBatteryName(exerciseData.exercise.nameFromBattery);
+      setStatement(exerciseData.exercise.statement);
+      setRules(exerciseData.exercise.rules);
+      setTags(exerciseData.exercise.tags);
+      setSuccessCondition(exerciseData.exercise.successCondition);*/
+
+
+    } catch (error: any) {
+      if (error.name !== "AbortError") {
+        console.log("Network error: " + error.message);
+      }
+    }
   };
 
   return (
@@ -309,8 +362,9 @@ export function ExerciseEditor() {
         batteryName={batteryNameBreadcrumb}
       />
 
-      <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 4 }}>
-        <Container component="main" maxWidth="sm">
+      <form onSubmit={handleSubmit}>
+      <Container component="main" sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 4 }}>
+        <Container maxWidth="sm" >
           <TextField
             sx={{ marginTop: 1 }}
             margin="normal"
@@ -340,6 +394,7 @@ export function ExerciseEditor() {
             id="Statement"
             label="Enunciado del ejercicio"
             name="Statement"
+            rows={6}
             autoComplete="Statement"
             value={statement}
             onChange={(e => {setStatement(e.target.value)})}
@@ -349,11 +404,30 @@ export function ExerciseEditor() {
           />
         </Container>
 
-        <Container component="main" maxWidth="lg">
+        {/*TODO No puede haber este component main y otro más arriba*/}
+        <Container maxWidth="lg">
           <Box sx={{ display: "flex", gap: 8 , marginTop: 2 }}>
             <Box>
-              <Typography sx={{ marginTop: 4, marginBottom: 1 }} variant="h6">
-                Archivos
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 4, marginBottom: 0 }}>
+                <Typography variant="h6">
+                  Archivos
+                </Typography>
+                <Tooltip title="Debes subir un .zip con los archivos del ejercicio ya con la estructura deseada"
+                slotProps={{
+                  tooltip: {
+                    sx: {
+                      fontSize: "1rem",
+                      maxWidth: 400
+                    }
+                  }
+                }}>
+                  <IconButton size="small">
+                    <Info color="action" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+
               </Typography>
 
               <Box
@@ -393,13 +467,62 @@ export function ExerciseEditor() {
                 */}
 
               </Box>
+
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 4, marginBottom: 0 }}>
+                <Typography variant="h6">
+                  Condición de éxito
+                </Typography>
+                <Tooltip title="Aquello que quieras que el alumno saque por consola al finalizar el programa. Escribe el texto exacto, por favor."
+                slotProps={{
+                  tooltip: {
+                    sx: {
+                      fontSize: "1rem",
+                      maxWidth: 500
+                    }
+                  }
+                }}>
+                  <IconButton size="small">
+                    <Info color="action" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+
+              <TextField
+                margin="normal"
+                variant={"outlined"}
+                required
+                fullWidth
+                multiline={true}
+                id="successCondition"
+                name="successCondition"
+                rows={4}
+                onChange={(e => {setSuccessCondition(e.target.value)})}
+                placeholder={"Ejemplo:\n> El sumatorio de floats es 27.5"}
+                sx={{ whiteSpace: "pre-line" }}
+              />
+
             </Box>
 
-
             <Box>
-              <Typography sx={{ marginTop: 4, marginBottom: 1 }} variant="h6">
-                Reglas
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 4, marginBottom: 0 }}>
+                <Typography variant="h6">
+                  Reglas
+                </Typography>
+                <Tooltip title="Aquellas clases, variables y funciones que quieres que aparezcan en el código del alumno"
+                slotProps={{
+                  tooltip: {
+                     sx: {
+                       fontSize: "1rem",
+                       maxWidth: 400
+                     }
+                   }
+                  }}>
+                    <IconButton size="small">
+                      <Info color="action" />
+                    </IconButton>
+                </Tooltip>
+              </Box>
 
               <Box width={700}
                    sx={{
@@ -409,32 +532,50 @@ export function ExerciseEditor() {
                      color: "#888",
                      cursor: "pointer"
                    }}>
-
                 <CustomTransferList/>
               </Box>
 
-
               <Box
-                width={700}
                 maxWidth={700}
-                sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 10, justifyContent: "space-between" }}>
-                <Typography variant="h6">
-                  Batería de Ejercicios
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                sx={{
+                  position: "relative",
+                  marginTop: 10
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 4, marginBottom: 0 }}>
                   <Typography variant="h6">
-                    {"Selected:"}
+                    Batería de Ejercicios
                   </Typography>
-                  <Chip key={batteryName} label={batteryName} />
+                  <Tooltip title="Los ejercicios de la página principal se agruparán en estas categorías"
+                  slotProps={{
+                    tooltip: {
+                      sx: {
+                        fontSize: "1rem",
+                        maxWidth: 300
+                      }
+                    }
+                  }}>
+                    <IconButton size="small">
+                      <Info color="action" />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
-                <IconButton color="primary" onClick={handleBatteryDialogOpen}>
+
+                <IconButton
+                  color="primary"
+                  onClick={handleBatteryDialogOpen}
+                  sx={{
+                    position: "absolute",
+                    right: 0,
+                    bottom: 0
+                  }}
+                >
                   <Add />
                 </IconButton>
-
               </Box>
+
               <Box
-                width={750}
-                maxWidth={750}
+                maxWidth={700}
                 sx={{
                   border: "2px groove #ccc",
                   borderRadius: 2,
@@ -465,28 +606,47 @@ export function ExerciseEditor() {
               </Box>
 
               <Box
-                width={600}
-                maxWidth={600}
-                sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 10, justifyContent: "space-between" }}>
-                <Typography variant="h6">
-                  Tags
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                maxWidth={700}
+                sx={{
+                  position: "relative",
+                  marginTop: 10
+                }}
+              >
+
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 4, marginBottom: 0 }}>
                   <Typography variant="h6">
-                    {"Selected: "}
+                    Tags
                   </Typography>
-                  {Array.from(tags ?? []).map((tag) => (
-                    <Chip key={tag.name} label={tag.name}/>
-                  ))}
+                  <Tooltip title="Estas etiquetas señalan qué tareas se requieren hacer en el ejercicio"
+                   slotProps={{
+                    tooltip: {
+                      sx: {
+                        fontSize: "1rem",
+                        maxWidth: 300
+                      }
+                    }
+                  }}>
+                    <IconButton size="small">
+                      <Info color="action" />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
-                <IconButton color="primary" onClick={handleTagDialogOpen}>
+
+                <IconButton
+                  color="primary"
+                  onClick={handleTagDialogOpen}
+                  sx={{
+                    position: "absolute",
+                    right: 0,
+                    bottom: 0
+                  }}
+                >
                   <Add />
                 </IconButton>
-
               </Box>
+
               <Box
-                width={800}
-                maxWidth={800}
+                maxWidth={700}
                 sx={{
                   border: "2px groove #ccc",
                   borderRadius: 2,
@@ -522,13 +682,8 @@ export function ExerciseEditor() {
           </Box>
         </Container>
 
-
-        <Container component="main" maxWidth="sm">
-
-
-        </Container>
-
-      </Box>
+      </Container>
+      </form>
     </>
   );
 }

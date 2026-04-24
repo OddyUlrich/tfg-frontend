@@ -11,7 +11,7 @@ import {
   LoginTypes,
   MyTreeNode
 } from "../Types";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Allotment } from "allotment";
 import { createTree, FileTree } from "../components/FileTree";
 import { Box, CircularProgress, Switch } from "@mui/material";
@@ -37,7 +37,6 @@ export function CodeEditorPage() {
   const loginStatus: LoginTypes = useContext(LoginContext);
   const navigate = useNavigate();
   const [exerciseName, setExerciseName] = useState<string>();
-  const [exerciseId, setExerciseId] = useState<string>();
   const [currentSolutionId, setCurrentSolutionId] = useState<string | null>(
     null
   );
@@ -56,13 +55,20 @@ export function CodeEditorPage() {
     file: null,
     children: []
   });
+
+  //Code editor variables
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const restrictions: RangeRestrictionObject[] = [];
 
+  //Route params
+  const { exerciseId } = useParams<{exerciseId: string}>();
+
+  //Separations
   const handleAllotmentChange = (sizes: number[]) => {
     sizes[2] < 325 ? setIsButtonSmall(true) : setIsButtonSmall(false);
   };
 
+  //Dialog handlers
   const handleDialogClose = () => {
     setOpenSaveDialog(false);
   };
@@ -73,14 +79,11 @@ export function CodeEditorPage() {
 
   //Fetching files for the editor to show and setting up states and file tree
   useEffect(() => {
-    const exerciseId = decodeURI(
-      location.pathname.slice(location.pathname.lastIndexOf("/") + 1)
-    );
 
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/exercises/" + exerciseId,
+          `http://localhost:8080/exercises/${exerciseId}/solutions`,
           {
             method: "GET",
             credentials: "include"
@@ -93,7 +96,6 @@ export function CodeEditorPage() {
         }
 
         const data: CodeEditorData = await response.json();
-        setExerciseId(exerciseId);
         setExerciseName(data.exercise.name);
         setBatteryName(data.exercise.nameFromBattery);
         setTemplateFiles(data.templateFiles);
@@ -121,7 +123,7 @@ export function CodeEditorPage() {
         setParentsIdList(parentNodeIdList);
 
       } catch (error: any) {
-        console.log("Network error");
+        console.log("Network error: " + error.message);
       }
     };
     void fetchData();
@@ -140,7 +142,7 @@ export function CodeEditorPage() {
 
     const saveData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/solutions/save", {
+        const response = await fetch(`http://localhost:8080/exercises/${exerciseId}/solutions`, {
           method: "POST",
           body: JSON.stringify({
             filesForDisplay: displayFiles,
@@ -179,33 +181,7 @@ export function CodeEditorPage() {
     void saveData();
   };
 
-  const handleStatusAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAutosave(event.target.checked);
-  };
-
-  const handleTabClick = (event: React.SyntheticEvent, index: number) => {
-    setActiveTab(index);
-  };
-
-  const handleCloseTab = (
-    event: React.MouseEvent<HTMLElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-
-
-    const newTabs = [...tabs];
-    if (index > -1) {
-      newTabs.splice(index, 1);
-    }
-
-    if (activeTab === tabs.length - 1 && activeTab > 0) {
-      setActiveTab(activeTab - 1);
-    }
-
-    setTabs(newTabs);
-  };
-
+  //Auto-save handle (3 seconds)
   const saveTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleEditorChange = (content: string | undefined) => {
@@ -238,6 +214,33 @@ export function CodeEditorPage() {
       }
     };
   }, []);
+
+  const handleStatusAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAutosave(event.target.checked);
+  };
+
+  const handleTabClick = (event: React.SyntheticEvent, index: number) => {
+    setActiveTab(index);
+  };
+
+  const handleCloseTab = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
+
+
+    const newTabs = [...tabs];
+    if (index > -1) {
+      newTabs.splice(index, 1);
+    }
+
+    if (activeTab === tabs.length - 1 && activeTab > 0) {
+      setActiveTab(activeTab - 1);
+    }
+
+    setTabs(newTabs);
+  };
 
 
   function handleEditorDidMount(
