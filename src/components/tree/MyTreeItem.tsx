@@ -4,7 +4,7 @@ import { TreeItem, treeItemClasses, TreeItemProps } from "@mui/x-tree-view/TreeI
 import { alpha, Collapse } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import { useSpring, animated } from "@react-spring/web";
-import { MyTreeNode } from "../Types";
+import { MyTreeNode } from "../../Types";
 
 interface MyTreeItemProps {
   nodeId: string;

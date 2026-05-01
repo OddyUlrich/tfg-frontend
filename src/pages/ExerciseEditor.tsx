@@ -1,8 +1,8 @@
-import { createTree, FileTree } from "../components/FileTree";
+import { createTree, FileTree } from "../components/tree/FileTree";
 import React, {useContext, useEffect, useState } from "react";
 import { Box, IconButton, List, ListItem, Tooltip } from "@mui/material";
 import {
-  BatteryExercise, EditorCommonExerciseData,
+  BatteryExercise,
   EditorExerciseData,
   ErrorSpring,
   ExerciseFile,
@@ -10,7 +10,7 @@ import {
   MyTreeNode,
   Tag
 } from "../Types";
-import { freeTree, TreeStructure } from "../TreeStructure";
+import { TreeStructure } from "../TreeStructure";
 import { useNavigate, useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -22,16 +22,19 @@ import { DropzoneExerciseFiles } from "../components/DropzoneExerciseFiles";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import { Add, Info } from "@mui/icons-material";
-import { AddBatteryDialog } from "../components/Dialogs/AddBatteryDialog";
-import { AddTagDialog } from "../components/Dialogs/AddTagDialog";
+import { AddBatteryDialog } from "../components/dialogs/AddBatteryDialog";
+import { AddTagDialog } from "../components/dialogs/AddTagDialog";
 import JSZip from "jszip";
+import { enqueueSnackbar } from "notistack";
+import MethodsEditor from "../components/MethodsEditor";
+import Button from "@mui/material/Button";
 
 export function ExerciseEditor() {
 
   const navigate = useNavigate();
   const loginStatus: LoginTypes = useContext(LoginContext);
 
-  //Dialogs for new content
+  //dialogs for new content
   const [openBatteryDialog, setOpenBatteryDialog] = React.useState(false);
   const [openTagDialog, setOpenTagDialog] = React.useState(false);
 
@@ -45,10 +48,11 @@ export function ExerciseEditor() {
   const [batteryName, setBatteryName] = useState<string>();
   const [statement, setStatement] = useState<string>();
   const [rules, setRules] = useState<string[]>();
-  const [tags, setTags] = useState<Tag[]>();
+  const [tags, setTags] = useState<Tag[]>([]);
   const [successCondition, setSuccessCondition] = useState<string>();
+  const [editableMethods, setEditableMethods] = useState<string[]>([]);
 
-  const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>();
+  const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>([]);
 
   /*We extract the parameter of this route to check if we must fetch an specific
   exercise data for edit mode or only the data needed for creation */
@@ -59,8 +63,8 @@ export function ExerciseEditor() {
   const [allTags, setAllTags] = useState<Tag[]>();
   const [allExerciseBatteries, setAllExerciseBatteries] = useState<BatteryExercise[]>();
 
-  const [showStatementError, setShowStatementError] = React.useState(false);
-  const [statementMessage, setStatementMessage] = React.useState("");
+  //Variable for editable methods, so we know which file we are selecting
+  const [selectedFile, setSelectedFile] = useState("");
 
   //Variables for treefile management
   const [parentsIdList, setParentsIdList] = useState<string[]>([]);
@@ -71,8 +75,6 @@ export function ExerciseEditor() {
     file: null,
     children: []
   });
-
-  const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
 
   // Functions to control the addBatteryDialog
   const handleBatteryDialogClose = (confirmed: boolean, inputValue? : string) => {
@@ -117,46 +119,69 @@ export function ExerciseEditor() {
 
   const accept = async (acceptedFiles: File[]) => {
 
-    if (acceptedFiles.length === 0) {
-      setUploadedFile(null);
-    } else {
-      setUploadedFile(acceptedFiles[0]);
-      let counter = 1;
+    const filesForDisplay:ExerciseFile[] = [];
+    const zip = await JSZip.loadAsync(acceptedFiles[0]);
+    const isTextFile = (name: string) => {
+      const lower = name.toLowerCase();
+      return lower.endsWith(".java") || lower.endsWith(".txt") || lower.endsWith(".md");
+    }
 
-      const filesForDisplay:ExerciseFile[] = [];
+    for (const path of Object.keys(zip.files)) {
+      const file = zip.files[path];
 
-      const zip = await JSZip.loadAsync(acceptedFiles[0]);
-
-      for (const path of Object.keys(zip.files)) {
-        const file = zip.files[path];
-
-        //Checks if it is not a folder
-        if (!file.dir) {
-          const content = await file.async("text");
-
-          const pathNames = path.split("/");
-          const name = pathNames[pathNames.length - 1];
-
-          const exerciseFile:ExerciseFile = {id: counter.toString(), name: name, path: path, text: content, idFromSolution: null, editableMethods: null};
-
-          filesForDisplay.push(exerciseFile);
-          counter++;
-        }
+      //If it is a file
+      if (file.dir) {
+        continue;
       }
 
-      //If there was a tree previously we clean it
-      freeTree(rootNode);
+      const pathNames = path.split("/");
+      const name = pathNames[pathNames.length - 1];
 
-      //Nodos a expandir (padres, empezamos por el nodo root)
-      const parentNodeIdList: string[] = ["0"];
+      if (!isTextFile(name)) {
+        console.warn("Archivo ignorado:", name);
+        continue;
+      }
 
-      //Create a new tree
-      const newTree = createTree(fileTree ?? new TreeStructure(), filesForDisplay, rootNode, parentNodeIdList);
-      setFileTree(newTree);
-      setParentsIdList(parentNodeIdList);
+        const content = await file.async("text");
 
+        const exerciseFile:ExerciseFile = {
+          id: "",
+          name: name,
+          path: path,
+          text: content,
+          idFromSolution: null,
+          editableMethods: null
+        };
+
+        filesForDisplay.push(exerciseFile);
+        setTemplateFiles(filesForDisplay);
     }
-  };
+
+    if (filesForDisplay.length === 0) {
+      enqueueSnackbar("No has subido ningún archivo de texto compatible (.java .txt .md)", {
+        variant: "error"
+      });
+      return;
+    }
+
+    //If there was a tree previously we clean it
+    setRootNode(prev => ({
+      ...prev,
+      file: null,
+      children: []
+    }));
+
+    //Nodos a expandir (padres, empezamos por el nodo root)
+    const parentNodeIdList: string[] = [rootNode.nodeId];
+
+    //Create a new tree
+    const newTree = fileTree ?? new TreeStructure();
+    createTree(newTree, filesForDisplay, rootNode, parentNodeIdList);
+    setFileTree(newTree);
+    setParentsIdList(parentNodeIdList);
+
+
+};
 
   //Use effect to get the exercise data when creating/editing an exercise
   useEffect(() => {
@@ -251,6 +276,7 @@ export function ExerciseEditor() {
         const newTemplateFiles = exerciseData.files;
         setTemplateFiles(newTemplateFiles);
 
+
         const root: MyTreeNode | null = {
           nodeId: "0",
           label: "Exercise",
@@ -258,14 +284,15 @@ export function ExerciseEditor() {
           children: []
         };
 
-        let myTree = new TreeStructure();
         setRootNode(root);
 
+        const myTree = new TreeStructure();
+
         //Nodos a expandir (padres, empezamos por el nodo root)
-        const parentNodeIdList: string[] = ["0"];
+        const parentNodeIdList: string[] = [root.nodeId];
 
         //Nodos del arbol
-        myTree = createTree(myTree, newTemplateFiles, root, parentNodeIdList);
+        createTree(myTree, newTemplateFiles, root, parentNodeIdList);
         setFileTree(myTree);
 
         //Nodos a expandir (padres) una vez terminado el arbol
@@ -305,29 +332,35 @@ export function ExerciseEditor() {
       const newTags = tags.filter(tag => tag.name !== tagMarcada.name)
       setTags(newTags);
     }else{
-      const newTags = [...(tags ?? []), tagMarcada];
+      const newTags = [...tags, tagMarcada];
       setTags(newTags);
     }
   };
 
-  const handleSubmit = () => {
+
+    /******************************/
+   /*       Submit exercise      */
+  /******************************/
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     const controller = new AbortController();
-
     const method = isEdit ? "PATCH" : "POST"
-
-    /*if (isEdit){
-      PATCH - edit.fetch
-    }else{
-      POST - new.fetch
-    }*/
 
     try {
 
-      /*if (exerciseId){}
+      if (exerciseId){}
       const responseExerciseData = await fetch(
-        "http://localhost:8080/exercises/edit/" + exerciseId,
+        "http://localhost:8080/exercises/" + exerciseId,
         {
-          method: "GET",
+          method: method,
+          body: JSON.stringify({
+
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          },
           credentials: "include",
           signal: controller.signal,
         }
@@ -342,7 +375,7 @@ export function ExerciseEditor() {
       setStatement(exerciseData.exercise.statement);
       setRules(exerciseData.exercise.rules);
       setTags(exerciseData.exercise.tags);
-      setSuccessCondition(exerciseData.exercise.successCondition);*/
+      setSuccessCondition(exerciseData.exercise.successCondition);
 
 
     } catch (error: any) {
@@ -363,7 +396,7 @@ export function ExerciseEditor() {
       />
 
       <form onSubmit={handleSubmit}>
-      <Container component="main" sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 4 }}>
+      <Container component="main" sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 4, paddingBottom: 12 }}>
         <Container maxWidth="sm" >
           <TextField
             sx={{ marginTop: 1 }}
@@ -378,8 +411,6 @@ export function ExerciseEditor() {
             autoComplete="ExerciseName"
             value={exerciseName}
             onChange={(e => {setExerciseName(e.target.value)})}
-            error={showStatementError}
-            helperText={statementMessage}
             autoFocus
             slotProps={{ inputLabel: { shrink: true } }}
           />
@@ -398,15 +429,12 @@ export function ExerciseEditor() {
             autoComplete="Statement"
             value={statement}
             onChange={(e => {setStatement(e.target.value)})}
-            error={showStatementError}
-            helperText={statementMessage}
 
           />
         </Container>
 
-        {/*TODO No puede haber este component main y otro más arriba*/}
         <Container maxWidth="lg">
-          <Box sx={{ display: "flex", gap: 8 , marginTop: 2 }}>
+          <Box sx={{ display: "flex", gap: 8 , marginTop: 2, justifyContent: "center", alignItems: "flex-start" }}>
             <Box>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 4, marginBottom: 0 }}>
                 <Typography variant="h6">
@@ -451,25 +479,19 @@ export function ExerciseEditor() {
                 />
                 <DropzoneExerciseFiles handleDrop={accept} />
 
-                {/*
-                <Button
-                  sx={{ marginTop: 2, marginBottom: 0 }}
-                  startIcon={<FolderZipIcon />}
-                  onClick={handleSubmitFile}
-                  color="success"
-                  variant="contained"
-                  endIcon={<SendIcon />}
-                >
-                  <Typography variant="button">
-                    <strong>Subir archivos</strong>
-                  </Typography>
-                </Button>
-                */}
-
               </Box>
 
 
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 4, marginBottom: 0 }}>
+              <Box sx={{marginTop: 6}}>
+
+                <MethodsEditor
+                  fileNames={templateFiles.map(file => file.name)}
+                  methods={editableMethods}
+                  setMethods={setEditableMethods}
+                />
+              </Box>
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 6, marginBottom: 0 }}>
                 <Typography variant="h6">
                   Condición de éxito
                 </Typography>
@@ -596,7 +618,7 @@ export function ExerciseEditor() {
                   >
                     {Array.from(allExerciseBatteries ?? []).map((battery) => (
                       <ListItem key={battery.name} sx={{ margin: 0, padding: 0, width: "200px" }}>
-                        <ListItemButton sx={{backgroundColor: batteryName === battery.name ? 'rgba(255, 255, 255, 0.1)' : 'transparent'}} onClick={() => handleExerciseBatteryClick(battery)}>
+                        <ListItemButton sx={{backgroundColor: batteryName && batteryName === battery.name ? 'rgba(155, 155, 155, 0.4)' : 'transparent'}} onClick={() => handleExerciseBatteryClick(battery)}>
                           <ListItemText primary={battery.name} />
                         </ListItemButton>
                       </ListItem>
@@ -667,7 +689,7 @@ export function ExerciseEditor() {
                   {Array.from(allTags ?? []).map((tag) => (
                     <ListItem key={tag.name} sx={{ margin: 0, padding: 0, width: "200px" }}>
                       <ListItemButton sx={{backgroundColor: tags && tags.some(knownTags => knownTags.name === tag.name) ?
-                          'rgba(255, 255, 255, 0.1)' :
+                          'rgba(155, 155, 155, 0.4)' :
                           'transparent'
                       }} onClick={() => handleTagClick(tag)}>
                         <ListItemText primary={tag.name} />
@@ -677,11 +699,19 @@ export function ExerciseEditor() {
                 </List>
               </Box>
             </Box>
-
-
           </Box>
         </Container>
-
+          <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginY:"8rem", marginX: "auto"}}>
+            <Button
+              onClick={handleSubmit}
+              color="success"
+              variant="contained"
+            >
+              <Typography variant="button">
+                <strong>Guardar</strong>
+              </Typography>
+            </Button>
+          </Box>
       </Container>
       </form>
     </>

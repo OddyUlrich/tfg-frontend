@@ -3,8 +3,8 @@ import { SvgIcon, SvgIconProps } from "@mui/material";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import MyTreeItem from "./MyTreeItem";
 import { InsertDriveFile } from "@mui/icons-material";
-import { ExerciseFile, MyTreeNode } from "../Types";
-import { TreeStructure } from "../TreeStructure";
+import { ExerciseFile, MyTreeNode } from "../../Types";
+import { TreeStructure } from "../../TreeStructure";
 
 function MinusSquare(props: SvgIconProps) {
   return (
@@ -131,6 +131,4 @@ export function createTree(tree: TreeStructure, files: ExerciseFile[], root: MyT
     });
 
   })
-
-  return tree;
 }

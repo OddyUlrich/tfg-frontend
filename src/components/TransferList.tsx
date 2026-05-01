@@ -8,7 +8,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import { Rule } from "../Types";
-import { AddRuleDialog } from "./Dialogs/addRuleDialog";
+import { AddRuleDialog } from "./dialogs/addRuleDialog";
 import { useEffect } from "react";
 
 function not(a: Rule[], b: Map<number, string>) {
@@ -50,7 +50,6 @@ export default function TransferList() {
 
   //Dialog's variables
   const [varRuleType, setVarRuleTypeDialog] = React.useState("");
-  const [varTemporalName, setVarTemporalName] = React.useState("");
 
   const [pendingRules, setPendingRules] = React.useState<string[]>([]);
   const [currentRule, setCurrentRule] = React.useState<string | null>(null);
@@ -71,7 +70,7 @@ export default function TransferList() {
   const rightChecked = intersection(checked, right, (rule) => rule.id, (rule) => rule.type);
 
 
-  //We open a dialog to process the addition of a new rule for each time "currentRule" changes
+  //We open a dialogs to process the addition of a new rule for each time "currentRule" changes
   useEffect(() => {
     if (currentRule) {
       handleRuleDialogOpen(currentRule);

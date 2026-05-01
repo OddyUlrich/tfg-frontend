@@ -13,7 +13,7 @@ import {
 } from "../Types";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Allotment } from "allotment";
-import { createTree, FileTree } from "../components/FileTree";
+import { createTree, FileTree } from "../components/tree/FileTree";
 import { Box, CircularProgress, Switch } from "@mui/material";
 import { LoginContext } from "../Utils";
 import { TreeStructure } from "../TreeStructure";
@@ -21,7 +21,7 @@ import { MyTab } from "../components/EditorTabs";
 import { editor, Uri } from "monaco-editor";
 import { Monaco } from "@monaco-editor/react";
 import { constrainedEditor } from "constrained-editor-plugin";
-import { AlertDialog } from "../components/Dialogs/AlertDialog";
+import { AlertDialog } from "../components/dialogs/AlertDialog";
 import Typography from "@mui/material/Typography";
 import SaveIcon from "@mui/icons-material/Save";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
@@ -114,7 +114,7 @@ export function CodeEditorPage() {
         myTree.addNode(root);
 
         //Nodos a expandir (padres)
-        const parentNodeIdList: string[] = ["0"];
+        const parentNodeIdList: string[] = [root.nodeId];
 
         createTree(myTree, filesForDisplay, root, parentNodeIdList);
 
@@ -161,9 +161,6 @@ export function CodeEditorPage() {
         }
 
         setUnsavedChanges(false);
-
-        //TODO AQUI VA LA RESPUESTA OK
-        //TODO SNACKBAR AVISANDO DE QUE TODOS LOS CAMBIOS SE HAN GUARDADO CON ÉXITO
 
         if (buttonPressed) {
           enqueueSnackbar("Se ha guardado todo correctamente", {
@@ -269,8 +266,7 @@ export function CodeEditorPage() {
     //We don't check the event cause this function could be called by a component and not the user
 
     if (fileTree === undefined || nodeId === null) {
-      /*Que hacer si el evento es nulo, el nodo es nulo o el arbol no se
-      * ha generado todavia...? No podria ocurrir este evento se supone...*/
+      console.warn("Tree not declared");
       return;
     }
 
@@ -347,7 +343,7 @@ export function CodeEditorPage() {
         >
           <Button
             sx={{ marginRight: "20px" }}
-            color="secondary"
+            color="primary"
             variant="contained"
             onClick={() => handleSave(true)}
           >
