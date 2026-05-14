@@ -40,7 +40,7 @@ export function StudentHome() {
             credentials: "include",
           });
 
-          if (response.status === 403) {
+          if (response.status === 401) {
             loginStatus.setIsLogged(false);
             navigate("/login");
             return;
@@ -97,7 +97,7 @@ export function StudentHome() {
           }
         );
 
-        if (response.status === 403) {
+        if (response.status === 401) {
           loginStatus.setIsLogged(false);
           navigate("/login");
           return;

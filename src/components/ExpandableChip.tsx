@@ -1,13 +1,13 @@
 import React from "react";
-import { Chip, Popover, Box, Typography, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Chip, Popover, Box, Typography } from "@mui/material";
 
 type MethodChipProps = {
   name: string;
+  filename: string;
   onRemove: () => void;
 };
 
-export function ExpandableChip({ name, onRemove }: MethodChipProps) {
+export function ExpandableChip({ name, filename, onRemove }: MethodChipProps) {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -41,9 +41,10 @@ export function ExpandableChip({ name, onRemove }: MethodChipProps) {
           horizontal: "center"
         }}
       >
-        <Box sx={{ p: 2, width: 200, maxWidth: 400 }}>
-          <Typography variant="subtitle2" gutterBottom>
-            Método
+        <Box sx={{ p: 2, minWidth: 200, maxWidth: 400, display: "flex", flexDirection: "column", gap: 2 }}>
+
+          <Typography variant="subtitle2">
+            {filename}
           </Typography>
 
           <Typography
@@ -56,11 +57,6 @@ export function ExpandableChip({ name, onRemove }: MethodChipProps) {
             {name}
           </Typography>
 
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-            <IconButton size="small" onClick={handleClose}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
         </Box>
       </Popover>
     </>

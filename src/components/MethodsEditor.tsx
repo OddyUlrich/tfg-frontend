@@ -15,7 +15,7 @@ export default function MethodsEditor({
   setMethods: React.Dispatch<React.SetStateAction<string[]>>;
 }) {
   const [methodName, setMethodName] = React.useState("");
-  const [fileName, setFilename] = React.useState("");
+  const [filename, setFilename] = React.useState("");
 
   const addMethod = () => {
     const trimmed = methodName.trim();
@@ -52,7 +52,7 @@ export default function MethodsEditor({
 
       {/* INPUT */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-        <FileSelector fileNames={fileNames} value={fileName} onChange={setFilename} />
+        <FileSelector fileNames={fileNames} value={filename} onChange={setFilename} />
         <TextField
           size="small"
           fullWidth
@@ -79,6 +79,7 @@ export default function MethodsEditor({
           <ExpandableChip
             key={m}
             name={m}
+            filename={filename}
             onRemove={() =>
               setMethods((prev) => prev.filter((x) => x !== m))
             }

@@ -4,22 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/components/ExpandableChip.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/FileSelector.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/MethodsEditor.tsx" afterDir="false" />
+    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Reformateo de FileTree.tsx y MyTreeItem.tsx para mejor separación de carpetas de componentes; Creación de ExpandableChip.tsx, FileSelector.tsx y MethodsEditor.tsx para gestión de nuevos métodos editables en el nuevos ejercicios y cambios menores en rutas; comprobación de tipo de fichero en la creación/edición de ejercicios">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Types.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Dialogs/AddBatteryDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dialogs/AddBatteryDialog.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Dialogs/AddTagDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dialogs/AddTagDialog.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Dialogs/AlertDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dialogs/AlertDialog.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Dialogs/addRuleDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dialogs/addRuleDialog.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/DropzoneExerciseFiles.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DropzoneExerciseFiles.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/FileTree.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tree/FileTree.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MyTreeItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tree/MyTreeItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ExpandableChip.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExpandableChip.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MethodsEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MethodsEditor.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/TransferList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TransferList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/dialogs/addRuleDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dialogs/addRuleDialog.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/StudentHome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/StudentHome.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,7 +107,7 @@
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;npm.npm start.executor&quot;: &quot;Run&quot;,
     &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;D:\\tfg-frontend\\node_modules\\prettier&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.JavaScript&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.intentionPowerPack&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;ts.external.directory.path&quot;: &quot;G:\\tfg-frontend\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
@@ -366,7 +359,10 @@
       <workItem from="1777321966968" duration="4447000" />
       <workItem from="1777330458079" duration="38000" />
       <workItem from="1777478447431" duration="4341000" />
-      <workItem from="1777576729715" duration="11964000" />
+      <workItem from="1777576729715" duration="12116000" />
+      <workItem from="1777598451994" duration="89000" />
+      <workItem from="1778017949931" duration="8787000" />
+      <workItem from="1778707639431" duration="8231000" />
     </task>
     <task id="LOCAL-00001" summary="Agregada aclaracion en AlreadyAuth sobre funcionamiento; acabada TransferList y RuleDialog para la creacion de nuevas normas para los ejercicios; agregado abortController en ExerciseEditor por si se cambia de pagina mientras se hace fetch del ejercicio permitiendo cancelarse. Cambio menor en ExerciseRow.tsx">
       <option name="closed" value="true" />
@@ -392,7 +388,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776989218995</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Reformateo de FileTree.tsx y MyTreeItem.tsx para mejor separación de carpetas de componentes; Creación de ExpandableChip.tsx, FileSelector.tsx y MethodsEditor.tsx para gestión de nuevos métodos editables en el nuevos ejercicios y cambios menores en rutas; comprobación de tipo de fichero en la creación/edición de ejercicios">
+      <option name="closed" value="true" />
+      <created>1777598318361</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1777598318361</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -469,7 +473,8 @@
     <MESSAGE value="Agregada aclaracion en AlreadyAuth sobre funcionamiento; acabada TransferList y RuleDialog para la creacion de nuevas normas para los ejercicios; agregado abortController en ExerciseEditor por si se cambia de pagina mientras se hace fetch del ejercicio permitiendo cancelarse. Cambio menor en ExerciseRow.tsx" />
     <MESSAGE value="Logica de los breadcrumbs cambiada. StudentHome.tsx posee un nuevo boton para permitir crear un nuevo ejercicio y ExerciseEditor.tsx ahora esta preparado por si se accede para crear un nuevo ejercicio. App.tsx posee la nueva ruta de creacion y se ha separado logica en Types.tsx para datos de creacion vs datos de edicion." />
     <MESSAGE value="Cambio en CodeEditorPage.tsx y ExerciseEditor.tsx para usar UseParams para almacenar el exerciseID a partir de parametro del route. Comentarios añadidos y cambios de orden de funciones para mayor claridad y orden." />
-    <option name="LAST_COMMIT_MESSAGE" value="Cambio en CodeEditorPage.tsx y ExerciseEditor.tsx para usar UseParams para almacenar el exerciseID a partir de parametro del route. Comentarios añadidos y cambios de orden de funciones para mayor claridad y orden." />
+    <MESSAGE value="Reformateo de FileTree.tsx y MyTreeItem.tsx para mejor separación de carpetas de componentes; Creación de ExpandableChip.tsx, FileSelector.tsx y MethodsEditor.tsx para gestión de nuevos métodos editables en el nuevos ejercicios y cambios menores en rutas; comprobación de tipo de fichero en la creación/edición de ejercicios" />
+    <option name="LAST_COMMIT_MESSAGE" value="Reformateo de FileTree.tsx y MyTreeItem.tsx para mejor separación de carpetas de componentes; Creación de ExpandableChip.tsx, FileSelector.tsx y MethodsEditor.tsx para gestión de nuevos métodos editables en el nuevos ejercicios y cambios menores en rutas; comprobación de tipo de fichero en la creación/edición de ejercicios" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -4,7 +4,7 @@ import { Box, IconButton, List, ListItem, Tooltip } from "@mui/material";
 import {
   BatteryExercise,
   EditorExerciseData,
-  ErrorSpring,
+  ErrorSpring, Exercise,
   ExerciseFile,
   LoginTypes,
   MyTreeNode,
@@ -43,13 +43,17 @@ export function ExerciseEditor() {
   const [batteryNameBreadcrumb, setBatteryNameBreadcrumb] = useState<string>();
 
   //Exercise data
-  const [exerciseName, setExerciseName] = useState<string>();
-  const [batteryId, setBatteryId] = useState<string>();
-  const [batteryName, setBatteryName] = useState<string>();
-  const [statement, setStatement] = useState<string>();
-  const [rules, setRules] = useState<string[]>();
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [successCondition, setSuccessCondition] = useState<string>();
+  const [exercise, setExercise] = useState<Exercise>({
+    id: "",
+    name: "",
+    idFromBattery: "",
+    nameFromBattery: "",
+    statement: "",
+    rules: [],
+    tags: [],
+    successCondition: "",
+  });
+
   const [editableMethods, setEditableMethods] = useState<string[]>([]);
 
   const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>([]);
@@ -63,12 +67,8 @@ export function ExerciseEditor() {
   const [allTags, setAllTags] = useState<Tag[]>();
   const [allExerciseBatteries, setAllExerciseBatteries] = useState<BatteryExercise[]>();
 
-  //Variable for editable methods, so we know which file we are selecting
-  const [selectedFile, setSelectedFile] = useState("");
-
   //Variables for treefile management
   const [parentsIdList, setParentsIdList] = useState<string[]>([]);
-  const [fileTree, setFileTree] = useState<TreeStructure>();
   const [rootNode, setRootNode] = useState<MyTreeNode>({
     nodeId: "0",
     label: "Exercise",
@@ -126,6 +126,7 @@ export function ExerciseEditor() {
       return lower.endsWith(".java") || lower.endsWith(".txt") || lower.endsWith(".md");
     }
 
+    let counter = 1;
     for (const path of Object.keys(zip.files)) {
       const file = zip.files[path];
 
@@ -145,7 +146,7 @@ export function ExerciseEditor() {
         const content = await file.async("text");
 
         const exerciseFile:ExerciseFile = {
-          id: "",
+          id: counter.toString(),
           name: name,
           path: path,
           text: content,
@@ -155,6 +156,7 @@ export function ExerciseEditor() {
 
         filesForDisplay.push(exerciseFile);
         setTemplateFiles(filesForDisplay);
+        counter++;
     }
 
     if (filesForDisplay.length === 0) {
@@ -164,23 +166,23 @@ export function ExerciseEditor() {
       return;
     }
 
-    //If there was a tree previously we clean it
-    setRootNode(prev => ({
-      ...prev,
+    //We make a new tree with a new root node
+    const newRootNode: MyTreeNode | null = {
+      nodeId: "0",
+      label: "Exercise",
       file: null,
       children: []
-    }));
+    };
 
-    //Nodos a expandir (padres, empezamos por el nodo root)
-    const parentNodeIdList: string[] = [rootNode.nodeId];
+    //Nodes to expand visually (we start for the root node)
+    const parentNodeIdList: string[] = [newRootNode.nodeId];
 
     //Create a new tree
-    const newTree = fileTree ?? new TreeStructure();
-    createTree(newTree, filesForDisplay, rootNode, parentNodeIdList);
-    setFileTree(newTree);
+    const newTree = new TreeStructure();
+    createTree(newTree, filesForDisplay, newRootNode, parentNodeIdList);
+
+    setRootNode(newRootNode);
     setParentsIdList(parentNodeIdList);
-
-
 };
 
   //Use effect to get the exercise data when creating/editing an exercise
@@ -209,7 +211,7 @@ export function ExerciseEditor() {
           }
         );
 
-        if (responseTags.status === 403 || responseBatteries.status === 403) {
+        if (responseTags.status === 401 || responseBatteries.status === 401) {
           loginStatus.setIsLogged(false);
           navigate("/login");
           return;
@@ -224,10 +226,10 @@ export function ExerciseEditor() {
         }
 
         //Common data for all exercises, the list of all batteries and tags
-        const batteries = await responseBatteries.json();
+        const batteries : BatteryExercise[] = await responseBatteries.json();
         setAllExerciseBatteries(batteries);
 
-        const tags = await responseTags.json();
+        const tags: Tag[] = await responseTags.json();
         setAllTags(tags);
 
         } catch (error: any) {
@@ -249,7 +251,7 @@ export function ExerciseEditor() {
           }
         );
 
-        if (responseExerciseData.status === 403) {
+        if (responseExerciseData.status === 401) {
           loginStatus.setIsLogged(false);
           navigate("/login");
           return;
@@ -261,13 +263,18 @@ export function ExerciseEditor() {
         const exerciseData: EditorExerciseData = await responseExerciseData.json();
 
         //If we are editing we see the data and set it
-        setExerciseName(exerciseData.exercise.name);
-        setBatteryId(exerciseData.exercise.idFromBattery);
-        setBatteryName(exerciseData.exercise.nameFromBattery);
-        setStatement(exerciseData.exercise.statement);
-        setRules(exerciseData.exercise.rules);
-        setTags(exerciseData.exercise.tags);
-        setSuccessCondition(exerciseData.exercise.successCondition);
+        const exercise: Exercise = {
+          id: exerciseData.exercise.id,
+          name: exerciseData.exercise.name,
+          idFromBattery: exerciseData.exercise.idFromBattery,
+          nameFromBattery: exerciseData.exercise.nameFromBattery,
+          statement: exerciseData.exercise.statement,
+          rules: exerciseData.exercise.rules,
+          tags: exerciseData.exercise.tags,
+          successCondition: exerciseData.exercise.successCondition,
+        }
+
+        setExercise(exercise);
 
         //Setting breadcrumb data
         setExerciseNameBreadcrumb(exerciseData.exercise.name);
@@ -284,18 +291,15 @@ export function ExerciseEditor() {
           children: []
         };
 
-        setRootNode(root);
-
         const myTree = new TreeStructure();
 
-        //Nodos a expandir (padres, empezamos por el nodo root)
+        //Nodes to expand visually (we start for the root node)
         const parentNodeIdList: string[] = [root.nodeId];
 
-        //Nodos del arbol
+        //Create a new tree
         createTree(myTree, newTemplateFiles, root, parentNodeIdList);
-        setFileTree(myTree);
 
-        //Nodos a expandir (padres) una vez terminado el arbol
+        setRootNode(root);
         setParentsIdList(parentNodeIdList);
 
       } catch (error: any) {
@@ -323,18 +327,33 @@ export function ExerciseEditor() {
   //HANDLERS
 
   const handleExerciseBatteryClick = (battery: BatteryExercise ) => {
-    setBatteryName(battery.name);
+    setExercise(prev => {
+
+      return {
+        ...prev,
+        nameFromBattery: battery.name,
+      }
+    })
   };
 
-  const handleTagClick = (tagMarcada: Tag ) => {
+  const handleTagClick = (tagMarcada: Tag) => {
+    setExercise(prev => {
 
-    if (tags && tags.some(tag => tag.name === tagMarcada.name)){
-      const newTags = tags.filter(tag => tag.name !== tagMarcada.name)
-      setTags(newTags);
-    }else{
-      const newTags = [...tags, tagMarcada];
-      setTags(newTags);
-    }
+      const tags = prev.tags ?? [];
+
+      let newTags: Tag[];
+
+      if (tags.some(tag => tag.name === tagMarcada.name)) {
+        newTags = tags.filter(tag => tag.name !== tagMarcada.name);
+      } else {
+        newTags = [...tags, tagMarcada];
+      }
+
+      return {
+        ...prev,
+        tags: newTags
+      };
+    });
   };
 
 
@@ -350,13 +369,12 @@ export function ExerciseEditor() {
 
     try {
 
-      if (exerciseId){}
-      const responseExerciseData = await fetch(
+      const response = await fetch(
         "http://localhost:8080/exercises/" + exerciseId,
         {
           method: method,
           body: JSON.stringify({
-
+            exercise: exercise,
           }),
           headers: {
             "Content-Type": "application/json"
@@ -366,17 +384,11 @@ export function ExerciseEditor() {
         }
       );
 
-      const exerciseData: EditorExerciseData = await responseExerciseData.json();
-
-      //If we are editing we see the data and set it
-      setExerciseName(exerciseData.exercise.name);
-      setBatteryId(exerciseData.exercise.idFromBattery);
-      setBatteryName(exerciseData.exercise.nameFromBattery);
-      setStatement(exerciseData.exercise.statement);
-      setRules(exerciseData.exercise.rules);
-      setTags(exerciseData.exercise.tags);
-      setSuccessCondition(exerciseData.exercise.successCondition);
-
+      if (response.status === 401) {
+        loginStatus.setIsLogged(false);
+        navigate("/login");
+        return;
+      }
 
     } catch (error: any) {
       if (error.name !== "AbortError") {
@@ -395,6 +407,29 @@ export function ExerciseEditor() {
         batteryName={batteryNameBreadcrumb}
       />
 
+      <Box
+        sx={{
+          position: "sticky",
+          top: 40,
+          display: "flex",
+          justifyContent: "flex-end",
+          width: "100%",
+          zIndex: 10,
+          pr: 4,
+        }}
+      >
+        <Button
+          onClick={handleSubmit}
+          color="success"
+          variant="contained"
+          size="large"
+        >
+          <Typography variant="button">
+            <strong>Guardar</strong>
+          </Typography>
+        </Button>
+      </Box>
+
       <form onSubmit={handleSubmit}>
       <Container component="main" sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 4, paddingBottom: 12 }}>
         <Container maxWidth="sm" >
@@ -409,8 +444,10 @@ export function ExerciseEditor() {
             label="Nombre del ejercicio"
             name="ExerciseName"
             autoComplete="ExerciseName"
-            value={exerciseName}
-            onChange={(e => {setExerciseName(e.target.value)})}
+            value={exercise.name}
+            onChange={(e) => {
+              setExercise({...exercise, name: e.target.value});
+            }}
             autoFocus
             slotProps={{ inputLabel: { shrink: true } }}
           />
@@ -427,8 +464,10 @@ export function ExerciseEditor() {
             name="Statement"
             rows={6}
             autoComplete="Statement"
-            value={statement}
-            onChange={(e => {setStatement(e.target.value)})}
+            value={exercise.statement ?? ""}
+            onChange={(e) => {
+              setExercise({...exercise, statement: e.target.value});
+            }}
 
           />
         </Container>
@@ -519,7 +558,9 @@ export function ExerciseEditor() {
                 id="successCondition"
                 name="successCondition"
                 rows={4}
-                onChange={(e => {setSuccessCondition(e.target.value)})}
+                onChange={(e) => {
+                  setExercise({...exercise, successCondition: e.target.value})
+                }}
                 placeholder={"Ejemplo:\n> El sumatorio de floats es 27.5"}
                 sx={{ whiteSpace: "pre-line" }}
               />
@@ -618,7 +659,7 @@ export function ExerciseEditor() {
                   >
                     {Array.from(allExerciseBatteries ?? []).map((battery) => (
                       <ListItem key={battery.name} sx={{ margin: 0, padding: 0, width: "200px" }}>
-                        <ListItemButton sx={{backgroundColor: batteryName && batteryName === battery.name ? 'rgba(155, 155, 155, 0.4)' : 'transparent'}} onClick={() => handleExerciseBatteryClick(battery)}>
+                        <ListItemButton sx={{backgroundColor: exercise.nameFromBattery && exercise.nameFromBattery === battery.name ? 'rgba(155, 155, 155, 0.4)' : 'transparent'}} onClick={() => handleExerciseBatteryClick(battery)}>
                           <ListItemText primary={battery.name} />
                         </ListItemButton>
                       </ListItem>
@@ -688,7 +729,7 @@ export function ExerciseEditor() {
                 >
                   {Array.from(allTags ?? []).map((tag) => (
                     <ListItem key={tag.name} sx={{ margin: 0, padding: 0, width: "200px" }}>
-                      <ListItemButton sx={{backgroundColor: tags && tags.some(knownTags => knownTags.name === tag.name) ?
+                      <ListItemButton sx={{backgroundColor: exercise.tags && exercise.tags.some(knownTags => knownTags.name === tag.name) ?
                           'rgba(155, 155, 155, 0.4)' :
                           'transparent'
                       }} onClick={() => handleTagClick(tag)}>
@@ -701,17 +742,6 @@ export function ExerciseEditor() {
             </Box>
           </Box>
         </Container>
-          <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginY:"8rem", marginX: "auto"}}>
-            <Button
-              onClick={handleSubmit}
-              color="success"
-              variant="contained"
-            >
-              <Typography variant="button">
-                <strong>Guardar</strong>
-              </Typography>
-            </Button>
-          </Box>
       </Container>
       </form>
     </>

@@ -49,13 +49,8 @@ export type ExerciseHome = {
   creationTimestamp: DateTime;
 };
 
-export type EditorCommonExerciseData = {
-  batteries: BatteryExercise[];
-  tags: Tag[];
-};
-
 export type EditorExerciseData = {
-  exercise: EditorExercise;
+  exercise: Exercise;
   files: ExerciseFile[];
 };
 
@@ -64,7 +59,7 @@ export type CodeEditorData = {
   templateFiles: ExerciseFile[];
   solutions: Solution[];
   currentSolution: string;
-  exercise: EditorExercise;
+  exercise: Exercise;
 };
 
 export type ExerciseFile = {
@@ -81,7 +76,7 @@ export type EditableMethod = {
   line: number;
 };
 
-export type EditorExercise = {
+export type Exercise = {
   id: string;
   name: string;
   idFromBattery: string;
