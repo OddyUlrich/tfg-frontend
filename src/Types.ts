@@ -79,7 +79,6 @@ export type EditableMethod = {
 export type Exercise = {
   id: string;
   name: string;
-  idFromBattery: string;
   nameFromBattery: string;
   statement: string;
   rules: string[];

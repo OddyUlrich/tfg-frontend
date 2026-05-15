@@ -42,13 +42,19 @@ export const Navbar = (props: NavbarProps) => {
         enqueueSnackbar("Error trying to logout, please try again", {
           variant: "error",
         });
+
+        //Checking if the response is a JSON
         const contentType = response.headers.get("content-type");
-        if (contentType && contentType.indexOf("application/json") !== -1) {
+        if (contentType?.includes("application/json")) {
           const errorSpring: ErrorSpring = await response.json();
-          throw new Error("Error from backend - " + errorSpring.message);
-        } else {
-          throw new Error("Error from backend - " + response.status);
+          throw new Error("Error " + response.status + "from backend - " + errorSpring.message);
         }
+
+        //If it is not a JSON we just use the text or the response status
+        const text = await response.text();
+        throw new Error(
+          "Error " + response.status + "from Backend - " + (text || "Unknown error")
+        );
       } else {
         //User is marked as "not logged" and is redirected to "/login"
         loginStatus.setIsLogged(false);

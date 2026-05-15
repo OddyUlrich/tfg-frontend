@@ -11,8 +11,6 @@ type ExerciseRowProps = {
   onFav: () => void;
 };
 
-
-
 export function ExerciseRow(props: ExerciseRowProps) {
 
   let content = null;

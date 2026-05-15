@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Route, Routes, Outlet } from "react-router-dom";
+import { Route, Routes, Outlet, useNavigate } from "react-router-dom";
 import { StudentHome } from "./pages/StudentHome";
 import { About } from "./pages/About";
 import {
@@ -59,6 +59,8 @@ function App() {
     [email, username, creationDate, roles, isLogged]
   );
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const localTheme = localStorage.getItem("theme") ?? "light";
     setIsDark(localTheme === "dark");
@@ -71,8 +73,8 @@ function App() {
         });
 
         if (response.status === 401) {
-          //TODO SI EL USUARIO NO ESTÁ AUTORIZADO HABRA QUE HACER ALGO AQUI, NO SOLO RETORNAR
           setIsLoading(false);
+          navigate("/login");
           return;
         } else if (!response.ok) {
 

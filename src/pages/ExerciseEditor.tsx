@@ -46,7 +46,6 @@ export function ExerciseEditor() {
   const [exercise, setExercise] = useState<Exercise>({
     id: "",
     name: "",
-    idFromBattery: "",
     nameFromBattery: "",
     statement: "",
     rules: [],
@@ -64,8 +63,8 @@ export function ExerciseEditor() {
   const isEdit = !!exerciseId;
 
   //All tags and batteries for selection
-  const [allTags, setAllTags] = useState<Tag[]>();
-  const [allExerciseBatteries, setAllExerciseBatteries] = useState<BatteryExercise[]>();
+  const [allTags, setAllTags] = useState<Tag[]>([]);
+  const [allExerciseBatteries, setAllExerciseBatteries] = useState<BatteryExercise[]>([]);
 
   //Variables for treefile management
   const [parentsIdList, setParentsIdList] = useState<string[]>([]);
@@ -77,17 +76,87 @@ export function ExerciseEditor() {
   });
 
   // Functions to control the addBatteryDialog
-  const handleBatteryDialogClose = (confirmed: boolean, inputValue? : string) => {
+  const handleBatteryDialogClose = async (confirmed: boolean, inputValue? : string) => {
 
-    console.log(confirmed, inputValue);
-
-    if (confirmed && inputValue){
-      console.log("El usuario escribió: ", inputValue);
-    }else{
-      console.log("Cancelado");
+    if (!confirmed || !inputValue) {
+      return;
     }
 
-    setOpenBatteryDialog(false);
+    //Create a new battery to be saved in the backend
+    const newBattery: BatteryExercise = {name: inputValue};
+
+    try {
+
+      //Sending the new name for the new batery the will be created
+      const response = await fetch(
+        "http://localhost:8080/exerciseBatteries",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            name: newBattery.name,
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+        }
+      );
+
+      if (response.status === 401) {
+        loginStatus.setIsLogged(false);
+        navigate("/login");
+        return;
+      }
+
+      if (response.status === 403) {
+        enqueueSnackbar("No tienes permisos para añadir una nueva batería", {
+          variant: "error"
+        });
+        return;
+      }
+
+      if (response.status === 409) {
+        enqueueSnackbar("Ya existe una batería con ese nombre", {
+          variant: "error"
+        });
+        return;
+      }
+
+      if (!response.ok){
+
+        //Checking if the response is a JSON
+        const contentType = response.headers.get("content-type");
+
+        if (contentType?.includes("application/json")) {
+          const errorSpring: ErrorSpring = await response.json();
+          throw new Error("Error " + response.status + " from backend - " + errorSpring.message);
+        }
+
+        //If it is not a JSON we just use the text or the response status
+        const text = await response.text();
+        throw new Error("Error " + response.status + " from Backend - " + (text || "Unknown error"));
+      }
+
+    } catch (error: any) {
+      if (error.name !== "AbortError") {
+        console.log("Network error: " + error.message);
+        enqueueSnackbar("No se ha podido guardar la nueva batería, inténtalo de nuevo", {
+          variant: "error"
+        });
+      }
+      return;
+
+    }finally{
+      setOpenBatteryDialog(false);
+    }
+
+    //If we reach here without any problems the new battery will be successfully saved
+    enqueueSnackbar("Nueva batería guardada satisfactoriamente", {
+      variant: "success"
+    });
+
+    const newBatteries = [...allExerciseBatteries, newBattery];
+    setAllExerciseBatteries(newBatteries);
   };
 
   const handleBatteryDialogOpen = () => {
@@ -96,15 +165,15 @@ export function ExerciseEditor() {
   // Ending of functions to control the addBateryDialog
 
   // Functions to control the addTagDialog
-  const handleTagDialogClose = (confirmed: boolean, inputValue? : string) => {
+  const handleTagDialogClose = async (confirmed: boolean, inputValue? : string) => {
 
     if (confirmed && inputValue){
-      console.log("El usuario escribió: ", inputValue);
-    }else{
-      console.log("Cancelado");
+      const newTag: Tag = {name: inputValue};
+      const newTags = [...allTags, newTag];
+      setAllTags(newTags);
     }
 
-    setOpenTagDialog(false);
+    setOpenBatteryDialog(false);
   };
 
   const handleTagDialogOpen = () => {
@@ -266,7 +335,6 @@ export function ExerciseEditor() {
         const exercise: Exercise = {
           id: exerciseData.exercise.id,
           name: exerciseData.exercise.name,
-          idFromBattery: exerciseData.exercise.idFromBattery,
           nameFromBattery: exerciseData.exercise.nameFromBattery,
           statement: exerciseData.exercise.statement,
           rules: exerciseData.exercise.rules,
