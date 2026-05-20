@@ -14,7 +14,7 @@ import { TreeStructure } from "../TreeStructure";
 import { useNavigate, useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { LoginContext } from "../Utils";
+import { LoginContext, useErrorHandler } from "../Utils";
 import TextField from "@mui/material/TextField";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import CustomTransferList from "../components/TransferList";
@@ -33,6 +33,7 @@ export function ExerciseEditor() {
 
   const navigate = useNavigate();
   const loginStatus: LoginTypes = useContext(LoginContext);
+  const errorHandler = useErrorHandler();
 
   //dialogs for new content
   const [openBatteryDialog, setOpenBatteryDialog] = React.useState(false);
@@ -102,45 +103,12 @@ export function ExerciseEditor() {
         }
       );
 
-      if (response.status === 401) {
-        loginStatus.setIsLogged(false);
-        navigate("/login");
-        return;
-      }
-
-      if (response.status === 403) {
-        enqueueSnackbar("No tienes permisos para añadir una nueva batería", {
-          variant: "error"
-        });
-        return;
-      }
-
-      if (response.status === 409) {
-        enqueueSnackbar("Ya existe una batería con ese nombre", {
-          variant: "error"
-        });
-        return;
-      }
-
-      if (!response.ok){
-
-        //Checking if the response is a JSON
-        const contentType = response.headers.get("content-type");
-
-        if (contentType?.includes("application/json")) {
-          const errorSpring: ErrorSpring = await response.json();
-          throw new Error("Error " + response.status + " from backend - " + errorSpring.message);
-        }
-
-        //If it is not a JSON we just use the text or the response status
-        const text = await response.text();
-        throw new Error("Error " + response.status + " from Backend - " + (text || "Unknown error"));
-      }
+      await errorHandler(response, "No tienes permisos para añadir una nueva batería", "Ya existe una batería con ese nombre");
 
     } catch (error: any) {
       if (error.name !== "AbortError") {
         console.log("Network error: " + error.message);
-        enqueueSnackbar("No se ha podido guardar la nueva batería, inténtalo de nuevo", {
+        enqueueSnackbar(error.message, {
           variant: "error"
         });
       }
@@ -149,7 +117,6 @@ export function ExerciseEditor() {
     }finally{
       setOpenBatteryDialog(false);
     }
-
     //If we reach here without any problems the new battery will be successfully saved
     enqueueSnackbar("Nueva batería guardada satisfactoriamente", {
       variant: "success"
@@ -167,19 +134,60 @@ export function ExerciseEditor() {
   // Functions to control the addTagDialog
   const handleTagDialogClose = async (confirmed: boolean, inputValue? : string) => {
 
-    if (confirmed && inputValue){
-      const newTag: Tag = {name: inputValue};
-      const newTags = [...allTags, newTag];
-      setAllTags(newTags);
+    if (!confirmed || !inputValue) {
+      return;
     }
 
-    setOpenBatteryDialog(false);
+    //Create a new battery to be saved in the backend
+    const newTag: Tag = {name: inputValue};
+
+    try {
+
+      //Sending the new name for the new batery the will be created
+      const response = await fetch(
+        "http://localhost:8080/tags",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            name: newTag.name,
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+        }
+      );
+
+      await errorHandler(response, "No tienes permisos para añadir una nueva tag", "Ya existe una tag con ese nombre");
+
+    } catch (error: any) {
+      if (error.name !== "AbortError") {
+        console.log("Network error: " + error.message);
+        enqueueSnackbar(error.message, {
+          variant: "error"
+        });
+      }
+      return;
+
+    }finally{
+      setOpenTagDialog(false);
+    }
+
+    //If we reach here without any problems the new battery will be successfully saved
+    enqueueSnackbar("Nueva tag guardada satisfactoriamente", {
+      variant: "success"
+    });
+
+    const newTags = [...allTags, newTag];
+    setAllTags(newTags);
   };
 
   const handleTagDialogOpen = () => {
     setOpenTagDialog(true);
   };
   // Ending of functions to control the addTagDialog
+
+  /* ------------------------------------------------------------------------ */
 
   /* Function that sets the accepted files variable if length is not 0 and are
   accepted beforehand with acceptedFiles from DropzoneExerciseFiles (it checks
@@ -254,178 +262,180 @@ export function ExerciseEditor() {
     setParentsIdList(parentNodeIdList);
 };
 
-  //Use effect to get the exercise data when creating/editing an exercise
-  useEffect(() => {
+  /* ------------------------------------------------------------------------ */
 
-    const controller = new AbortController();
+    //Use effect to get the exercise data when creating/editing an exercise
+    useEffect(() => {
 
-    const fetchBatteriesAndTags = async () => {
-      try {
+      const controller = new AbortController();
 
-        const responseTags = await fetch(
-          "http://localhost:8080/tags",
-          {
-            method: "GET",
-            credentials: "include",
-            signal: controller.signal,
+      const fetchBatteriesAndTags = async () => {
+        try {
+
+          const responseTags = await fetch(
+            "http://localhost:8080/tags",
+            {
+              method: "GET",
+              credentials: "include",
+              signal: controller.signal,
+            }
+          );
+
+          const responseBatteries = await fetch(
+            "http://localhost:8080/exerciseBatteries",
+            {
+              method: "GET",
+              credentials: "include",
+              signal: controller.signal,
+            }
+          );
+
+          if (responseTags.status === 401 || responseBatteries.status === 401) {
+            loginStatus.setIsLogged(false);
+            navigate("/login");
+            return;
+
+          } else if (!responseTags.ok) {
+            const errorExercise: ErrorSpring = await responseTags.json();
+            throw new Error("Error from tags data on backend - Error " + errorExercise.status + ": " + errorExercise.message);
+
+          }else if (!responseBatteries.ok){
+            const errorExercise: ErrorSpring = await responseBatteries.json();
+            throw new Error("Error from exercise batteries  data on backend - Error " + errorExercise.status + ": " + errorExercise.message);
           }
-        );
 
-        const responseBatteries = await fetch(
-          "http://localhost:8080/exerciseBatteries",
-          {
-            method: "GET",
-            credentials: "include",
-            signal: controller.signal,
+          //Common data for all exercises, the list of all batteries and tags
+          const batteries : BatteryExercise[] = await responseBatteries.json();
+          setAllExerciseBatteries(batteries);
+
+          const tags: Tag[] = await responseTags.json();
+          setAllTags(tags);
+
+          } catch (error: any) {
+            if (error.name !== "AbortError") {
+              console.log("Network error: " + error.message);
+            }
           }
-        );
-
-        if (responseTags.status === 401 || responseBatteries.status === 401) {
-          loginStatus.setIsLogged(false);
-          navigate("/login");
-          return;
-
-        } else if (!responseTags.ok) {
-          const errorExercise: ErrorSpring = await responseTags.json();
-          throw new Error("Error from tags data on backend - Error " + errorExercise.status + ": " + errorExercise.message);
-
-        }else if (!responseBatteries.ok){
-          const errorExercise: ErrorSpring = await responseBatteries.json();
-          throw new Error("Error from exercise batteries  data on backend - Error " + errorExercise.status + ": " + errorExercise.message);
         }
 
-        //Common data for all exercises, the list of all batteries and tags
-        const batteries : BatteryExercise[] = await responseBatteries.json();
-        setAllExerciseBatteries(batteries);
+      const fetchExerciseData = async () => {
+        try {
 
-        const tags: Tag[] = await responseTags.json();
-        setAllTags(tags);
+          const responseExerciseData = await fetch(
+            "http://localhost:8080/exercises/" + exerciseId,
+            {
+              method: "GET",
+              credentials: "include",
+              signal: controller.signal,
+            }
+          );
+
+          if (responseExerciseData.status === 401) {
+            loginStatus.setIsLogged(false);
+            navigate("/login");
+            return;
+          } else if ( !responseExerciseData.ok) {
+            const errorExercise: ErrorSpring = await responseExerciseData.json();
+            throw new Error("Error from exercise data on backend - Error " + errorExercise.status + ": " + errorExercise.message);
+          }
+
+          const exerciseData: EditorExerciseData = await responseExerciseData.json();
+
+          //If we are editing we see the data and set it
+          const exercise: Exercise = {
+            id: exerciseData.exercise.id,
+            name: exerciseData.exercise.name,
+            nameFromBattery: exerciseData.exercise.nameFromBattery,
+            statement: exerciseData.exercise.statement,
+            rules: exerciseData.exercise.rules,
+            tags: exerciseData.exercise.tags,
+            successCondition: exerciseData.exercise.successCondition,
+          }
+
+          setExercise(exercise);
+
+          //Setting breadcrumb data
+          setExerciseNameBreadcrumb(exerciseData.exercise.name);
+          setBatteryNameBreadcrumb(exerciseData.exercise.nameFromBattery);
+
+          const newTemplateFiles = exerciseData.files;
+          setTemplateFiles(newTemplateFiles);
+
+
+          const root: MyTreeNode | null = {
+            nodeId: "0",
+            label: "Exercise",
+            file: null,
+            children: []
+          };
+
+          const myTree = new TreeStructure();
+
+          //Nodes to expand visually (we start for the root node)
+          const parentNodeIdList: string[] = [root.nodeId];
+
+          //Create a new tree
+          createTree(myTree, newTemplateFiles, root, parentNodeIdList);
+
+          setRootNode(root);
+          setParentsIdList(parentNodeIdList);
 
         } catch (error: any) {
-          if (error.name !== "AbortError") {
-            console.log("Network error: " + error.message);
-          }
-        }
-      }
-
-    const fetchExerciseData = async () => {
-      try {
-
-        const responseExerciseData = await fetch(
-          "http://localhost:8080/exercises/" + exerciseId,
-          {
-            method: "GET",
-            credentials: "include",
-            signal: controller.signal,
-          }
-        );
-
-        if (responseExerciseData.status === 401) {
-          loginStatus.setIsLogged(false);
-          navigate("/login");
-          return;
-        } else if ( !responseExerciseData.ok) {
-          const errorExercise: ErrorSpring = await responseExerciseData.json();
-          throw new Error("Error from exercise data on backend - Error " + errorExercise.status + ": " + errorExercise.message);
+            if (error.name !== "AbortError") {
+              console.log("Network error: " + error.message);
+            }
         }
 
-        const exerciseData: EditorExerciseData = await responseExerciseData.json();
-
-        //If we are editing we see the data and set it
-        const exercise: Exercise = {
-          id: exerciseData.exercise.id,
-          name: exerciseData.exercise.name,
-          nameFromBattery: exerciseData.exercise.nameFromBattery,
-          statement: exerciseData.exercise.statement,
-          rules: exerciseData.exercise.rules,
-          tags: exerciseData.exercise.tags,
-          successCondition: exerciseData.exercise.successCondition,
-        }
-
-        setExercise(exercise);
-
-        //Setting breadcrumb data
-        setExerciseNameBreadcrumb(exerciseData.exercise.name);
-        setBatteryNameBreadcrumb(exerciseData.exercise.nameFromBattery);
-
-        const newTemplateFiles = exerciseData.files;
-        setTemplateFiles(newTemplateFiles);
-
-
-        const root: MyTreeNode | null = {
-          nodeId: "0",
-          label: "Exercise",
-          file: null,
-          children: []
-        };
-
-        const myTree = new TreeStructure();
-
-        //Nodes to expand visually (we start for the root node)
-        const parentNodeIdList: string[] = [root.nodeId];
-
-        //Create a new tree
-        createTree(myTree, newTemplateFiles, root, parentNodeIdList);
-
-        setRootNode(root);
-        setParentsIdList(parentNodeIdList);
-
-      } catch (error: any) {
-          if (error.name !== "AbortError") {
-            console.log("Network error: " + error.message);
-          }
-      }
-
-    };
-
-    void fetchBatteriesAndTags();
-
-    if (isEdit){
-      void fetchExerciseData();
-    }
-
-    // CLEANUP
-    return () => {
-      controller.abort();
-    };
-
-  }, []);
-
-
-  //HANDLERS
-
-  const handleExerciseBatteryClick = (battery: BatteryExercise ) => {
-    setExercise(prev => {
-
-      return {
-        ...prev,
-        nameFromBattery: battery.name,
-      }
-    })
-  };
-
-  const handleTagClick = (tagMarcada: Tag) => {
-    setExercise(prev => {
-
-      const tags = prev.tags ?? [];
-
-      let newTags: Tag[];
-
-      if (tags.some(tag => tag.name === tagMarcada.name)) {
-        newTags = tags.filter(tag => tag.name !== tagMarcada.name);
-      } else {
-        newTags = [...tags, tagMarcada];
-      }
-
-      return {
-        ...prev,
-        tags: newTags
       };
-    });
-  };
+
+      void fetchBatteriesAndTags();
+
+      if (isEdit){
+        void fetchExerciseData();
+      }
+
+      // CLEANUP
+      return () => {
+        controller.abort();
+      };
+
+    }, []);
 
 
-    /******************************/
+    //HANDLERS
+
+    const handleExerciseBatteryClick = (battery: BatteryExercise ) => {
+      setExercise(prev => {
+
+        return {
+          ...prev,
+          nameFromBattery: battery.name,
+        }
+      })
+    };
+
+    const handleTagClick = (tagMarcada: Tag) => {
+      setExercise(prev => {
+
+        const tags = prev.tags ?? [];
+
+        let newTags: Tag[];
+
+        if (tags.some(tag => tag.name === tagMarcada.name)) {
+          newTags = tags.filter(tag => tag.name !== tagMarcada.name);
+        } else {
+          newTags = [...tags, tagMarcada];
+        }
+
+        return {
+          ...prev,
+          tags: newTags
+        };
+      });
+    };
+
+
+      /******************************/
    /*       Submit exercise      */
   /******************************/
 
