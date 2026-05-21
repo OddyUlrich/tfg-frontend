@@ -5,7 +5,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 export interface selectorProps {
-  fileNames: string[];
+  filenames: string[];
   value: string;
   onChange: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -28,7 +28,7 @@ export default function FileSelector(props: selectorProps) {
           autoWidth
           label="FileName"
         >
-          {props.fileNames.map((file) => (
+          {props.filenames.map((file) => (
             <MenuItem key={file} value={file}>{file}</MenuItem>
           ))}
         </Select>

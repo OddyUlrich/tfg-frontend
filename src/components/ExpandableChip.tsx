@@ -1,11 +1,11 @@
 import React from "react";
 import { Chip, Popover, Box, Typography } from "@mui/material";
 
-type MethodChipProps = {
+interface MethodChipProps {
   name: string;
   filename: string;
   onRemove: () => void;
-};
+}
 
 export function ExpandableChip({ name, filename, onRemove }: MethodChipProps) {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);

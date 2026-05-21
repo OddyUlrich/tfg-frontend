@@ -4,9 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Creado sistema de creación de exerciseBatteries en ExerciseEditor.tsx. Usado en ExerciseEditor.tsx el nuevo sistema de errores recibidos del backend. Resto cambios menores.">
+    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Cambiada la gestión de errores en ExerciseEditor.tsx para utilizar &quot;useErrorHandler&quot;. Creación de tags añadida.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ExpandableChip.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExpandableChip.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/FileSelector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/FileSelector.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MethodsEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MethodsEditor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/TransferList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TransferList.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -54,6 +58,65 @@
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0000000000000513" />
+      <entry key="MS500" value="1.0026426638320676" />
+      <entry key="S2" value="1.4176216694402002" />
+      <entry key="S5" value="2.6376443624053607" />
+      <entry key="S10" value="3.9718880707649604" />
+      <entry key="S30" value="5.690693050605129" />
+      <entry key="S60" value="6.398331072293467" />
+      <entry key="M2" value="7.27495454788596" />
+      <entry key="M5" value="8.889075137389884" />
+      <entry key="M10" value="11.64301972882237" />
+      <entry key="M15" value="16.956941702726127" />
+      <entry key="M30" value="42.57517998906614" />
+      <entry key="H1" value="92.37454322021495" />
+      <entry key="H2" value="149.3239887507134" />
+      <entry key="H4" value="194.61798515725997" />
+      <entry key="D1" value="245.86455805536383" />
+      <entry key="W1" value="256.22285666218363" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="3.10032205517421E-22" />
+      <entry key="MS500" value="4.992077994127082E-5" />
+      <entry key="S2" value="0.0840563137854379" />
+      <entry key="S5" value="0.3713882301652073" />
+      <entry key="S10" value="0.6094163053289756" />
+      <entry key="S30" value="0.8496121349986622" />
+      <entry key="S60" value="0.9786084656517365" />
+      <entry key="M2" value="1.296616804720369" />
+      <entry key="M5" value="1.972786669683592" />
+      <entry key="M10" value="2.9040335278554092" />
+      <entry key="M15" value="4.769208270625127" />
+      <entry key="M30" value="14.001047225956954" />
+      <entry key="H1" value="31.45612008547492" />
+      <entry key="H2" value="50.68493869329448" />
+      <entry key="H4" value="65.58322908223683" />
+      <entry key="D1" value="82.1241105732258" />
+      <entry key="W1" value="85.43330229336573" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.015197733553317045" />
+      <entry key="MS500" value="0.4336285501420976" />
+      <entry key="S2" value="1.1751045217200886" />
+      <entry key="S5" value="2.690789172698029" />
+      <entry key="S10" value="4.324079507711885" />
+      <entry key="S30" value="6.4134299662756975" />
+      <entry key="S60" value="7.302167949917999" />
+      <entry key="M2" value="8.5213457579605" />
+      <entry key="M5" value="10.830945417985125" />
+      <entry key="M10" value="14.525982603531432" />
+      <entry key="M15" value="21.70585115510662" />
+      <entry key="M30" value="56.5486474371405" />
+      <entry key="H1" value="123.79867033702875" />
+      <entry key="H2" value="199.9825401804567" />
+      <entry key="H4" value="260.18395619341123" />
+      <entry key="D1" value="327.9850384082133" />
+      <entry key="W1" value="341.65561880257974" />
+    </decayedShown>
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -138,7 +201,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-WS-261.23567.141" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-WS-261.24374.125" />
       </set>
     </attachedChunks>
   </component>
@@ -360,7 +423,8 @@
       <workItem from="1778707639431" duration="9189000" />
       <workItem from="1778719508529" duration="272000" />
       <workItem from="1778876505293" duration="8025000" />
-      <workItem from="1779215321747" duration="10378000" />
+      <workItem from="1779215321747" duration="11041000" />
+      <workItem from="1779314022005" duration="11657000" />
     </task>
     <task id="LOCAL-00001" summary="Agregada aclaracion en AlreadyAuth sobre funcionamiento; acabada TransferList y RuleDialog para la creacion de nuevas normas para los ejercicios; agregado abortController en ExerciseEditor por si se cambia de pagina mientras se hace fetch del ejercicio permitiendo cancelarse. Cambio menor en ExerciseRow.tsx">
       <option name="closed" value="true" />
@@ -410,18 +474,21 @@
       <option name="project" value="LOCAL" />
       <updated>1778884728029</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Cambiada la gestión de errores en ExerciseEditor.tsx para utilizar &quot;useErrorHandler&quot;. Creación de tags añadida.">
+      <option name="closed" value="true" />
+      <created>1779313701334</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1779313701334</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
-    <option name="OPEN_GENERIC_TABS">
-      <map>
-        <entry key="b4da917f-c1e6-49a6-9aac-c23591a73c2d" value="TOOL_WINDOW" />
-      </map>
-    </option>
     <option name="RECENT_FILTERS">
       <map>
         <entry key="Branch">
@@ -474,11 +541,6 @@
             </State>
           </value>
         </entry>
-        <entry key="b4da917f-c1e6-49a6-9aac-c23591a73c2d">
-          <value>
-            <State />
-          </value>
-        </entry>
       </map>
     </option>
   </component>
@@ -490,7 +552,8 @@
     <MESSAGE value="Reformateo de FileTree.tsx y MyTreeItem.tsx para mejor separación de carpetas de componentes; Creación de ExpandableChip.tsx, FileSelector.tsx y MethodsEditor.tsx para gestión de nuevos métodos editables en el nuevos ejercicios y cambios menores en rutas; comprobación de tipo de fichero en la creación/edición de ejercicios" />
     <MESSAGE value="Cambio de formato de ExpandableChip.tsx; ExerciseEditor.tsx ahora usa una sola variable para todos los campos del ejercicio; ExerciseEditor.tsx ahora tiene el arbol de ficheros mejor estructurado, usa httpStatus 401 correctamente y el botón de guardar ahora sigue al usuario; StudentHome.tsx también usa httpStatus 401 correctamente." />
     <MESSAGE value="Creado sistema de creación de exerciseBatteries en ExerciseEditor.tsx. Usado en ExerciseEditor.tsx el nuevo sistema de errores recibidos del backend. Resto cambios menores." />
-    <option name="LAST_COMMIT_MESSAGE" value="Creado sistema de creación de exerciseBatteries en ExerciseEditor.tsx. Usado en ExerciseEditor.tsx el nuevo sistema de errores recibidos del backend. Resto cambios menores." />
+    <MESSAGE value="Cambiada la gestión de errores en ExerciseEditor.tsx para utilizar &quot;useErrorHandler&quot;. Creación de tags añadida." />
+    <option name="LAST_COMMIT_MESSAGE" value="Cambiada la gestión de errores en ExerciseEditor.tsx para utilizar &quot;useErrorHandler&quot;. Creación de tags añadida." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

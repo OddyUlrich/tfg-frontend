@@ -37,6 +37,9 @@ export interface MyTreeNode {
   file: ExerciseFile | null;
   children: MyTreeNode[];
 }
+export type Tag = {
+  name: string;
+};
 
 export type ExerciseHome = {
   id: string;
@@ -49,53 +52,6 @@ export type ExerciseHome = {
   creationTimestamp: DateTime;
 };
 
-export type EditorExerciseData = {
-  exercise: Exercise;
-  files: ExerciseFile[];
-};
-
-export type CodeEditorData = {
-  filesForDisplay: ExerciseFile[];
-  templateFiles: ExerciseFile[];
-  solutions: Solution[];
-  currentSolution: string;
-  exercise: Exercise;
-};
-
-export type ExerciseFile = {
-  id: string;
-  name: string;
-  path: string;
-  text: string;
-  idFromSolution: string | null;
-  editableMethods: EditableMethod[] | null;
-};
-
-export type EditableMethod = {
-  name: string;
-  line: number;
-};
-
-export type Exercise = {
-  id: string;
-  name: string;
-  nameFromBattery: string;
-  statement: string;
-  rules: string[];
-  tags: Tag[];
-  successCondition: string;
-};
-
-export type Rule = {
-  id: number;
-  type: string
-  name: string;
-}
-
-export type Tag = {
-  name: string;
-};
-
 export type BatteryExercise = {
   name: string;
 };
@@ -106,6 +62,49 @@ export type Solution = {
   lastUpdate: DateTime;
   status: solutionStatus;
   numberErrors: number;
+};
+
+export type ExerciseFile = {
+  id: string;
+  name: string;
+  path: string;
+  text: string;
+  idFromSolution: string | null;
+  editableMethods: EditableMethod[];
+};
+
+export type CodeEditorData = {
+  filesForDisplay: ExerciseFile[];
+  templateFiles: ExerciseFile[];
+  solutions: Solution[];
+  currentSolution: string;
+  exercise: Exercise;
+};
+
+export type EditableMethod = {
+  name: string;
+  line: number;
+};
+
+export type Rule = {
+  id: number;
+  type: string
+  name: string;
+}
+
+export type Exercise = {
+  id: string;
+  name: string;
+  nameFromBattery: string;
+  statement: string;
+  rules: Rule[];
+  tags: Tag[];
+  successCondition: string;
+};
+
+export type EditorExerciseData = {
+  exercise: Exercise;
+  files: ExerciseFile[];
 };
 
 enum solutionStatus {

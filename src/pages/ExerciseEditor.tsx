@@ -8,7 +8,9 @@ import {
   ExerciseFile,
   LoginTypes,
   MyTreeNode,
-  Tag
+  Tag,
+  Rule,
+  EditableMethod,
 } from "../Types";
 import { TreeStructure } from "../TreeStructure";
 import { useNavigate, useParams } from "react-router-dom";
@@ -54,7 +56,7 @@ export function ExerciseEditor() {
     successCondition: "",
   });
 
-  const [editableMethods, setEditableMethods] = useState<string[]>([]);
+  const [rules, setRules] = useState<Rule[]>([]);
 
   const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>([]);
 
@@ -228,7 +230,7 @@ export function ExerciseEditor() {
           path: path,
           text: content,
           idFromSolution: null,
-          editableMethods: null
+          editableMethods: []
         };
 
         filesForDisplay.push(exerciseFile);
@@ -435,7 +437,7 @@ export function ExerciseEditor() {
     };
 
 
-      /******************************/
+    /******************************/
    /*       Submit exercise      */
   /******************************/
 
@@ -447,12 +449,17 @@ export function ExerciseEditor() {
 
     try {
 
+      //We must set the rules created in the transfer list in the exercise we are about to submit
+      //setExercise({...exercise, rules: rules})
+      const updatedExercise = {...exercise, rules: rules};
+
       const response = await fetch(
         "http://localhost:8080/exercises/" + exerciseId,
         {
           method: method,
           body: JSON.stringify({
-            exercise: exercise,
+            exercise: updatedExercise,
+            files: templateFiles
           }),
           headers: {
             "Content-Type": "application/json"
@@ -602,9 +609,9 @@ export function ExerciseEditor() {
               <Box sx={{marginTop: 6}}>
 
                 <MethodsEditor
-                  fileNames={templateFiles.map(file => file.name)}
-                  methods={editableMethods}
-                  setMethods={setEditableMethods}
+                  filenames={templateFiles.map(file => file.name)}
+                  templateFiles={templateFiles}
+                  setTemplateFiles={setTemplateFiles}
                 />
               </Box>
 
@@ -673,7 +680,7 @@ export function ExerciseEditor() {
                      color: "#888",
                      cursor: "pointer"
                    }}>
-                <CustomTransferList/>
+                <CustomTransferList setRules={setRules}/>
               </Box>
 
               <Box

@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import { Rule } from "../Types";
 import { AddRuleDialog } from "./dialogs/addRuleDialog";
-import { useEffect } from "react";
+import { JSX, useEffect } from "react";
 
 function not(a: Rule[], b: Map<number, string>) {
   const filteredRules: Rule[] = [];
@@ -42,7 +42,11 @@ function intersection<T>(
   return filteredMap;
 }
 
-export default function TransferList() {
+interface TransferListProps {
+  setRules: React.Dispatch<React.SetStateAction<Rule[]>>
+}
+
+export default function TransferList(props: TransferListProps): JSX.Element {
   const idCounter = React.useRef(4);
 
   //Dialog
@@ -82,14 +86,19 @@ export default function TransferList() {
   const handleRuleDialogClose = (confirmed: boolean, inputValue? : string) => {
 
     if (confirmed && inputValue && currentRule) {
+      const newRule:Rule = {
+        id: idCounter.current++,
+        type: currentRule,
+        name: inputValue
+      }
+
       setRight(prev => [
-        ...prev,
-        {
-          id: idCounter.current++,
-          type: currentRule,
-          name: inputValue
-        }
+        ...prev, newRule
       ]);
+
+      props.setRules(prev => [
+        ...prev, newRule
+      ])
     }
 
     const next = pendingRules.slice(1);

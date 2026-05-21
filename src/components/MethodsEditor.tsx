@@ -4,29 +4,68 @@ import { ExpandableChip } from "./ExpandableChip";
 import { Info } from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import FileSelector from "./FileSelector";
+import { EditableMethod, ExerciseFile } from "../Types";
+import { enqueueSnackbar } from "notistack";
 
 export default function MethodsEditor({
-                                methods,
-                                setMethods,
-                                fileNames,
+                                filenames,
+                                templateFiles,
+                                setTemplateFiles,
+
                               }: {
-  fileNames: string[];
-  methods: string[];
-  setMethods: React.Dispatch<React.SetStateAction<string[]>>;
+  filenames: string[];
+  templateFiles: ExerciseFile[];
+  setTemplateFiles: React.Dispatch<React.SetStateAction<ExerciseFile[]>>;
 }) {
+
   const [methodName, setMethodName] = React.useState("");
   const [filename, setFilename] = React.useState("");
 
   const addMethod = () => {
-    const trimmed = methodName.trim();
-    if (!trimmed) return;
+    const trimmedName = methodName.trim();
+    const trimmedFilename = filename.trim();
 
-    if (!methods.includes(trimmed)) {
-      setMethods([...methods, trimmed]);
-    }
+    if (!trimmedName || !trimmedFilename) return;
 
+    setTemplateFiles(prevFiles => {
+      return prevFiles.map(file => {
+        if (file.name !== trimmedFilename) return file;
+
+        const fileMethods  = file.editableMethods ?? [];
+
+        const exists = fileMethods.some(m => m.name === trimmedName);
+
+        if (exists) {
+          enqueueSnackbar(
+            "Ya existe un método con ese nombre en el mismo fichero",
+            { variant: "error" }
+          );
+          return file;
+        }
+
+        const newMethod: EditableMethod = {
+          name: trimmedName,
+          line: -1,
+        };
+
+          return {
+          ...file,
+          editableMethods: [...fileMethods, newMethod],
+        };
+      });
+    });
     setMethodName("");
-  };
+  }
+
+  const methods = React.useMemo(() =>
+    templateFiles.flatMap(file =>
+      (file.editableMethods ?? []).map(method => ({
+        ...method,
+        filename: file.name
+      }))
+    ),
+    [templateFiles]
+  );
 
   return (
     <Box>
@@ -52,7 +91,7 @@ export default function MethodsEditor({
 
       {/* INPUT */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-        <FileSelector fileNames={fileNames} value={filename} onChange={setFilename} />
+        <FileSelector filenames={filenames} value={filename} onChange={setFilename} />
         <TextField
           size="small"
           fullWidth
@@ -77,11 +116,11 @@ export default function MethodsEditor({
       <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
         {methods.map((m) => (
           <ExpandableChip
-            key={m}
-            name={m}
-            filename={filename}
+            key={m.name}
+            name={m.name}
+            filename={m.filename}
             onRemove={() =>
-              setMethods((prev) => prev.filter((x) => x !== m))
+              methods.filter((x) => x !== m)
             }
           />
         ))}
