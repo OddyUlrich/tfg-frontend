@@ -7,7 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
-import { Rule } from "../Types";
+import { Exercise, Rule } from "../Types";
 import { AddRuleDialog } from "./dialogs/addRuleDialog";
 import { JSX, useEffect } from "react";
 
@@ -43,7 +43,7 @@ function intersection<T>(
 }
 
 interface TransferListProps {
-  setRules: React.Dispatch<React.SetStateAction<Rule[]>>
+  setExercise:  React.Dispatch<React.SetStateAction<Exercise>>;
 }
 
 export default function TransferList(props: TransferListProps): JSX.Element {
@@ -92,13 +92,14 @@ export default function TransferList(props: TransferListProps): JSX.Element {
         name: inputValue
       }
 
-      setRight(prev => [
-        ...prev, newRule
-      ]);
+      const newRules = [...right, newRule];
 
-      props.setRules(prev => [
-        ...prev, newRule
-      ])
+      setRight(newRules);
+
+      props.setExercise(prev => ({
+        ...prev,
+        rules: newRules
+      }));
     }
 
     const next = pendingRules.slice(1);
@@ -137,11 +138,19 @@ export default function TransferList(props: TransferListProps): JSX.Element {
     setPendingRules(values);
     setCurrentRule(values[0] ?? null);
 
+    setChecked([]);
   };
 
 
   const handleCheckedLeft = () => {
-    setRight(not(right, rightChecked));
+    const newRules = not(right, rightChecked);
+
+    setRight(newRules);
+
+    props.setExercise(prev => ({
+      ...prev,
+      rules: newRules
+    }));
 
     setChecked(prev => prev.filter(id => !rightChecked.has(id)));
   };

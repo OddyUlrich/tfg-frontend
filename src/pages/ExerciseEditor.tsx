@@ -9,8 +9,6 @@ import {
   LoginTypes,
   MyTreeNode,
   Tag,
-  Rule,
-  EditableMethod,
 } from "../Types";
 import { TreeStructure } from "../TreeStructure";
 import { useNavigate, useParams } from "react-router-dom";
@@ -55,8 +53,6 @@ export function ExerciseEditor() {
     tags: [],
     successCondition: "",
   });
-
-  const [rules, setRules] = useState<Rule[]>([]);
 
   const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>([]);
 
@@ -449,16 +445,12 @@ export function ExerciseEditor() {
 
     try {
 
-      //We must set the rules created in the transfer list in the exercise we are about to submit
-      //setExercise({...exercise, rules: rules})
-      const updatedExercise = {...exercise, rules: rules};
-
       const response = await fetch(
         "http://localhost:8080/exercises/" + exerciseId,
         {
           method: method,
           body: JSON.stringify({
-            exercise: updatedExercise,
+            exercise: exercise,
             files: templateFiles
           }),
           headers: {
@@ -680,7 +672,7 @@ export function ExerciseEditor() {
                      color: "#888",
                      cursor: "pointer"
                    }}>
-                <CustomTransferList setRules={setRules}/>
+                <CustomTransferList setExercise={setExercise}/>
               </Box>
 
               <Box

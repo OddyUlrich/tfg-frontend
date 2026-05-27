@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Cambiada la gestión de errores en ExerciseEditor.tsx para utilizar &quot;useErrorHandler&quot;. Creación de tags añadida.">
+    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="MethodsEditor.tsx ahora actualiza correctamente los métodos en &quot;TemplateFiles&quot; directamente para ser enviados al backend. Pendiente de que la TransferList.tsx actualice el exercise con las nuevas rules y no tener que añadirlas más tarde. El resto de cambios son debido a lo comentado anteriormente o cambios menores.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ExpandableChip.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExpandableChip.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/FileSelector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/FileSelector.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MethodsEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MethodsEditor.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/TransferList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TransferList.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
     </list>
@@ -61,61 +57,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0000000000000513" />
-      <entry key="MS500" value="1.0026426638320676" />
-      <entry key="S2" value="1.4176216694402002" />
-      <entry key="S5" value="2.6376443624053607" />
-      <entry key="S10" value="3.9718880707649604" />
-      <entry key="S30" value="5.690693050605129" />
-      <entry key="S60" value="6.398331072293467" />
-      <entry key="M2" value="7.27495454788596" />
-      <entry key="M5" value="8.889075137389884" />
-      <entry key="M10" value="11.64301972882237" />
-      <entry key="M15" value="16.956941702726127" />
-      <entry key="M30" value="42.57517998906614" />
-      <entry key="H1" value="92.37454322021495" />
-      <entry key="H2" value="149.3239887507134" />
-      <entry key="H4" value="194.61798515725997" />
-      <entry key="D1" value="245.86455805536383" />
-      <entry key="W1" value="256.22285666218363" />
+      <entry key="MS100" value="6.104569296215902E-5" />
+      <entry key="MS500" value="0.1697342950395263" />
+      <entry key="S2" value="1.5345040592293027" />
+      <entry key="S5" value="3.720427477927252" />
+      <entry key="S10" value="5.361768462533755" />
+      <entry key="S30" value="6.975048604823483" />
+      <entry key="S60" value="7.466573729597041" />
+      <entry key="M2" value="7.727835410502512" />
+      <entry key="M5" value="7.907518501142516" />
+      <entry key="M10" value="8.78783279986642" />
+      <entry key="M15" value="12.29839196354134" />
+      <entry key="M30" value="35.067894919491344" />
+      <entry key="H1" value="91.63983185894445" />
+      <entry key="H2" value="173.28716385251738" />
+      <entry key="H4" value="249.92841637525683" />
+      <entry key="D1" value="348.0785810050151" />
+      <entry key="W1" value="369.3114711276363" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="3.10032205517421E-22" />
-      <entry key="MS500" value="4.992077994127082E-5" />
-      <entry key="S2" value="0.0840563137854379" />
-      <entry key="S5" value="0.3713882301652073" />
-      <entry key="S10" value="0.6094163053289756" />
-      <entry key="S30" value="0.8496121349986622" />
-      <entry key="S60" value="0.9786084656517365" />
-      <entry key="M2" value="1.296616804720369" />
-      <entry key="M5" value="1.972786669683592" />
-      <entry key="M10" value="2.9040335278554092" />
-      <entry key="M15" value="4.769208270625127" />
-      <entry key="M30" value="14.001047225956954" />
-      <entry key="H1" value="31.45612008547492" />
-      <entry key="H2" value="50.68493869329448" />
-      <entry key="H4" value="65.58322908223683" />
-      <entry key="D1" value="82.1241105732258" />
-      <entry key="W1" value="85.43330229336573" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0" />
+      <entry key="S30" value="1.0" />
+      <entry key="S60" value="1.0000000108283644" />
+      <entry key="M2" value="1.0001591974509967" />
+      <entry key="M5" value="1.0655397794178822" />
+      <entry key="M10" value="1.599603030201656" />
+      <entry key="M15" value="2.551074013113788" />
+      <entry key="M30" value="7.432377899766533" />
+      <entry key="H1" value="21.39197387043033" />
+      <entry key="H2" value="43.88567662503055" />
+      <entry key="H4" value="65.91855511452496" />
+      <entry key="D1" value="94.65424818696222" />
+      <entry key="W1" value="100.91190655228252" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.015197733553317045" />
-      <entry key="MS500" value="0.4336285501420976" />
-      <entry key="S2" value="1.1751045217200886" />
-      <entry key="S5" value="2.690789172698029" />
-      <entry key="S10" value="4.324079507711885" />
-      <entry key="S30" value="6.4134299662756975" />
-      <entry key="S60" value="7.302167949917999" />
-      <entry key="M2" value="8.5213457579605" />
-      <entry key="M5" value="10.830945417985125" />
-      <entry key="M10" value="14.525982603531432" />
-      <entry key="M15" value="21.70585115510662" />
-      <entry key="M30" value="56.5486474371405" />
-      <entry key="H1" value="123.79867033702875" />
-      <entry key="H2" value="199.9825401804567" />
-      <entry key="H4" value="260.18395619341123" />
-      <entry key="D1" value="327.9850384082133" />
-      <entry key="W1" value="341.65561880257974" />
+      <entry key="MS100" value="0.006088590861898326" />
+      <entry key="MS500" value="0.43693024764645855" />
+      <entry key="S2" value="2.0275596939155416" />
+      <entry key="S5" value="4.342652245895042" />
+      <entry key="S10" value="6.10756720409282" />
+      <entry key="S30" value="7.868748910828695" />
+      <entry key="S60" value="8.410119799280505" />
+      <entry key="M2" value="8.698886611379544" />
+      <entry key="M5" value="8.96101648328266" />
+      <entry key="M10" value="10.38032373205849" />
+      <entry key="M15" value="14.84272270415976" />
+      <entry key="M30" value="42.48945733671613" />
+      <entry key="H1" value="113.01336082020387" />
+      <entry key="H2" value="217.15226313226415" />
+      <entry key="H4" value="315.8309594339517" />
+      <entry key="D1" value="442.72889958411855" />
+      <entry key="W1" value="470.22277686832655" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -424,7 +420,9 @@
       <workItem from="1778719508529" duration="272000" />
       <workItem from="1778876505293" duration="8025000" />
       <workItem from="1779215321747" duration="11041000" />
-      <workItem from="1779314022005" duration="11657000" />
+      <workItem from="1779314022005" duration="12085000" />
+      <workItem from="1779399203269" duration="1207000" />
+      <workItem from="1779747270150" duration="7501000" />
     </task>
     <task id="LOCAL-00001" summary="Agregada aclaracion en AlreadyAuth sobre funcionamiento; acabada TransferList y RuleDialog para la creacion de nuevas normas para los ejercicios; agregado abortController en ExerciseEditor por si se cambia de pagina mientras se hace fetch del ejercicio permitiendo cancelarse. Cambio menor en ExerciseRow.tsx">
       <option name="closed" value="true" />
@@ -482,7 +480,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779313701334</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="MethodsEditor.tsx ahora actualiza correctamente los métodos en &quot;TemplateFiles&quot; directamente para ser enviados al backend. Pendiente de que la TransferList.tsx actualice el exercise con las nuevas rules y no tener que añadirlas más tarde. El resto de cambios son debido a lo comentado anteriormente o cambios menores.">
+      <option name="closed" value="true" />
+      <created>1779326103016</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1779326103016</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -553,7 +559,8 @@
     <MESSAGE value="Cambio de formato de ExpandableChip.tsx; ExerciseEditor.tsx ahora usa una sola variable para todos los campos del ejercicio; ExerciseEditor.tsx ahora tiene el arbol de ficheros mejor estructurado, usa httpStatus 401 correctamente y el botón de guardar ahora sigue al usuario; StudentHome.tsx también usa httpStatus 401 correctamente." />
     <MESSAGE value="Creado sistema de creación de exerciseBatteries en ExerciseEditor.tsx. Usado en ExerciseEditor.tsx el nuevo sistema de errores recibidos del backend. Resto cambios menores." />
     <MESSAGE value="Cambiada la gestión de errores en ExerciseEditor.tsx para utilizar &quot;useErrorHandler&quot;. Creación de tags añadida." />
-    <option name="LAST_COMMIT_MESSAGE" value="Cambiada la gestión de errores en ExerciseEditor.tsx para utilizar &quot;useErrorHandler&quot;. Creación de tags añadida." />
+    <MESSAGE value="MethodsEditor.tsx ahora actualiza correctamente los métodos en &quot;TemplateFiles&quot; directamente para ser enviados al backend. Pendiente de que la TransferList.tsx actualice el exercise con las nuevas rules y no tener que añadirlas más tarde. El resto de cambios son debido a lo comentado anteriormente o cambios menores." />
+    <option name="LAST_COMMIT_MESSAGE" value="MethodsEditor.tsx ahora actualiza correctamente los métodos en &quot;TemplateFiles&quot; directamente para ser enviados al backend. Pendiente de que la TransferList.tsx actualice el exercise con las nuevas rules y no tener que añadirlas más tarde. El resto de cambios son debido a lo comentado anteriormente o cambios menores." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
