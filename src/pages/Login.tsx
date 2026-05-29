@@ -134,10 +134,16 @@ export default function Login() {
             loginStatus.setUsername(user.username);
             loginStatus.setCreationDate(user.creationDate);
             loginStatus.setRoles(user.roles);
+
+            //Y redireccionamos a la página principal del usuario en cuestión
+            navigate("/");
+
+          } else{
+            enqueueSnackbar("Error retrieving user data, try log in again", {
+              variant: "error",
+            });
           }
 
-          //Y redireccionamos a la página principal del usuario en cuestión
-          navigate("/");
           return;
         }
       } catch (error: any) {

@@ -37,6 +37,7 @@ export interface MyTreeNode {
   file: ExerciseFile | null;
   children: MyTreeNode[];
 }
+
 export type Tag = {
   name: string;
 };
@@ -83,7 +84,8 @@ export type CodeEditorData = {
 
 export type EditableMethod = {
   name: string;
-  line: number;
+  startLine: number;
+  endLine: number;
 };
 
 export type Rule = {
@@ -93,7 +95,7 @@ export type Rule = {
 }
 
 export type Exercise = {
-  id: string;
+  id: string | null;
   name: string;
   nameFromBattery: string;
   statement: string;

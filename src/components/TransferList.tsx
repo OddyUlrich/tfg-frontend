@@ -10,6 +10,7 @@ import Paper from '@mui/material/Paper';
 import { Exercise, Rule } from "../Types";
 import { AddRuleDialog } from "./dialogs/addRuleDialog";
 import { JSX, useEffect } from "react";
+import { enqueueSnackbar } from "notistack";
 
 function not(a: Rule[], b: Map<number, string>) {
   const filteredRules: Rule[] = [];
@@ -43,6 +44,7 @@ function intersection<T>(
 }
 
 interface TransferListProps {
+  exercise: Exercise;
   setExercise:  React.Dispatch<React.SetStateAction<Exercise>>;
 }
 
@@ -60,7 +62,6 @@ export default function TransferList(props: TransferListProps): JSX.Element {
 
   //Variables
   const [checked, setChecked] = React.useState<readonly number[]>([]);
-  const [right, setRight] = React.useState<Rule[]>([]);
   const [left, setLeft] = React.useState<Map<number, string>>(
     new Map([
       [0, "Bucle for"],
@@ -71,7 +72,7 @@ export default function TransferList(props: TransferListProps): JSX.Element {
   );
 
   const leftChecked = intersection(checked, [...left.entries()], ([id, ]) => id, ([, value]) => value);
-  const rightChecked = intersection(checked, right, (rule) => rule.id, (rule) => rule.type);
+  const rightChecked = intersection(checked, props.exercise.rules, (rule) => rule.id, (rule) => rule.type);
 
 
   //We open a dialogs to process the addition of a new rule for each time "currentRule" changes
@@ -86,20 +87,32 @@ export default function TransferList(props: TransferListProps): JSX.Element {
   const handleRuleDialogClose = (confirmed: boolean, inputValue? : string) => {
 
     if (confirmed && inputValue && currentRule) {
+
       const newRule:Rule = {
         id: idCounter.current++,
         type: currentRule,
         name: inputValue
       }
 
-      const newRules = [...right, newRule];
+      props.setExercise(prev => {
+        const alreadyExists = prev.rules.some(
+          rule =>
+            rule.type === newRule.type &&
+            rule.name === newRule.name
+        );
 
-      setRight(newRules);
+        if (alreadyExists) {
+          enqueueSnackbar("Ya existe ese tipo de regla con el mismo nombre!", {
+            variant: "error"
+          });
+          return prev;
+        }
 
-      props.setExercise(prev => ({
-        ...prev,
-        rules: newRules
-      }));
+        return {
+          ...prev,
+          rules: [...prev.rules, newRule]
+        };
+      });
     }
 
     const next = pendingRules.slice(1);
@@ -143,13 +156,10 @@ export default function TransferList(props: TransferListProps): JSX.Element {
 
 
   const handleCheckedLeft = () => {
-    const newRules = not(right, rightChecked);
-
-    setRight(newRules);
 
     props.setExercise(prev => ({
       ...prev,
-      rules: newRules
+      rules: not(prev.rules, rightChecked)
     }));
 
     setChecked(prev => prev.filter(id => !rightChecked.has(id)));
@@ -256,7 +266,7 @@ export default function TransferList(props: TransferListProps): JSX.Element {
                 </Button>
             </Grid>
         </Grid>
-        <Grid>{rightList(right)}</Grid>
+        <Grid>{rightList(props.exercise.rules)}</Grid>
       </Grid>
     </>
   );

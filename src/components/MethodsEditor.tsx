@@ -31,7 +31,7 @@ export default function MethodsEditor({
       return prevFiles.map(file => {
         if (file.name !== trimmedFilename) return file;
 
-        const fileMethods  = file.editableMethods ?? [];
+        const fileMethods = file.editableMethods ?? [];
 
         const exists = fileMethods.some(m => m.name === trimmedName);
 
@@ -45,7 +45,8 @@ export default function MethodsEditor({
 
         const newMethod: EditableMethod = {
           name: trimmedName,
-          line: -1,
+          startLine: -1,
+          endLine: -1,
         };
 
           return {

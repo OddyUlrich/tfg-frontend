@@ -45,10 +45,10 @@ export function ExerciseEditor() {
 
   //Exercise data
   const [exercise, setExercise] = useState<Exercise>({
-    id: "",
+    id: null,
     name: "",
-    nameFromBattery: "",
     statement: "",
+    nameFromBattery: "",
     rules: [],
     tags: [],
     successCondition: "",
@@ -441,16 +441,25 @@ export function ExerciseEditor() {
     e.preventDefault();
 
     const controller = new AbortController();
-    const method = isEdit ? "PATCH" : "POST"
+
+    let method;
+    let URI;
+
+    if (isEdit){
+      method = "PATCH";
+      URI = "http://localhost:8080/exercises/" + exerciseId;
+    }else{
+      method = "POST";
+      URI = "http://localhost:8080/exercises";
+    }
 
     try {
-
       const response = await fetch(
-        "http://localhost:8080/exercises/" + exerciseId,
+        URI,
         {
           method: method,
           body: JSON.stringify({
-            exercise: exercise,
+            exercise: {...exercise, tags: exercise.tags.map(tag => tag.name)},
             files: templateFiles
           }),
           headers: {
@@ -461,16 +470,20 @@ export function ExerciseEditor() {
         }
       );
 
-      if (response.status === 401) {
-        loginStatus.setIsLogged(false);
-        navigate("/login");
-        return;
-      }
+      await errorHandler(response, "No tienes permisos para crear un nuevo ejercicio", "Ya existe un ejercicio con ese nombre y esa batería");
+      navigate("/");
+      enqueueSnackbar("¡Ejercicio creado correctamente!", {
+        variant: "success"
+      });
 
     } catch (error: any) {
       if (error.name !== "AbortError") {
         console.log("Network error: " + error.message);
+        enqueueSnackbar(error.message, {
+          variant: "error"
+        });
       }
+      return;
     }
   };
 
@@ -672,7 +685,7 @@ export function ExerciseEditor() {
                      color: "#888",
                      cursor: "pointer"
                    }}>
-                <CustomTransferList setExercise={setExercise}/>
+                <CustomTransferList exercise={exercise} setExercise={setExercise}/>
               </Box>
 
               <Box
