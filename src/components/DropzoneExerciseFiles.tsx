@@ -80,6 +80,7 @@ export function DropzoneExerciseFiles({handleDrop}: DropzoneProps) {
               <p style={{ whiteSpace: "pre-line" }}>
                 Arrastra y suelta el archivo .zip aquí o haz clic para seleccionar
                 {"\n"}El .zip debe contener todos los ficheros del ejercicio
+                {"\n"}En el .zip solo debería haber ficheros .java, .txt o .md
               </p>
               <p>Máximo 16 MB</p>
             </Box>

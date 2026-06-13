@@ -78,6 +78,7 @@ export function ExerciseEditor() {
   const handleBatteryDialogClose = async (confirmed: boolean, inputValue? : string) => {
 
     if (!confirmed || !inputValue) {
+      setOpenBatteryDialog(false);
       return;
     }
 
@@ -133,6 +134,7 @@ export function ExerciseEditor() {
   const handleTagDialogClose = async (confirmed: boolean, inputValue? : string) => {
 
     if (!confirmed || !inputValue) {
+      setOpenTagDialog(false);
       return;
     }
 
@@ -432,11 +434,6 @@ export function ExerciseEditor() {
       });
     };
 
-
-    /******************************/
-   /*       Submit exercise      */
-  /******************************/
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -459,7 +456,11 @@ export function ExerciseEditor() {
         {
           method: method,
           body: JSON.stringify({
-            exercise: {...exercise, tags: exercise.tags.map(tag => tag.name)},
+            exercise: {
+              ...exercise,
+              tags: exercise.tags.map(tag => tag.name),
+              rules: exercise.rules.map(rule => ({name: rule.name, type: rule.type})),
+            },
             files: templateFiles
           }),
           headers: {
@@ -470,7 +471,9 @@ export function ExerciseEditor() {
         }
       );
 
-      await errorHandler(response, "No tienes permisos para crear un nuevo ejercicio", "Ya existe un ejercicio con ese nombre y esa batería");
+      await errorHandler(response,
+        "No tienes permisos para crear un nuevo ejercicio",
+        "Ya existe un ejercicio con ese nombre y esa batería");
       navigate("/");
       enqueueSnackbar("¡Ejercicio creado correctamente!", {
         variant: "success"
@@ -583,9 +586,6 @@ export function ExerciseEditor() {
                   </IconButton>
                 </Tooltip>
               </Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-
-              </Typography>
 
               <Box
                 sx={{

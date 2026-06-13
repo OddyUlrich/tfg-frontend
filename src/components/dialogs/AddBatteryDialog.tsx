@@ -28,7 +28,11 @@ export const AddBatteryDialog: React.FC<AlertDialogProps> = ({open, handleClose}
     <div>
       <Dialog
         open={open}
-        onClose={handleClose}
+        onClose={(_, reason) => {
+          if (reason === "backdropClick" || reason === "escapeKeyDown") {
+            handleClose(false);
+          }
+        }}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         fullWidth

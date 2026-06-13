@@ -4,13 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="TransferList.tsx ahora actualiza ejercicio en vez de utilizar una variable diferente y se encarga de agregar o borrar reglas correctamente&#10;ExerciseEditor.tsx sufrió cambios necesarios para esto">
+    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/proyect.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MethodsEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MethodsEditor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/TransferList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TransferList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/DropzoneExerciseFiles.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DropzoneExerciseFiles.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/dialogs/AddBatteryDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dialogs/AddBatteryDialog.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/dialogs/AddTagDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dialogs/AddTagDialog.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Login.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,61 +64,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0022748711732845" />
-      <entry key="MS500" value="1.3115420103373616" />
-      <entry key="S2" value="2.0903475154528826" />
-      <entry key="S5" value="2.5521416720769743" />
-      <entry key="S10" value="2.8401563015746474" />
-      <entry key="S30" value="3.3736495394946076" />
-      <entry key="S60" value="3.994727965562749" />
-      <entry key="M2" value="6.0117431393150795" />
-      <entry key="M5" value="11.718914122343433" />
-      <entry key="M10" value="18.266695946273632" />
-      <entry key="M15" value="23.647164510634877" />
-      <entry key="M30" value="37.01285188853325" />
-      <entry key="H1" value="59.66241853499803" />
-      <entry key="H2" value="117.43818387899672" />
-      <entry key="H4" value="225.03730189512328" />
-      <entry key="D1" value="466.8500785041195" />
-      <entry key="W1" value="537.0953062461393" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0000000004414924" />
+      <entry key="S10" value="1.000069834330194" />
+      <entry key="S30" value="1.2137618128709327" />
+      <entry key="S60" value="2.5996348353445597" />
+      <entry key="M2" value="5.380086612950728" />
+      <entry key="M5" value="9.169678605036964" />
+      <entry key="M10" value="13.086855145415978" />
+      <entry key="M15" value="18.280096546614814" />
+      <entry key="M30" value="37.90737320707084" />
+      <entry key="H1" value="78.70570497273953" />
+      <entry key="H2" value="155.22243614173973" />
+      <entry key="H4" value="286.0063485702426" />
+      <entry key="D1" value="641.7908526085469" />
+      <entry key="W1" value="762.1167756573462" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="3.493578863897051E-18" />
-      <entry key="MS500" value="3.2259238419391243E-4" />
-      <entry key="S2" value="0.13401812191096332" />
-      <entry key="S5" value="0.44757457817480417" />
-      <entry key="S10" value="0.6690101480359795" />
-      <entry key="S30" value="0.8746648791191768" />
-      <entry key="S60" value="0.9431414986977688" />
-      <entry key="M2" value="1.063896045864625" />
-      <entry key="M5" value="1.5242454089764912" />
-      <entry key="M10" value="2.2062576863182075" />
-      <entry key="M15" value="2.8866669287006617" />
-      <entry key="M30" value="5.077615533678654" />
-      <entry key="H1" value="9.802652083132239" />
-      <entry key="H2" value="23.258325084327957" />
-      <entry key="H4" value="50.00200173951222" />
-      <entry key="D1" value="112.91412745465466" />
-      <entry key="W1" value="131.56174082375568" />
+      <entry key="MS100" value="8.775593286751513E-7" />
+      <entry key="MS500" value="0.06146887962664052" />
+      <entry key="S2" value="0.49792487654722906" />
+      <entry key="S5" value="0.7565985937284724" />
+      <entry key="S10" value="0.869826760756688" />
+      <entry key="S30" value="0.9545769023012943" />
+      <entry key="S60" value="0.9770245151126844" />
+      <entry key="M2" value="0.9884671780730758" />
+      <entry key="M5" value="1.0224290197213846" />
+      <entry key="M10" value="1.4831462326396785" />
+      <entry key="M15" value="2.4782074830972056" />
+      <entry key="M30" value="6.648102701482351" />
+      <entry key="H1" value="14.685842571715375" />
+      <entry key="H2" value="28.56855394819399" />
+      <entry key="H4" value="55.01949837002991" />
+      <entry key="D1" value="137.10790482573785" />
+      <entry key="W1" value="166.3808701175476" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.8307198934721155" />
-      <entry key="MS500" value="1.2469581676762167" />
-      <entry key="S2" value="2.160897305090538" />
-      <entry key="S5" value="2.9357799189033122" />
-      <entry key="S10" value="3.4580509657724607" />
-      <entry key="S30" value="4.218207538539455" />
-      <entry key="S60" value="4.9168925749406815" />
-      <entry key="M2" value="7.056274640329985" />
-      <entry key="M5" value="13.224901429621852" />
-      <entry key="M10" value="20.457569029315223" />
-      <entry key="M15" value="26.519792110282545" />
-      <entry key="M30" value="42.0776028218481" />
-      <entry key="H1" value="69.45331594014979" />
-      <entry key="H2" value="140.6843114597072" />
-      <entry key="H4" value="275.02694014290296" />
-      <entry key="D1" value="579.7596200526236" />
-      <entry key="W1" value="668.6562834139214" />
+      <entry key="MS100" value="0.01709833913650873" />
+      <entry key="MS500" value="0.4520415049513071" />
+      <entry key="S2" value="1.12264146505699" />
+      <entry key="S5" value="1.5451480896585579" />
+      <entry key="S10" value="1.749692477764475" />
+      <entry key="S30" value="2.1243683301924268" />
+      <entry key="S60" value="3.553635060473967" />
+      <entry key="M2" value="6.3563639651248485" />
+      <entry key="M5" value="10.186394806910782" />
+      <entry key="M10" value="14.562575107841585" />
+      <entry key="M15" value="20.74632716791356" />
+      <entry key="M30" value="44.53522624514862" />
+      <entry key="H1" value="93.36966253312734" />
+      <entry key="H2" value="183.77181297358823" />
+      <entry key="H4" value="341.0094953028472" />
+      <entry key="D1" value="778.8926696086527" />
+      <entry key="W1" value="928.4966049266851" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -426,7 +430,16 @@
       <workItem from="1779314022005" duration="12085000" />
       <workItem from="1779399203269" duration="1207000" />
       <workItem from="1779747270150" duration="7740000" />
-      <workItem from="1779998411893" duration="12274000" />
+      <workItem from="1779998411893" duration="13825000" />
+      <workItem from="1780084392375" duration="6524000" />
+      <workItem from="1780277470238" duration="4974000" />
+      <workItem from="1780307962473" duration="8667000" />
+      <workItem from="1780442821891" duration="206000" />
+      <workItem from="1780521291876" duration="4241000" />
+      <workItem from="1780536482913" duration="1467000" />
+      <workItem from="1780685263536" duration="2769000" />
+      <workItem from="1780913280662" duration="6347000" />
+      <workItem from="1781113626991" duration="8690000" />
     </task>
     <task id="LOCAL-00001" summary="Agregada aclaracion en AlreadyAuth sobre funcionamiento; acabada TransferList y RuleDialog para la creacion de nuevas normas para los ejercicios; agregado abortController en ExerciseEditor por si se cambia de pagina mientras se hace fetch del ejercicio permitiendo cancelarse. Cambio menor en ExerciseRow.tsx">
       <option name="closed" value="true" />
@@ -500,7 +513,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779841261396</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="ExerciseEditor.tsx ya no uso string vacío para el ID del ejercicio sino null y se ha modificado las URIs del submit, así como otros cambios menores&#10;Cambiado Types.ts para que EditableMethod tenga línea de comienzo y de final. MethodsEditor.tsx refleja esto.&#10;TransferList.tsx ya no usa &quot;right&quot; para las reglas de la parte derecha de la transfer list, ya se usa directamente las rules del exercise.">
+      <option name="closed" value="true" />
+      <created>1780017260400</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1780017260400</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -573,7 +594,8 @@
     <MESSAGE value="Cambiada la gestión de errores en ExerciseEditor.tsx para utilizar &quot;useErrorHandler&quot;. Creación de tags añadida." />
     <MESSAGE value="MethodsEditor.tsx ahora actualiza correctamente los métodos en &quot;TemplateFiles&quot; directamente para ser enviados al backend. Pendiente de que la TransferList.tsx actualice el exercise con las nuevas rules y no tener que añadirlas más tarde. El resto de cambios son debido a lo comentado anteriormente o cambios menores." />
     <MESSAGE value="TransferList.tsx ahora actualiza ejercicio en vez de utilizar una variable diferente y se encarga de agregar o borrar reglas correctamente&#10;ExerciseEditor.tsx sufrió cambios necesarios para esto" />
-    <option name="LAST_COMMIT_MESSAGE" value="TransferList.tsx ahora actualiza ejercicio en vez de utilizar una variable diferente y se encarga de agregar o borrar reglas correctamente&#10;ExerciseEditor.tsx sufrió cambios necesarios para esto" />
+    <MESSAGE value="ExerciseEditor.tsx ya no uso string vacío para el ID del ejercicio sino null y se ha modificado las URIs del submit, así como otros cambios menores&#10;Cambiado Types.ts para que EditableMethod tenga línea de comienzo y de final. MethodsEditor.tsx refleja esto.&#10;TransferList.tsx ya no usa &quot;right&quot; para las reglas de la parte derecha de la transfer list, ya se usa directamente las rules del exercise." />
+    <option name="LAST_COMMIT_MESSAGE" value="ExerciseEditor.tsx ya no uso string vacío para el ID del ejercicio sino null y se ha modificado las URIs del submit, así como otros cambios menores&#10;Cambiado Types.ts para que EditableMethod tenga línea de comienzo y de final. MethodsEditor.tsx refleja esto.&#10;TransferList.tsx ya no usa &quot;right&quot; para las reglas de la parte derecha de la transfer list, ya se usa directamente las rules del exercise." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

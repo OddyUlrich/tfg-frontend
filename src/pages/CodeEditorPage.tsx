@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   MonacoEditor,
   RangeRestrictionObject
@@ -8,14 +8,12 @@ import {
   CodeEditorData,
   ErrorSpring,
   ExerciseFile,
-  LoginTypes,
   MyTreeNode
 } from "../Types";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Allotment } from "allotment";
 import { createTree, FileTree } from "../components/tree/FileTree";
 import { Box, CircularProgress, Switch } from "@mui/material";
-import { LoginContext } from "../Utils";
 import { TreeStructure } from "../TreeStructure";
 import { MyTab } from "../components/EditorTabs";
 import { editor, Uri } from "monaco-editor";
@@ -34,8 +32,6 @@ import { enqueueSnackbar } from "notistack";
 export function CodeEditorPage() {
   const location = useLocation();
   const [openSaveDialog, setOpenSaveDialog] = React.useState(false);
-  const loginStatus: LoginTypes = useContext(LoginContext);
-  const navigate = useNavigate();
   const [exerciseName, setExerciseName] = useState<string>();
   const [currentSolutionId, setCurrentSolutionId] = useState<string | null>(
     null
@@ -250,11 +246,11 @@ export function CodeEditorPage() {
     const model = codeEditor.getModel();
 
     constrainedInstance.initializeIn(codeEditor);
-    // restrictions.push({
-    //   range: [1, 1, 2, 10],
-    //   allowMultiline: true,
-    // });
-    // constrainedInstance.addRestrictionsTo(model, restrictions);
+     restrictions.push({
+       range: [1, 1, 2, 10],
+       allowMultiline: true,
+     });
+     constrainedInstance.addRestrictionsTo(model, restrictions);
   }
 
   //Function for handling the event of selecting a node from the tree
