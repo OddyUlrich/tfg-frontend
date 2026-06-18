@@ -1,13 +1,13 @@
 import { createTree, FileTree } from "../components/tree/FileTree";
 import React, {useContext, useEffect, useState } from "react";
-import { Box, IconButton, List, ListItem, Tooltip } from "@mui/material";
+import { Box, Divider, IconButton, List, ListItem, Paper, Tooltip } from "@mui/material";
 import {
   BatteryExercise,
   EditorExerciseData,
   ErrorSpring, Exercise,
   ExerciseFile,
   LoginTypes,
-  MyTreeNode,
+  MyTreeNode, ProcessedRules, Rule,
   Tag,
 } from "../Types";
 import { TreeStructure } from "../TreeStructure";
@@ -17,7 +17,6 @@ import Container from "@mui/material/Container";
 import { LoginContext, useErrorHandler } from "../Utils";
 import TextField from "@mui/material/TextField";
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
-import CustomTransferList from "../components/TransferList";
 import { DropzoneExerciseFiles } from "../components/DropzoneExerciseFiles";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
@@ -26,8 +25,8 @@ import { AddBatteryDialog } from "../components/dialogs/AddBatteryDialog";
 import { AddTagDialog } from "../components/dialogs/AddTagDialog";
 import JSZip from "jszip";
 import { enqueueSnackbar } from "notistack";
-import MethodsEditor from "../components/MethodsEditor";
 import Button from "@mui/material/Button";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 export function ExerciseEditor() {
 
@@ -49,10 +48,13 @@ export function ExerciseEditor() {
     name: "",
     statement: "",
     nameFromBattery: "",
-    rules: [],
+    requiredRules: [],
+    forbiddenRules: [],
     tags: [],
     successCondition: "",
   });
+
+  const [unproccessedRules, setUnproccessedRules] = React.useState<string>();
 
   const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>([]);
 
@@ -347,7 +349,8 @@ export function ExerciseEditor() {
             name: exerciseData.exercise.name,
             nameFromBattery: exerciseData.exercise.nameFromBattery,
             statement: exerciseData.exercise.statement,
-            rules: exerciseData.exercise.rules,
+            requiredRules: exerciseData.exercise.requiredRules,
+            forbiddenRules: exerciseData.exercise.forbiddenRules,
             tags: exerciseData.exercise.tags,
             successCondition: exerciseData.exercise.successCondition,
           }
@@ -459,7 +462,6 @@ export function ExerciseEditor() {
             exercise: {
               ...exercise,
               tags: exercise.tags.map(tag => tag.name),
-              rules: exercise.rules.map(rule => ({name: rule.name, type: rule.type})),
             },
             files: templateFiles
           }),
@@ -478,6 +480,54 @@ export function ExerciseEditor() {
       enqueueSnackbar("¡Ejercicio creado correctamente!", {
         variant: "success"
       });
+
+    } catch (error: any) {
+      if (error.name !== "AbortError") {
+        console.log("Network error: " + error.message);
+        enqueueSnackbar(error.message, {
+          variant: "error"
+        });
+      }
+      return;
+    }
+  };
+
+  const ruleProcessing = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const controller = new AbortController();
+
+    try {
+      const response = await fetch(
+        "http://localhost:8080/exercises/rules",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            rules: { unproccessedRules }
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+          signal: controller.signal,
+        }
+      );
+
+      if (response.status === 500) {
+        throw new Error("Actualmente no podemos procesar sus reglas con esta IA, seleccione otra");
+      }else{
+        await errorHandler(response, "No tienes permisos para crear nuevas reglas");
+      }
+
+      const processedRules: ProcessedRules = await response.json();
+
+      setExercise(prev => {
+        return {
+          ...prev,
+          requiredRules: processedRules.requiredRules,
+          forbiddenRules: processedRules.forbiddenRules,
+        }
+      })
 
     } catch (error: any) {
       if (error.name !== "AbortError") {
@@ -568,7 +618,7 @@ export function ExerciseEditor() {
         <Container maxWidth="lg">
           <Box sx={{ display: "flex", gap: 8 , marginTop: 2, justifyContent: "center", alignItems: "flex-start" }}>
             <Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 4, marginBottom: 0 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 10, marginBottom: 0 }}>
                 <Typography variant="h6">
                   Archivos
                 </Typography>
@@ -610,59 +660,11 @@ export function ExerciseEditor() {
 
               </Box>
 
-
-              <Box sx={{marginTop: 6}}>
-
-                <MethodsEditor
-                  filenames={templateFiles.map(file => file.name)}
-                  templateFiles={templateFiles}
-                  setTemplateFiles={setTemplateFiles}
-                />
-              </Box>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 6, marginBottom: 0 }}>
-                <Typography variant="h6">
-                  Condición de éxito
-                </Typography>
-                <Tooltip title="Aquello que quieras que el alumno saque por consola al finalizar el programa. Escribe el texto exacto, por favor."
-                slotProps={{
-                  tooltip: {
-                    sx: {
-                      fontSize: "1rem",
-                      maxWidth: 500
-                    }
-                  }
-                }}>
-                  <IconButton size="small">
-                    <Info color="action" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-
-              <TextField
-                margin="normal"
-                variant={"outlined"}
-                required
-                fullWidth
-                multiline={true}
-                id="successCondition"
-                name="successCondition"
-                rows={4}
-                onChange={(e) => {
-                  setExercise({...exercise, successCondition: e.target.value})
-                }}
-                placeholder={"Ejemplo:\n> El sumatorio de floats es 27.5"}
-                sx={{ whiteSpace: "pre-line" }}
-              />
-
-            </Box>
-
-            <Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 4, marginBottom: 0 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 10, marginBottom: 0 }}>
                 <Typography variant="h6">
                   Reglas
                 </Typography>
-                <Tooltip title="Aquellas clases, variables y funciones que quieres que aparezcan en el código del alumno"
+                <Tooltip title="Toda obligación o prohibición que quieras que el ejercicio tenga en cuenta a la hora de examinar el ejercicio, además de que funcione correctamente."
                 slotProps={{
                   tooltip: {
                      sx: {
@@ -676,16 +678,120 @@ export function ExerciseEditor() {
                     </IconButton>
                 </Tooltip>
               </Box>
+              <Box sx={{ mt: 2 }}>
 
-              <Box width={700}
-                   sx={{
-                     border: "2px groove #ccc",
-                     borderRadius: 2,
-                     padding: 4,
-                     color: "#888",
-                     cursor: "pointer"
-                   }}>
-                <CustomTransferList exercise={exercise} setExercise={setExercise}/>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 3,
+                    alignItems: "stretch"
+                  }}
+                >
+                  <Paper
+                    elevation={2}
+                    sx={{
+                      flex: 1,
+                      p: 2,
+                      display: "flex",
+                      flexDirection: "column"
+                    }}
+                  >
+
+                    <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600}}>
+
+                      Descripción libre
+                    </Typography>
+
+                    <TextField
+                      multiline
+                      rows={14}
+                      fullWidth
+                      placeholder={
+                        "Escribe aquí las reglas del ejercicio...\n\nEj.: los alumnos no deben usar un bucle for, sino un bucle while con la variable 'var'."
+                      }
+                      onChange={(e) => {
+                        setUnproccessedRules(e.target.value);
+                      }}
+                    />
+
+                    <Button
+                      variant="contained"
+                      startIcon={<AutoAwesomeIcon />}
+                      sx={{
+                        mt: 2,
+                        alignSelf: "center",
+                        width: 220
+                      }}
+                      onClick={ruleProcessing}
+                    >
+                      Procesar
+                    </Button>
+
+                  </Paper>
+
+
+                  {/* PANEL DERECHO */}
+
+                  <Paper
+                    elevation={2}
+                    sx={{
+                      flex: 1,
+                      p: 2,
+                      minHeight: 430,
+                    }}
+                  >
+                    <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 , textAlign: "center" }}>
+                      Reglas detectadas
+                    </Typography>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 4,
+                        alignItems: "stretch",
+                      }}
+                    >
+
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ mb: 1, textAlign: "center", opacity: 0.8 }}
+                        >
+                          Obligaciones
+                        </Typography>
+
+                        <List dense>
+                          {exercise.requiredRules.map((rule, index) => (
+                            <ListItem key={index}>
+                              <ListItemText primary={rule.description} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Box>
+
+                      <Divider orientation="vertical" flexItem />
+
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ mb: 1, textAlign: "center", opacity: 0.8  }}
+                        >
+                          Prohibiciones
+                        </Typography>
+
+                        <List dense>
+                          {exercise.forbiddenRules.map((rule, index) => (
+                            <ListItem key={index}>
+                              <ListItemText primary={rule.description} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Box>
+                    </Box>
+                  </Paper>
+
+                </Box>
+
               </Box>
 
               <Box

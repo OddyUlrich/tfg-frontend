@@ -89,9 +89,12 @@ export type EditableMethod = {
 };
 
 export type Rule = {
-  id: number;
-  type: string
-  name: string;
+  description: string;
+}
+
+export type ProcessedRules = {
+  requiredRules: Rule[];
+  forbiddenRules: Rule[];
 }
 
 export type Exercise = {
@@ -99,7 +102,8 @@ export type Exercise = {
   name: string;
   nameFromBattery: string;
   statement: string;
-  rules: Rule[];
+  requiredRules: Rule[];
+  forbiddenRules: Rule[];
   tags: Tag[];
   successCondition: string;
 };
