@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Evitado que pulsando ESC o Backspace sea el nombre que aparece en las baterías o tags&#10;Prueba de restricción del codeEditor&#10;Arreglos menores y estilo">
+    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Reformateo de ExerciseEditor.tsx para utilizar RequiredRules y ForbiddenRules. Ya no se indicarán los métodos vacíos sino que se sacarán automáticamente con Java Parser en el backend.">
       <change afterPath="$PROJECT_DIR$/src/src.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MethodsEditor.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/TransferList.tsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,61 +57,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0014239552864703" />
-      <entry key="MS500" value="1.352937916160299" />
-      <entry key="S2" value="2.258025732963088" />
-      <entry key="S5" value="2.657229272594936" />
-      <entry key="S10" value="2.819805015526456" />
-      <entry key="S30" value="2.9678130538331007" />
-      <entry key="S60" value="3.3395535093515964" />
-      <entry key="M2" value="5.092066671218733" />
-      <entry key="M5" value="10.229660408136406" />
-      <entry key="M10" value="18.068465159409378" />
-      <entry key="M15" value="27.29860976765187" />
-      <entry key="M30" value="57.297240346061514" />
-      <entry key="H1" value="116.12877595532078" />
-      <entry key="H2" value="216.7572364265356" />
-      <entry key="H4" value="374.2542873684144" />
-      <entry key="D1" value="821.009053108992" />
-      <entry key="W1" value="982.6873686205029" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0000000407420853" />
+      <entry key="S5" value="1.0022544497423709" />
+      <entry key="S10" value="1.0925787914256675" />
+      <entry key="S30" value="2.134145650909341" />
+      <entry key="S60" value="3.3467592971178646" />
+      <entry key="M2" value="7.23291692745202" />
+      <entry key="M5" value="22.283574439476233" />
+      <entry key="M10" value="39.1460075590493" />
+      <entry key="M15" value="51.77599214556324" />
+      <entry key="M30" value="84.84313882981047" />
+      <entry key="H1" value="145.46579370724078" />
+      <entry key="H2" value="248.64783689197307" />
+      <entry key="H4" value="409.6476441895049" />
+      <entry key="D1" value="868.9203486182204" />
+      <entry key="W1" value="1036.4763121635492" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="1.2145287071399808E-217" />
-      <entry key="S2" value="5.9033963999530994E-55" />
-      <entry key="S5" value="2.0344207578841543E-22" />
-      <entry key="S10" value="1.4263312230629148E-11" />
-      <entry key="S30" value="2.4251586028319996E-4" />
-      <entry key="S60" value="0.015577218202787155" />
-      <entry key="M2" value="0.12789536043285257" />
-      <entry key="M5" value="0.7871986807951525" />
-      <entry key="M10" value="3.565152134022258" />
-      <entry key="M15" value="7.0432556071519015" />
-      <entry key="M30" value="15.479451080743946" />
-      <entry key="H1" value="26.692347058799704" />
-      <entry key="H2" value="43.32910647812691" />
-      <entry key="H4" value="71.79771080090443" />
-      <entry key="D1" value="167.43167183104492" />
-      <entry key="W1" value="204.68780236479668" />
+      <entry key="MS100" value="3.624157524743424E-144" />
+      <entry key="MS500" value="2.0504309382729506E-29" />
+      <entry key="S2" value="7.09350926814431E-8" />
+      <entry key="S5" value="0.001773964790234926" />
+      <entry key="S10" value="0.057304387893153244" />
+      <entry key="S30" value="0.6063695279072103" />
+      <entry key="S60" value="1.1035475597845017" />
+      <entry key="M2" value="1.54314688428182" />
+      <entry key="M5" value="2.168282906348538" />
+      <entry key="M10" value="3.5113286775722687" />
+      <entry key="M15" value="5.742167030330596" />
+      <entry key="M30" value="13.11373243494089" />
+      <entry key="H1" value="24.689699389678697" />
+      <entry key="H2" value="42.10086160462795" />
+      <entry key="H4" value="71.22508938826049" />
+      <entry key="D1" value="169.02010427475113" />
+      <entry key="W1" value="207.44053905345186" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.0015146324251453169" />
-      <entry key="MS500" value="0.40937074876000273" />
-      <entry key="S2" value="1.711235585291138" />
-      <entry key="S5" value="2.382522278541351" />
-      <entry key="S10" value="2.670838108749633" />
-      <entry key="S30" value="2.915156793778604" />
-      <entry key="S60" value="3.3265177207613092" />
-      <entry key="M2" value="5.201526987848125" />
-      <entry key="M5" value="11.003661241045405" />
-      <entry key="M10" value="21.62005866844853" />
-      <entry key="M15" value="34.327327312115514" />
-      <entry key="M30" value="72.7613863943695" />
-      <entry key="H1" value="142.8046762305895" />
-      <entry key="H2" value="260.06939243752026" />
-      <entry key="H4" value="446.03602252781576" />
-      <entry key="D1" value="988.4340493567394" />
-      <entry key="W1" value="1187.3739963888695" />
+      <entry key="MS100" value="0.4897101487934634" />
+      <entry key="MS500" value="0.8669375635146866" />
+      <entry key="S2" value="0.9649326274799797" />
+      <entry key="S5" value="0.9894278324603499" />
+      <entry key="S10" value="1.1347706301537805" />
+      <entry key="S30" value="2.7063512648548604" />
+      <entry key="S60" value="4.419319715510193" />
+      <entry key="M2" value="8.754620466195885" />
+      <entry key="M5" value="24.43967296535946" />
+      <entry key="M10" value="42.6471277048325" />
+      <entry key="M15" value="57.507380913746275" />
+      <entry key="M30" value="97.9444017488462" />
+      <entry key="H1" value="170.14090135391697" />
+      <entry key="H2" value="290.73279263692467" />
+      <entry key="H4" value="480.85725080302245" />
+      <entry key="D1" value="1037.933783821552" />
+      <entry key="W1" value="1243.9156709459708" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -437,7 +434,7 @@
       <workItem from="1780913280662" duration="6347000" />
       <workItem from="1781113626991" duration="8861000" />
       <workItem from="1781654873778" duration="3029000" />
-      <workItem from="1781804311163" duration="10699000" />
+      <workItem from="1781804311163" duration="12446000" />
     </task>
     <task id="LOCAL-00001" summary="Agregada aclaracion en AlreadyAuth sobre funcionamiento; acabada TransferList y RuleDialog para la creacion de nuevas normas para los ejercicios; agregado abortController en ExerciseEditor por si se cambia de pagina mientras se hace fetch del ejercicio permitiendo cancelarse. Cambio menor en ExerciseRow.tsx">
       <option name="closed" value="true" />
@@ -527,7 +524,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781318936920</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Reformateo de ExerciseEditor.tsx para utilizar RequiredRules y ForbiddenRules. Ya no se indicarán los métodos vacíos sino que se sacarán automáticamente con Java Parser en el backend.">
+      <option name="closed" value="true" />
+      <created>1781816217519</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1781816217519</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -602,7 +607,8 @@
     <MESSAGE value="TransferList.tsx ahora actualiza ejercicio en vez de utilizar una variable diferente y se encarga de agregar o borrar reglas correctamente&#10;ExerciseEditor.tsx sufrió cambios necesarios para esto" />
     <MESSAGE value="ExerciseEditor.tsx ya no uso string vacío para el ID del ejercicio sino null y se ha modificado las URIs del submit, así como otros cambios menores&#10;Cambiado Types.ts para que EditableMethod tenga línea de comienzo y de final. MethodsEditor.tsx refleja esto.&#10;TransferList.tsx ya no usa &quot;right&quot; para las reglas de la parte derecha de la transfer list, ya se usa directamente las rules del exercise." />
     <MESSAGE value="Evitado que pulsando ESC o Backspace sea el nombre que aparece en las baterías o tags&#10;Prueba de restricción del codeEditor&#10;Arreglos menores y estilo" />
-    <option name="LAST_COMMIT_MESSAGE" value="Evitado que pulsando ESC o Backspace sea el nombre que aparece en las baterías o tags&#10;Prueba de restricción del codeEditor&#10;Arreglos menores y estilo" />
+    <MESSAGE value="Reformateo de ExerciseEditor.tsx para utilizar RequiredRules y ForbiddenRules. Ya no se indicarán los métodos vacíos sino que se sacarán automáticamente con Java Parser en el backend." />
+    <option name="LAST_COMMIT_MESSAGE" value="Reformateo de ExerciseEditor.tsx para utilizar RequiredRules y ForbiddenRules. Ya no se indicarán los métodos vacíos sino que se sacarán automáticamente con Java Parser en el backend." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

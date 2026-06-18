@@ -574,371 +574,281 @@ export function ExerciseEditor() {
       </Box>
 
       <form onSubmit={handleSubmit}>
-      <Container component="main" sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 4, paddingBottom: 12 }}>
-        <Container maxWidth="sm" >
-          <TextField
-            sx={{ marginTop: 1 }}
-            margin="normal"
-            variant={"outlined"}
-            required
-            fullWidth
-            multiline={true}
-            id="ExerciseName"
-            label="Nombre del ejercicio"
-            name="ExerciseName"
-            autoComplete="ExerciseName"
-            value={exercise.name}
-            onChange={(e) => {
-              setExercise({...exercise, name: e.target.value});
-            }}
-            autoFocus
-            slotProps={{ inputLabel: { shrink: true } }}
-          />
+        <Container component="main" sx={{ display: "flex", flexDirection: "column", marginTop: 4, paddingBottom: 12 }}>
 
-          <TextField
-            sx={{ marginTop: 1 }}
-            margin="normal"
-            variant={"outlined"}
-            required
-            fullWidth
-            multiline={true}
-            id="Statement"
-            label="Enunciado del ejercicio"
-            name="Statement"
-            rows={6}
-            autoComplete="Statement"
-            value={exercise.statement ?? ""}
-            onChange={(e) => {
-              setExercise({...exercise, statement: e.target.value});
-            }}
+          {/* SECCIÓN SUPERIOR: Nombre y Enunciado */}
+          <Container maxWidth="sm" sx={{ mb: 4 }}>
+            <TextField
+              sx={{ marginTop: 1 }}
+              margin="normal"
+              variant="outlined"
+              required
+              fullWidth
+              multiline
+              id="ExerciseName"
+              label="Nombre del ejercicio"
+              name="ExerciseName"
+              autoComplete="ExerciseName"
+              value={exercise.name}
+              onChange={(e) => {
+                setExercise({...exercise, name: e.target.value});
+              }}
+              autoFocus
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
 
-          />
-        </Container>
+            <TextField
+              sx={{ marginTop: 1 }}
+              margin="normal"
+              variant="outlined"
+              required
+              fullWidth
+              multiline
+              id="Statement"
+              label="Enunciado del ejercicio"
+              name="Statement"
+              rows={6}
+              autoComplete="Statement"
+              value={exercise.statement ?? ""}
+              onChange={(e) => {
+                setExercise({...exercise, statement: e.target.value});
+              }}
+            />
+          </Container>
 
-        <Container maxWidth="lg">
-          <Box sx={{ display: "flex", gap: 8 , marginTop: 2, justifyContent: "center", alignItems: "flex-start" }}>
-            <Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 10, marginBottom: 0 }}>
-                <Typography variant="h6">
-                  Archivos
-                </Typography>
-                <Tooltip title="Debes subir un .zip con los archivos del ejercicio ya con la estructura deseada"
-                slotProps={{
-                  tooltip: {
-                    sx: {
-                      fontSize: "1rem",
-                      maxWidth: 400
-                    }
-                  }
-                }}>
-                  <IconButton size="small">
-                    <Info color="action" />
-                  </IconButton>
-                </Tooltip>
+          {/* SECCIÓN PRINCIPAL ANCHA */}
+          <Container maxWidth="lg">
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 6, width: "100%", maxWidth: 900, margin: "0 auto" }}>
+
+              {/* 1. ARCHIVOS (Tamaño compacto y centrado horizontalmente) */}
+              <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <Box sx={{ maxWidth: 600, width: "100%" }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                    <Typography variant="h6">Archivos</Typography>
+                    <Tooltip
+                      title="Debes subir un .zip con los archivos del ejercicio ya con la estructura deseada"
+                      slotProps={{ tooltip: { sx: { fontSize: "1rem", maxWidth: 400 } } }}
+                    >
+                      <IconButton size="small">
+                        <Info color="action" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      border: "2px solid #ccc",
+                      borderRadius: 2,
+                      px: 4,
+                      pt: 3,
+                      pb: 4,
+                      cursor: "pointer",
+                      width: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 2,
+                      bgcolor: "background.paper"
+                    }}
+                  >
+                    <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                      <FileTree
+                        expand={true}
+                        onNodeSelect={() => null}
+                        parents={parentsIdList}
+                        nodeId={rootNode?.nodeId}
+                        label={rootNode?.label}
+                        children={rootNode?.children}
+                      />
+                    </Box>
+                    <DropzoneExerciseFiles handleDrop={accept} />
+                  </Box>
+                </Box>
               </Box>
 
-              <Box
-                sx={{
-                  border: "2px solid #ccc",
-                  borderRadius: 2,
-                  paddingLeft: 4,
-                  paddingRight: 4,
-                  paddingTop: 1,
-                  paddingBottom: 4,
-                  cursor: "pointer"
-                }}>
-
-                <FileTree
-                  expand={true}
-                  onNodeSelect={() => null}
-                  parents={parentsIdList}
-                  nodeId={rootNode?.nodeId}
-                  label={rootNode?.label}
-                  children={rootNode?.children}
-                />
-                <DropzoneExerciseFiles handleDrop={accept} />
-
-              </Box>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 10, marginBottom: 0 }}>
-                <Typography variant="h6">
-                  Reglas
-                </Typography>
-                <Tooltip title="Toda obligación o prohibición que quieras que el ejercicio tenga en cuenta a la hora de examinar el ejercicio, además de que funcione correctamente."
-                slotProps={{
-                  tooltip: {
-                     sx: {
-                       fontSize: "1rem",
-                       maxWidth: 400
-                     }
-                   }
-                  }}>
+              {/* 2. REGLAS (Scroll interno estable y textos autoajustables) */}
+              <Box sx={{ width: "100%" }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                  <Typography variant="h6">Reglas</Typography>
+                  <Tooltip
+                    title="Toda obligación o prohibición que quieras que el ejercicio tenga en cuenta a la hora de examinar el ejercicio, además de que funcione correctamente."
+                    slotProps={{ tooltip: { sx: { fontSize: "1rem", maxWidth: 400 } } }}
+                  >
                     <IconButton size="small">
                       <Info color="action" />
                     </IconButton>
-                </Tooltip>
-              </Box>
-              <Box sx={{ mt: 2 }}>
+                  </Tooltip>
+                </Box>
 
                 <Box
                   sx={{
                     display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
                     gap: 3,
-                    alignItems: "stretch"
+                    alignItems: "stretch",
+                    width: "100%"
                   }}
                 >
-                  <Paper
-                    elevation={2}
-                    sx={{
-                      flex: 1,
-                      p: 2,
-                      display: "flex",
-                      flexDirection: "column"
-                    }}
-                  >
-
-                    <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600}}>
-
+                  {/* Panel Izquierdo: Entrada de texto */}
+                  <Paper elevation={2} sx={{ flex: 1, p: 2, display: "flex", flexDirection: "column" }}>
+                    <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
                       Descripción libre
                     </Typography>
-
                     <TextField
                       multiline
                       rows={14}
                       fullWidth
-                      placeholder={
-                        "Escribe aquí las reglas del ejercicio...\n\nEj.: los alumnos no deben usar un bucle for, sino un bucle while con la variable 'var'."
-                      }
-                      onChange={(e) => {
-                        setUnproccessedRules(e.target.value);
-                      }}
+                      placeholder={"Escribe aquí las reglas del ejercicio...\n\nEj.: los alumnos no deben usar un bucle for, sino un bucle while con la variable 'var'."}
+                      onChange={(e) => setUnproccessedRules(e.target.value)}
                     />
-
-                    <Button
-                      variant="contained"
-                      startIcon={<AutoAwesomeIcon />}
-                      sx={{
-                        mt: 2,
-                        alignSelf: "center",
-                        width: 220
-                      }}
-                      onClick={ruleProcessing}
-                    >
-                      Procesar
-                    </Button>
-
+                    <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+                      <Button
+                        variant="contained"
+                        startIcon={<AutoAwesomeIcon />}
+                        sx={{ width: 220 }}
+                        onClick={ruleProcessing}
+                      >
+                        Procesar
+                      </Button>
+                    </Box>
                   </Paper>
 
-
-                  {/* PANEL DERECHO */}
-
-                  <Paper
-                    elevation={2}
-                    sx={{
-                      flex: 1,
-                      p: 2,
-                      minHeight: 430,
-                    }}
-                  >
-                    <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 , textAlign: "center" }}>
+                  {/* Panel Derecho: Reglas procesadas con scroll de seguridad */}
+                  <Paper elevation={2} sx={{ flex: 1, p: 2, display: "flex", flexDirection: "column", minWidth: 0 }}>
+                    <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, textAlign: "center" }}>
                       Reglas detectadas
                     </Typography>
 
-                    <Box
-                      sx={{
-                        display: "flex",
-                        gap: 4,
-                        alignItems: "stretch",
-                      }}
-                    >
+                    <Box sx={{ display: "flex", gap: 2, flex: 1, minHeight: 350 }}>
 
-                      <Box sx={{ flex: 1 }}>
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ mb: 1, textAlign: "center", opacity: 0.8 }}
-                        >
+                      {/* Obligaciones */}
+                      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                        <Typography variant="subtitle2" sx={{ mb: 1, textAlign: "center", opacity: 0.8 }}>
                           Obligaciones
                         </Typography>
-
-                        <List dense>
-                          {exercise.requiredRules.map((rule, index) => (
-                            <ListItem key={index}>
-                              <ListItemText primary={rule.description} />
-                            </ListItem>
-                          ))}
-                        </List>
+                        <Box sx={{ flex: 1, maxHeight: 320, overflowY: "auto", border: "1px dashed #eee", borderRadius: 1 }}>
+                          <List dense>
+                            {exercise.requiredRules.map((rule, index) => (
+                              <ListItem key={index} disablePadding sx={{ px: 1, py: 0.5 }}>
+                                <ListItemText
+                                  primary={rule.description}
+                                  slotProps={{
+                                    primary: {
+                                      sx: { wordBreak: "break-word", fontSize: "0.875rem" }
+                                    }
+                                  }}
+                                />
+                              </ListItem>
+                            ))}
+                          </List>
+                        </Box>
                       </Box>
 
                       <Divider orientation="vertical" flexItem />
 
-                      <Box sx={{ flex: 1 }}>
-                        <Typography
-                          variant="subtitle2"
-                          sx={{ mb: 1, textAlign: "center", opacity: 0.8  }}
-                        >
+                      {/* Prohibiciones */}
+                      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                        <Typography variant="subtitle2" sx={{ mb: 1, textAlign: "center", opacity: 0.8 }}>
                           Prohibiciones
                         </Typography>
-
-                        <List dense>
-                          {exercise.forbiddenRules.map((rule, index) => (
-                            <ListItem key={index}>
-                              <ListItemText primary={rule.description} />
-                            </ListItem>
-                          ))}
-                        </List>
+                        <Box sx={{ flex: 1, maxHeight: 320, overflowY: "auto", border: "1px dashed #eee", borderRadius: 1 }}>
+                          <List dense>
+                            {exercise.forbiddenRules.map((rule, index) => (
+                              <ListItem key={index} disablePadding sx={{ px: 1, py: 0.5 }}>
+                                <ListItemText
+                                  primary={rule.description}
+                                  slotProps={{
+                                    primary: {
+                                      sx: { wordBreak: "break-word", fontSize: "0.875rem" }
+                                    }
+                                  }}
+                                />
+                              </ListItem>
+                            ))}
+                          </List>
+                        </Box>
                       </Box>
+
                     </Box>
                   </Paper>
-
                 </Box>
-
               </Box>
 
-              <Box
-                maxWidth={700}
-                sx={{
-                  position: "relative",
-                  marginTop: 10
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 4, marginBottom: 0 }}>
-                  <Typography variant="h6">
-                    Batería de Ejercicios
-                  </Typography>
-                  <Tooltip title="Los ejercicios de la página principal se agruparán en estas categorías"
-                  slotProps={{
-                    tooltip: {
-                      sx: {
-                        fontSize: "1rem",
-                        maxWidth: 300
-                      }
-                    }
-                  }}>
-                    <IconButton size="small">
-                      <Info color="action" />
-                    </IconButton>
-                  </Tooltip>
+              {/* 3. BATERÍA DE EJERCICIOS */}
+              <Box sx={{ width: "100%" }}>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", mb: 2 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography variant="h6">Batería de Ejercicios</Typography>
+                    <Tooltip
+                      title="Los ejercicios de la página principal se agruparán en estas categorías"
+                      slotProps={{ tooltip: { sx: { fontSize: "1rem", maxWidth: 300 } } }}
+                    >
+                      <IconButton size="small">
+                        <Info color="action" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                  <IconButton color="primary" onClick={handleBatteryDialogOpen} sx={{ position: "absolute", right: 0 }}>
+                    <Add />
+                  </IconButton>
                 </Box>
 
-                <IconButton
-                  color="primary"
-                  onClick={handleBatteryDialogOpen}
-                  sx={{
-                    position: "absolute",
-                    right: 0,
-                    bottom: 0
-                  }}
-                >
-                  <Add />
-                </IconButton>
+                <Box sx={{ border: "2px groove #ccc", borderRadius: 2, p: 2, bgcolor: "background.paper", width: "100%" }}>
+                  <nav aria-label="Batteries">
+                    <List sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 1 }}>
+                      {Array.from(allExerciseBatteries ?? []).map((battery) => (
+                        <ListItem key={battery.name} disablePadding>
+                          <ListItemButton
+                            sx={{ borderRadius: 1, backgroundColor: exercise.nameFromBattery && exercise.nameFromBattery === battery.name ? 'rgba(155, 155, 155, 0.4)' : 'transparent'}}
+                            onClick={() => handleExerciseBatteryClick(battery)}
+                          >
+                            <ListItemText primary={battery.name} />
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </nav>
+                </Box>
               </Box>
 
-              <Box
-                maxWidth={700}
-                sx={{
-                  border: "2px groove #ccc",
-                  borderRadius: 2,
-                  padding: 2,
-                  marginTop: 0,
-                  cursor: "pointer",
-                  width: "100%",
-                  bgcolor: "background.paper"
-                }}
-              >
-                <nav aria-label="Batterys">
-                  <List
-                    sx={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(3, 1fr)",
-                      gap: 1
-                    }}
-                  >
-                    {Array.from(allExerciseBatteries ?? []).map((battery) => (
-                      <ListItem key={battery.name} sx={{ margin: 0, padding: 0, width: "200px" }}>
-                        <ListItemButton sx={{backgroundColor: exercise.nameFromBattery && exercise.nameFromBattery === battery.name ? 'rgba(155, 155, 155, 0.4)' : 'transparent'}} onClick={() => handleExerciseBatteryClick(battery)}>
-                          <ListItemText primary={battery.name} />
+              {/* 4. TAGS */}
+              <Box sx={{ width: "100%" }}>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", mb: 2 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography variant="h6">Tags</Typography>
+                    <Tooltip
+                      title="Estas etiquetas señalan qué tareas se requieren hacer en el ejercicio"
+                      slotProps={{ tooltip: { sx: { fontSize: "1rem", maxWidth: 300 } } }}
+                    >
+                      <IconButton size="small">
+                        <Info color="action" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                  <IconButton color="primary" onClick={handleTagDialogOpen} sx={{ position: "absolute", right: 0 }}>
+                    <Add />
+                  </IconButton>
+                </Box>
+
+                <Box sx={{ border: "2px groove #ccc", borderRadius: 2, p: 2, bgcolor: "background.paper", width: "100%" }}>
+                  <List sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 1 }}>
+                    {Array.from(allTags ?? []).map((tag) => (
+                      <ListItem key={tag.name} disablePadding>
+                        <ListItemButton
+                          sx={{ borderRadius: 1, backgroundColor: exercise.tags && exercise.tags.some(knownTags => knownTags.name === tag.name) ? 'rgba(155, 155, 155, 0.4)' : 'transparent'}}
+                          onClick={() => handleTagClick(tag)}
+                        >
+                          <ListItemText primary={tag.name} />
                         </ListItemButton>
                       </ListItem>
                     ))}
                   </List>
-                </nav>
-              </Box>
-
-              <Box
-                maxWidth={700}
-                sx={{
-                  position: "relative",
-                  marginTop: 10
-                }}
-              >
-
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 4, marginBottom: 0 }}>
-                  <Typography variant="h6">
-                    Tags
-                  </Typography>
-                  <Tooltip title="Estas etiquetas señalan qué tareas se requieren hacer en el ejercicio"
-                   slotProps={{
-                    tooltip: {
-                      sx: {
-                        fontSize: "1rem",
-                        maxWidth: 300
-                      }
-                    }
-                  }}>
-                    <IconButton size="small">
-                      <Info color="action" />
-                    </IconButton>
-                  </Tooltip>
                 </Box>
-
-                <IconButton
-                  color="primary"
-                  onClick={handleTagDialogOpen}
-                  sx={{
-                    position: "absolute",
-                    right: 0,
-                    bottom: 0
-                  }}
-                >
-                  <Add />
-                </IconButton>
               </Box>
 
-              <Box
-                maxWidth={700}
-                sx={{
-                  border: "2px groove #ccc",
-                  borderRadius: 2,
-                  padding: 2,
-                  marginTop: 0,
-                  cursor: "pointer",
-                  width: "100%",
-                  bgcolor: "background.paper"
-                }}
-              >
-                <List
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: 1
-                  }}
-                >
-                  {Array.from(allTags ?? []).map((tag) => (
-                    <ListItem key={tag.name} sx={{ margin: 0, padding: 0, width: "200px" }}>
-                      <ListItemButton sx={{backgroundColor: exercise.tags && exercise.tags.some(knownTags => knownTags.name === tag.name) ?
-                          'rgba(155, 155, 155, 0.4)' :
-                          'transparent'
-                      }} onClick={() => handleTagClick(tag)}>
-                        <ListItemText primary={tag.name} />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
             </Box>
-          </Box>
+          </Container>
         </Container>
-      </Container>
       </form>
     </>
   );
