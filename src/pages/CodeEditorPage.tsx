@@ -6,14 +6,14 @@ import {
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import {
   CodeEditorData,
-  ErrorSpring,
+  ErrorSpring, Exercise,
   ExerciseFile,
   MyTreeNode
 } from "../Types";
 import { useLocation, useParams } from "react-router-dom";
 import { Allotment } from "allotment";
 import { createTree, FileTree } from "../components/tree/FileTree";
-import { Box, CircularProgress, Switch } from "@mui/material";
+import { Box, Chip, CircularProgress, Divider, Switch } from "@mui/material";
 import { TreeStructure } from "../TreeStructure";
 import { MyTab } from "../components/EditorTabs";
 import { editor, Uri } from "monaco-editor";
@@ -28,15 +28,14 @@ import FolderZipIcon from "@mui/icons-material/FolderZip";
 import SendIcon from "@mui/icons-material/Send";
 import { Done } from "@mui/icons-material";
 import { enqueueSnackbar } from "notistack";
+import TextField from "@mui/material/TextField";
 
 export function CodeEditorPage() {
   const location = useLocation();
   const [openSaveDialog, setOpenSaveDialog] = React.useState(false);
-  const [exerciseName, setExerciseName] = useState<string>();
   const [currentSolutionId, setCurrentSolutionId] = useState<string | null>(
     null
   );
-  const [batteryName, setBatteryName] = useState<string>();
   const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>();
   const [tabs, setTabs] = useState<MyTab[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -52,9 +51,22 @@ export function CodeEditorPage() {
     children: []
   });
 
+  const [exercise, setExercise] = useState<Exercise>({
+    id: null,
+    name: "",
+    statement: "",
+    nameFromBattery: "",
+    requiredRules: [],
+    forbiddenRules: [],
+    tags: [],
+  });
+
+  //IA variables
+  const [IAResponse, setIAResponse] = useState<string>();
+
   //Code editor variables
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-  const restrictions: RangeRestrictionObject[] = [];
+  const fullRestriction: RangeRestrictionObject[] = [];
 
   //Route params
   const { exerciseId } = useParams<{exerciseId: string}>();
@@ -92,10 +104,9 @@ export function CodeEditorPage() {
         }
 
         const data: CodeEditorData = await response.json();
-        setExerciseName(data.exercise.name);
-        setBatteryName(data.exercise.nameFromBattery);
         setTemplateFiles(data.templateFiles);
         setCurrentSolutionId(data.currentSolution);
+        setExercise(data.exercise);
 
         const filesForDisplay = data.filesForDisplay;
 
@@ -246,11 +257,12 @@ export function CodeEditorPage() {
     const model = codeEditor.getModel();
 
     constrainedInstance.initializeIn(codeEditor);
-     restrictions.push({
-       range: [1, 1, 2, 10],
+     fullRestriction.push({
+       range: [1, 1, 2, 81],
        allowMultiline: true,
+       label: "start"
      });
-     constrainedInstance.addRestrictionsTo(model, restrictions);
+     constrainedInstance.addRestrictionsTo(model, fullRestriction);
   }
 
   //Function for handling the event of selecting a node from the tree
@@ -328,7 +340,7 @@ export function CodeEditorPage() {
     <>
       <AlertDialog open={openSaveDialog} handleClose={handleDialogClose} />
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <MyBreadcrumbs exerciseName={exerciseName} batteryName={batteryName} />
+        <MyBreadcrumbs exerciseName={exercise.name} batteryName={exercise.nameFromBattery} />
         <Box
           sx={{
             display: "flex",
@@ -357,33 +369,173 @@ export function CodeEditorPage() {
       </Box>
       <Box className="editor-page">
         <Allotment onChange={handleAllotmentChange}>
-          <Allotment.Pane minSize={150} snap>
-            <Box>{rootNode?.label}</Box>
-
-            <Button
-              onClick={handleSubmit}
-              color="success"
-              variant="contained"
-              endIcon={<SendIcon />}
+          <Allotment.Pane minSize={250} preferredSize="25%" snap>
+            <Box
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                p: 2,
+                boxSizing: "border-box",
+                overflowY: "auto",
+                backgroundColor: theme => theme.palette.mode === "dark" ? "#1e1e1e" : "#fafafa",
+                borderRight: "1px solid #ced4da"
+              }}
             >
-              <Typography variant="button">
-                <strong>Submit solution</strong>
-              </Typography>
-            </Button>
+              {/* SECCIÓN SUPERIOR: Información del ejercicio */}
+              <Box>
+                {/* Título del Ejercicio */}
+                <Typography variant="h5" component="h2" sx={{ fontWeight: "bold", mb: 1 }}>
+                  {exercise.name}
+                </Typography>
+
+                <Divider sx={{ my: 1.5 }} />
+
+                {/* Enunciado */}
+                <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 0.5 }}>
+                  Enunciado:
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: "justify" }}>
+                  {exercise.statement}
+                </Typography>
+
+                {/* REGLAS OBLIGATORIAS */}
+                {exercise.requiredRules && exercise.requiredRules.length > 0 && (
+                  <Box sx={{ mb: 3 }} >
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        fontWeight: "bold",
+                        mb: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1
+                      }}
+                    >
+                      <Chip label="Obligatorio" color="success" size="small" sx={{ fontWeight: "bold", height: 20 }} />
+                    </Typography>
+                    <Box component="ul" sx={{ pl: 2, margin: 0, mb: 3, color: "text.secondary", fontSize: "0.875rem" }}>
+                      {exercise?.requiredRules?.map((rule, index) => (
+                        <Box component="li" key={index} sx={{ mb: 0.5 }}>
+                          {rule.description}
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                )}
+
+                {/* PROHIBICIONES */}
+                {exercise.forbiddenRules && exercise.forbiddenRules.length > 0 && (
+                  <Box sx={{ mb: 3 }} >
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        fontWeight: "bold",
+                        mb: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1
+                      }}
+                    >
+                      <Chip
+                        label="Prohibido"
+                        size="small"
+                        sx={{
+                          fontWeight: "bold",
+                          height: 20,
+                          backgroundColor: theme => theme.palette.mode === "dark" ? "#5a1818" : "#901a1a",
+                          color: "#ffffff"
+                        }}
+                      />
+                    </Typography>
+                    <Box component="ul" sx={{ pl: 2, margin: 0, mb: 3, color: "text.secondary", fontSize: "0.875rem" }}>
+                      {exercise?.forbiddenRules?.map((rule, index) => (
+                        <Box component="li" key={index} sx={{ mb: 0.5 }}>
+                          {rule.description}
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                  )}
+              </Box>
+
+              <Box sx={{ mt: "auto" }}>
+                <Divider sx={{ mb: 2 }} />
+
+                <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1, display: "flex", alignItems: "center", gap: 1 }}>
+                  ✨ Asistente IA:
+                </Typography>
+                <TextField
+                  multiline
+                  rows={5}
+                  fullWidth
+                  variant="outlined"
+                  placeholder="La respuesta del análisis de la IA aparecerá aquí tras pulsar Examinar..."
+                  value={IAResponse}
+                  slotProps={{
+                    input: {
+                      readOnly: true,
+                    },
+                  }}
+                  sx={{
+                    mb: 1.5,
+                    "& .MuiOutlinedInput-root": {
+                      backgroundColor: theme => theme.palette.mode === "dark" ? "#2d2d2d" : "#fff",
+                      fontSize: "0.85rem",
+                      fontFamily: "monospace"
+                    }
+                  }}
+                />
+
+                {/* Botones de acción */}
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <Button
+                    fullWidth
+                    onClick={() => console.log("Examinando con IA...")}
+                    color="secondary"
+                    variant="outlined"
+                    sx={{ fontWeight: "bold", textTransform: "none" }}
+                  >
+                    Examinar
+                  </Button>
+
+                  <Button
+                    fullWidth
+                    onClick={handleSubmit}
+                    color="success"
+                    variant="contained"
+                    endIcon={<SendIcon />}
+                    sx={{ fontWeight: "bold", textTransform: "none" }}
+                  >
+                    Submit solution
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
           </Allotment.Pane>
-          <Box padding="0px 20px 0px 20px">
-            <Allotment.Pane visible snap>
+          <Allotment.Pane visible snap>
+            <Box
+              sx={{
+                height: "100%",
+                width: "100%",
+                px: 2,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden"
+              }}
+            >
               <MonacoEditor
-                path={tabs[activeTab]?.node.file?.path ?? "/"}
-                tabs={tabs}
-                activeTab={activeTab}
-                onTabClick={handleTabClick}
-                onCloseClick={handleCloseTab}
-                onValueChange={handleEditorChange}
-                onEditorDidMount={handleEditorDidMount}
-              />
-            </Allotment.Pane>
-          </Box>
+                  path={tabs[activeTab]?.node.file?.path ?? "/"}
+                  tabs={tabs}
+                  activeTab={activeTab}
+                  onTabClick={handleTabClick}
+                  onCloseClick={handleCloseTab}
+                  onValueChange={handleEditorChange}
+                  onEditorDidMount={handleEditorDidMount}
+                />
+            </Box>
+          </Allotment.Pane>
           <Allotment.Pane preferredSize="25%" minSize={150} snap>
             <Box className="file-pane">
               <Box className="file-selector"

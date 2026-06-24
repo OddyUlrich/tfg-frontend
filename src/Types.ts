@@ -105,7 +105,6 @@ export type Exercise = {
   requiredRules: Rule[];
   forbiddenRules: Rule[];
   tags: Tag[];
-  successCondition: string;
 };
 
 export type EditorExerciseData = {

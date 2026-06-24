@@ -51,7 +51,6 @@ export function ExerciseEditor() {
     requiredRules: [],
     forbiddenRules: [],
     tags: [],
-    successCondition: "",
   });
 
   const [unproccessedRules, setUnproccessedRules] = React.useState<string>();
@@ -352,7 +351,6 @@ export function ExerciseEditor() {
             requiredRules: exerciseData.exercise.requiredRules,
             forbiddenRules: exerciseData.exercise.forbiddenRules,
             tags: exerciseData.exercise.tags,
-            successCondition: exerciseData.exercise.successCondition,
           }
 
           setExercise(exercise);

@@ -18,8 +18,8 @@
 }
 
 .editor {
-    border: 1px solid #ced4da;
-    height: 78.5vh;
+    height: 100% !important;
+    width: 100%;
 }
 
 .editor-close-button{
@@ -33,6 +33,7 @@
     height: 84vh;
     width: 100%;
     margin-top: 20px;
+    overflow: hidden;
 }
 
 .flex-center {
