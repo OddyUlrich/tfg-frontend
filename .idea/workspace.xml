@@ -4,19 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Arreglada la parte visual">
+    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Arreglada parte visual del MonacoEditor.tsx, utilización de los atributos de ejercicio en CodeEditorPage.tsx y StudentsHome.tsx ahora tiene un buscador de ejercicios">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/StudentHome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/StudentHome.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="62" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -61,61 +61,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0000431669313543" />
-      <entry key="MS500" value="1.1598873360219595" />
-      <entry key="S2" value="2.1989710278781986" />
-      <entry key="S5" value="3.0351752164984656" />
-      <entry key="S10" value="3.550985974791379" />
-      <entry key="S30" value="5.336560954049448" />
-      <entry key="S60" value="8.451769517252817" />
-      <entry key="M2" value="13.682971340028216" />
-      <entry key="M5" value="22.541763375972064" />
-      <entry key="M10" value="28.905407035548695" />
-      <entry key="M15" value="31.89287298926399" />
-      <entry key="M30" value="35.53986052558547" />
-      <entry key="H1" value="39.23786424628921" />
-      <entry key="H2" value="64.48831299395498" />
-      <entry key="H4" value="175.1308613394519" />
-      <entry key="D1" value="828.9635980735834" />
-      <entry key="W1" value="1166.8876456198575" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0" />
+      <entry key="S30" value="1.0000000000103975" />
+      <entry key="S60" value="1.0000080109249405" />
+      <entry key="M2" value="1.0095441699881373" />
+      <entry key="M5" value="2.016952388085484" />
+      <entry key="M10" value="8.020187940125414" />
+      <entry key="M15" value="16.750386051154237" />
+      <entry key="M30" value="44.83764117028782" />
+      <entry key="H1" value="84.37498973940511" />
+      <entry key="H2" value="134.46547654329052" />
+      <entry key="H4" value="248.5486556646312" />
+      <entry key="D1" value="924.1776919525876" />
+      <entry key="W1" value="1292.3748497979914" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="4.811990528558198E-19" />
-      <entry key="MS500" value="2.1700260770668217E-4" />
-      <entry key="S2" value="0.12137137692614051" />
-      <entry key="S5" value="0.4308410193917053" />
-      <entry key="S10" value="0.6822488923006935" />
-      <entry key="S30" value="1.3016996191554697" />
-      <entry key="S60" value="2.089582379013347" />
-      <entry key="M2" value="3.184370031622315" />
-      <entry key="M5" value="4.711568773920429" />
-      <entry key="M10" value="5.6294510682627275" />
-      <entry key="M15" value="6.0227024533849844" />
-      <entry key="M30" value="6.478517613338075" />
-      <entry key="H1" value="7.158959725249762" />
-      <entry key="H2" value="13.18909468033734" />
-      <entry key="H4" value="37.26748968145634" />
-      <entry key="D1" value="177.43092662884482" />
-      <entry key="W1" value="252.12301288784" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="2.9625934543176386E-174" />
+      <entry key="S5" value="4.306005218471476E-70" />
+      <entry key="S10" value="2.82212637684839E-35" />
+      <entry key="S30" value="6.33902808426921E-12" />
+      <entry key="S60" value="5.018650777643705E-6" />
+      <entry key="M2" value="0.004902162132691281" />
+      <entry key="M5" value="0.36241485100020526" />
+      <entry key="M10" value="1.8669891513489756" />
+      <entry key="M15" value="3.580137107661121" />
+      <entry key="M30" value="7.974706779419297" />
+      <entry key="H1" value="13.336503403119972" />
+      <entry key="H2" value="21.376435828123952" />
+      <entry key="H4" value="44.0411340312538" />
+      <entry key="D1" value="186.79813054231693" />
+      <entry key="W1" value="267.56694746647764" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.0633967494958962" />
-      <entry key="MS500" value="0.717931294137316" />
-      <entry key="S2" value="2.121964804946806" />
-      <entry key="S5" value="3.3344276483477087" />
-      <entry key="S10" value="4.1384922964184625" />
-      <entry key="S30" value="6.563298319041189" />
-      <entry key="S60" value="10.474848254135582" />
-      <entry key="M2" value="16.812060152416002" />
-      <entry key="M5" value="27.2148957233852" />
-      <entry key="M10" value="34.509125829002" />
-      <entry key="M15" value="37.8963031065885" />
-      <entry key="M30" value="42.00742462010453" />
-      <entry key="H1" value="46.390577624671714" />
-      <entry key="H2" value="77.67167185569205" />
-      <entry key="H4" value="212.39014671236643" />
-      <entry key="D1" value="1006.3876575353311" />
-      <entry key="W1" value="1419.009249905283" />
+      <entry key="MS100" value="0.012779719664965326" />
+      <entry key="MS500" value="0.4181231999570314" />
+      <entry key="S2" value="0.8041296325492199" />
+      <entry key="S5" value="0.9164956891496818" />
+      <entry key="S10" value="0.9573378134961984" />
+      <entry key="S30" value="0.9855721082436775" />
+      <entry key="S60" value="0.9927727486182166" />
+      <entry key="M2" value="1.0107490261722472" />
+      <entry key="M5" value="2.37526591708019" />
+      <entry key="M10" value="9.877900107901231" />
+      <entry key="M15" value="20.31800552930948" />
+      <entry key="M30" value="52.79747468014247" />
+      <entry key="H1" value="97.69873645355385" />
+      <entry key="H2" value="155.83179296381923" />
+      <entry key="H4" value="292.57964512726744" />
+      <entry key="D1" value="1110.968539612832" />
+      <entry key="W1" value="1559.9402955339751" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -442,7 +442,10 @@
       <workItem from="1781884678443" duration="6017000" />
       <workItem from="1782085372652" duration="1309000" />
       <workItem from="1782123783977" duration="2725000" />
-      <workItem from="1782234423937" duration="9048000" />
+      <workItem from="1782234423937" duration="9491000" />
+      <workItem from="1782420129334" duration="2020000" />
+      <workItem from="1782430561587" duration="3693000" />
+      <workItem from="1782851894406" duration="7091000" />
     </task>
     <task id="LOCAL-00001" summary="Agregada aclaracion en AlreadyAuth sobre funcionamiento; acabada TransferList y RuleDialog para la creacion de nuevas normas para los ejercicios; agregado abortController en ExerciseEditor por si se cambia de pagina mientras se hace fetch del ejercicio permitiendo cancelarse. Cambio menor en ExerciseRow.tsx">
       <option name="closed" value="true" />
@@ -548,7 +551,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781817800337</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Arreglada parte visual del MonacoEditor.tsx, utilización de los atributos de ejercicio en CodeEditorPage.tsx y StudentsHome.tsx ahora tiene un buscador de ejercicios">
+      <option name="closed" value="true" />
+      <created>1782261023390</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1782261023390</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -625,7 +636,8 @@
     <MESSAGE value="Evitado que pulsando ESC o Backspace sea el nombre que aparece en las baterías o tags&#10;Prueba de restricción del codeEditor&#10;Arreglos menores y estilo" />
     <MESSAGE value="Reformateo de ExerciseEditor.tsx para utilizar RequiredRules y ForbiddenRules. Ya no se indicarán los métodos vacíos sino que se sacarán automáticamente con Java Parser en el backend." />
     <MESSAGE value="Arreglada la parte visual" />
-    <option name="LAST_COMMIT_MESSAGE" value="Arreglada la parte visual" />
+    <MESSAGE value="Arreglada parte visual del MonacoEditor.tsx, utilización de los atributos de ejercicio en CodeEditorPage.tsx y StudentsHome.tsx ahora tiene un buscador de ejercicios" />
+    <option name="LAST_COMMIT_MESSAGE" value="Arreglada parte visual del MonacoEditor.tsx, utilización de los atributos de ejercicio en CodeEditorPage.tsx y StudentsHome.tsx ahora tiene un buscador de ejercicios" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

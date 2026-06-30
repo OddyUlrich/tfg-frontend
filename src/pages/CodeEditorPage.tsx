@@ -56,8 +56,7 @@ export function CodeEditorPage() {
     name: "",
     statement: "",
     nameFromBattery: "",
-    requiredRules: [],
-    forbiddenRules: [],
+    rules: [],
     tags: [],
   });
 
@@ -401,7 +400,7 @@ export function CodeEditorPage() {
                 </Typography>
 
                 {/* REGLAS OBLIGATORIAS */}
-                {exercise.requiredRules && exercise.requiredRules.length > 0 && (
+                {exercise.rules && exercise.rules.filter((rule) => (rule.type === "REQUIRED")).length > 0 && (
                   <Box sx={{ mb: 3 }} >
                     <Typography
                       variant="subtitle2"
@@ -413,10 +412,18 @@ export function CodeEditorPage() {
                         gap: 1
                       }}
                     >
-                      <Chip label="Obligatorio" color="success" size="small" sx={{ fontWeight: "bold", height: 20 }} />
+                      <Chip
+                        label="Obligatorio"
+                        color="success"
+                        size="small"
+                        sx={{
+                          fontWeight: "bold",
+                          height: 20
+                        }}
+                      />
                     </Typography>
                     <Box component="ul" sx={{ pl: 2, margin: 0, mb: 3, color: "text.secondary", fontSize: "0.875rem" }}>
-                      {exercise?.requiredRules?.map((rule, index) => (
+                      {exercise?.rules?.filter((rule) => (rule.type === "REQUIRED"))?.map((rule, index) => (
                         <Box component="li" key={index} sx={{ mb: 0.5 }}>
                           {rule.description}
                         </Box>
@@ -426,7 +433,7 @@ export function CodeEditorPage() {
                 )}
 
                 {/* PROHIBICIONES */}
-                {exercise.forbiddenRules && exercise.forbiddenRules.length > 0 && (
+                {exercise.rules && exercise.rules.filter((rule) => (rule.type === "FORBIDDEN")).length > 0 && (
                   <Box sx={{ mb: 3 }} >
                     <Typography
                       variant="subtitle2"
@@ -450,7 +457,7 @@ export function CodeEditorPage() {
                       />
                     </Typography>
                     <Box component="ul" sx={{ pl: 2, margin: 0, mb: 3, color: "text.secondary", fontSize: "0.875rem" }}>
-                      {exercise?.forbiddenRules?.map((rule, index) => (
+                      {exercise?.rules?.filter((rule) => (rule.type === "FORBIDDEN"))?.map((rule, index) => (
                         <Box component="li" key={index} sx={{ mb: 0.5 }}>
                           {rule.description}
                         </Box>

@@ -1,6 +1,6 @@
 import { createTree, FileTree } from "../components/tree/FileTree";
 import React, {useContext, useEffect, useState } from "react";
-import { Box, Divider, IconButton, List, ListItem, Paper, Tooltip } from "@mui/material";
+import { Autocomplete, Box, Divider, IconButton, InputAdornment, List, ListItem, Paper, Stack, Tooltip } from "@mui/material";
 import {
   BatteryExercise,
   EditorExerciseData,
@@ -20,7 +20,7 @@ import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import { DropzoneExerciseFiles } from "../components/DropzoneExerciseFiles";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import { Add, Info } from "@mui/icons-material";
+import { Add, Info, Search } from "@mui/icons-material";
 import { AddBatteryDialog } from "../components/dialogs/AddBatteryDialog";
 import { AddTagDialog } from "../components/dialogs/AddTagDialog";
 import JSZip from "jszip";
@@ -48,14 +48,26 @@ export function ExerciseEditor() {
     name: "",
     statement: "",
     nameFromBattery: "",
-    requiredRules: [],
-    forbiddenRules: [],
+    rules: [],
     tags: [],
   });
 
   const [unproccessedRules, setUnproccessedRules] = React.useState<string>();
 
   const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>([]);
+
+  //Filters for rules searcher
+  const [filterExerciseName, setFilterExerciseName] = useState("");
+  const [filterRuleDescription, setFilterRuleDescription] = useState("");
+  const [results, setResults] = useState<Exercise[]>([]);
+
+  const hasSearch =
+    filterExerciseName.trim() !== "" ||
+    filterRuleDescription.trim() !== "";
+
+  const showResults =
+    hasSearch &&
+    results.length > 0;
 
   /*We extract the parameter of this route to check if we must fetch an specific
   exercise data for edit mode or only the data needed for creation */
@@ -348,8 +360,7 @@ export function ExerciseEditor() {
             name: exerciseData.exercise.name,
             nameFromBattery: exerciseData.exercise.nameFromBattery,
             statement: exerciseData.exercise.statement,
-            requiredRules: exerciseData.exercise.requiredRules,
-            forbiddenRules: exerciseData.exercise.forbiddenRules,
+            rules: exerciseData.exercise.rules,
             tags: exerciseData.exercise.tags,
           }
 
@@ -401,6 +412,8 @@ export function ExerciseEditor() {
       };
 
     }, []);
+
+  /* ------------------------------------------------------------------------ */
 
 
     //HANDLERS
@@ -519,11 +532,17 @@ export function ExerciseEditor() {
 
       const processedRules: ProcessedRules = await response.json();
 
+      if (processedRules.warning){
+        enqueueSnackbar(processedRules.warning, {
+          variant: "error"
+        });
+        return;
+      }
+
       setExercise(prev => {
         return {
           ...prev,
-          requiredRules: processedRules.requiredRules,
-          forbiddenRules: processedRules.forbiddenRules,
+          rules: processedRules.rules,
         }
       })
 
@@ -664,7 +683,7 @@ export function ExerciseEditor() {
                 </Box>
               </Box>
 
-              {/* 2. REGLAS (Scroll interno estable y textos autoajustables) */}
+              {/* 2. REGLAS */}
               <Box sx={{ width: "100%" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
                   <Typography variant="h6">Reglas</Typography>
@@ -677,6 +696,84 @@ export function ExerciseEditor() {
                     </IconButton>
                   </Tooltip>
                 </Box>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  spacing={1.5}
+                  sx={{
+                    justifyContent: "center",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    flexGrow: 1,
+                    mb: 2
+                  }}
+                >
+                  <TextField
+                    size="small"
+                    placeholder="Nombre del ejercicio..."
+                    value={filterExerciseName}
+                    onChange={(e) => setFilterExerciseName(e.target.value)}
+                    slotProps={{
+                      input:{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Search fontSize="small" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    }
+                    sx={{ minWidth: 160 }}
+                  />
+                  <TextField
+                    size="small"
+                    placeholder="Regla..."
+                    value={filterRuleDescription}
+                    onChange={(e) => setFilterRuleDescription(e.target.value)}
+                    slotProps={{
+                      input:{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Search fontSize="small" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    }
+                    sx={{ minWidth: 160 }}
+                  />
+                </Stack>
+
+                {showResults && (
+                  <Paper elevation={4}>
+                    {results.map((exercise) => (
+                      <Box key={exercise.id}>
+                        <Typography fontWeight={600}>
+                          {exercise.name}
+                        </Typography>
+
+                        {exercise.rules
+                          .filter((rule) => rule.type === "FORBIDDEN")
+                          .map((rule) => (
+                            <Box key={rule.id} sx={{ pl: 2, py: 0.5 }}>
+                              {rule.description}
+                            </Box>
+                          ))
+                        }
+
+                        {exercise.rules
+                          .filter((rule) => rule.type === "REQUIRED")
+                          .map((rule) => (
+                            <Box key={rule.id} sx={{ pl: 2, py: 0.5 }}>
+                              {rule.description}
+                            </Box>
+                          ))
+                        }
+
+                        <Divider sx={{ my: 1 }} />
+                      </Box>
+                    ))}
+                  </Paper>
+                )}
 
                 <Box
                   sx={{
@@ -726,7 +823,9 @@ export function ExerciseEditor() {
                         </Typography>
                         <Box sx={{ flex: 1, maxHeight: 320, overflowY: "auto", border: "1px dashed #eee", borderRadius: 1 }}>
                           <List dense>
-                            {exercise.requiredRules.map((rule, index) => (
+                            {exercise.rules
+                              .filter((rule) => rule.type === "REQUIRED")
+                              .map((rule, index) => (
                               <ListItem key={index} disablePadding sx={{ px: 1, py: 0.5 }}>
                                 <ListItemText
                                   primary={rule.description}
@@ -751,7 +850,9 @@ export function ExerciseEditor() {
                         </Typography>
                         <Box sx={{ flex: 1, maxHeight: 320, overflowY: "auto", border: "1px dashed #eee", borderRadius: 1 }}>
                           <List dense>
-                            {exercise.forbiddenRules.map((rule, index) => (
+                            {exercise.rules
+                              .filter((rule) => rule.type === "FORBIDDEN")
+                              .map((rule, index) => (
                               <ListItem key={index} disablePadding sx={{ px: 1, py: 0.5 }}>
                                 <ListItemText
                                   primary={rule.description}

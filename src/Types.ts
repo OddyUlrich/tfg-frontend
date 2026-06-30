@@ -61,7 +61,7 @@ export type Solution = {
   id: string;
   name: string;
   lastUpdate: DateTime;
-  status: solutionStatus;
+  status: SolutionStatus;
   numberErrors: number;
 };
 
@@ -89,21 +89,22 @@ export type EditableMethod = {
 };
 
 export type Rule = {
+  id: string;
   description: string;
+  type: RuleType;
 }
 
 export type ProcessedRules = {
-  requiredRules: Rule[];
-  forbiddenRules: Rule[];
+  rules: Rule[];
+  warning: string;
 }
 
 export type Exercise = {
   id: string | null;
   name: string;
-  nameFromBattery: string;
   statement: string;
-  requiredRules: Rule[];
-  forbiddenRules: Rule[];
+  nameFromBattery: string;
+  rules: Rule[];
   tags: Tag[];
 };
 
@@ -112,7 +113,12 @@ export type EditorExerciseData = {
   files: ExerciseFile[];
 };
 
-enum solutionStatus {
+enum RuleType {
+  FORBIDDEN = "FORBIDDEN",
+  REQUIRED = "REQUIRED",
+}
+
+enum SolutionStatus {
   PENDING = "PENDING",
   COMPLETED = "COMPLETED",
 }
