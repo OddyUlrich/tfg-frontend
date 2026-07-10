@@ -1,13 +1,13 @@
 import { createTree, FileTree } from "../components/tree/FileTree";
 import React, {useContext, useEffect, useState } from "react";
-import { Autocomplete, Box, Divider, IconButton, InputAdornment, List, ListItem, Paper, Stack, Tooltip } from "@mui/material";
+import {Box, Divider, IconButton, List, ListItem, Paper, Tooltip } from "@mui/material";
 import {
   BatteryExercise,
   EditorExerciseData,
   ErrorSpring, Exercise,
   ExerciseFile,
   LoginTypes,
-  MyTreeNode, ProcessedRules, Rule,
+  MyTreeNode, ProcessedRules, RuleSearch,
   Tag,
 } from "../Types";
 import { TreeStructure } from "../TreeStructure";
@@ -20,19 +20,23 @@ import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import { DropzoneExerciseFiles } from "../components/DropzoneExerciseFiles";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import { Add, Info, Search } from "@mui/icons-material";
+import { Add, Info } from "@mui/icons-material";
 import { AddBatteryDialog } from "../components/dialogs/AddBatteryDialog";
 import { AddTagDialog } from "../components/dialogs/AddTagDialog";
 import JSZip from "jszip";
 import { enqueueSnackbar } from "notistack";
 import Button from "@mui/material/Button";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import AutocompleteRules from "../components/AutocompleteRules";
 
 export function ExerciseEditor() {
 
   const navigate = useNavigate();
   const loginStatus: LoginTypes = useContext(LoginContext);
   const errorHandler = useErrorHandler();
+
+  //Loading variables
+  const [isLoadingAIProcessing, setIsLoadingAIProcessing] = useState(false);
 
   //dialogs for new content
   const [openBatteryDialog, setOpenBatteryDialog] = React.useState(false);
@@ -55,19 +59,6 @@ export function ExerciseEditor() {
   const [unproccessedRules, setUnproccessedRules] = React.useState<string>();
 
   const [templateFiles, setTemplateFiles] = useState<ExerciseFile[]>([]);
-
-  //Filters for rules searcher
-  const [filterExerciseName, setFilterExerciseName] = useState("");
-  const [filterRuleDescription, setFilterRuleDescription] = useState("");
-  const [results, setResults] = useState<Exercise[]>([]);
-
-  const hasSearch =
-    filterExerciseName.trim() !== "" ||
-    filterRuleDescription.trim() !== "";
-
-  const showResults =
-    hasSearch &&
-    results.length > 0;
 
   /*We extract the parameter of this route to check if we must fetch an specific
   exercise data for edit mode or only the data needed for creation */
@@ -457,7 +448,7 @@ export function ExerciseEditor() {
     let URI;
 
     if (isEdit){
-      method = "PATCH";
+      method = "PUT";
       URI = "http://localhost:8080/exercises/" + exerciseId;
     }else{
       method = "POST";
@@ -488,9 +479,16 @@ export function ExerciseEditor() {
         "No tienes permisos para crear un nuevo ejercicio",
         "Ya existe un ejercicio con ese nombre y esa batería");
       navigate("/");
-      enqueueSnackbar("¡Ejercicio creado correctamente!", {
-        variant: "success"
-      });
+
+      if (isEdit){
+        enqueueSnackbar("¡Ejercicio guardado correctamente!", {
+          variant: "success"
+        });
+      }else{
+        enqueueSnackbar("¡Ejercicio creado correctamente!", {
+          variant: "success"
+        });
+      }
 
     } catch (error: any) {
       if (error.name !== "AbortError") {
@@ -510,7 +508,7 @@ export function ExerciseEditor() {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/exercises/rules",
+        "http://localhost:8080/rules",
         {
           method: "POST",
           body: JSON.stringify({
@@ -542,7 +540,7 @@ export function ExerciseEditor() {
       setExercise(prev => {
         return {
           ...prev,
-          rules: processedRules.rules,
+          rules: [...prev.rules, ...processedRules.rules],
         }
       })
 
@@ -635,7 +633,7 @@ export function ExerciseEditor() {
 
           {/* SECCIÓN PRINCIPAL ANCHA */}
           <Container maxWidth="lg">
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 6, width: "100%", maxWidth: 900, margin: "0 auto" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 6, width: "100%", maxWidth: 950, margin: "0 auto" }}>
 
               {/* 1. ARCHIVOS (Tamaño compacto y centrado horizontalmente) */}
               <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -684,102 +682,36 @@ export function ExerciseEditor() {
               </Box>
 
               {/* 2. REGLAS */}
-              <Box sx={{ width: "100%" }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-                  <Typography variant="h6">Reglas</Typography>
-                  <Tooltip
-                    title="Toda obligación o prohibición que quieras que el ejercicio tenga en cuenta a la hora de examinar el ejercicio, además de que funcione correctamente."
-                    slotProps={{ tooltip: { sx: { fontSize: "1rem", maxWidth: 400 } } }}
-                  >
-                    <IconButton size="small">
-                      <Info color="action" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  spacing={1.5}
-                  sx={{
-                    justifyContent: "center",
-                    width: "100%",
-                    height: "100%",
+              <Box sx={{ width: "100%", mt: 6}}>
+                <Box sx={{ position: "relative", mb: 1 }}>
+                  <Box sx={{
+                    position: "absolute",
+                    left: 0,
+                    top: "10%",
                     display: "flex",
-                    flexGrow: 1,
-                    mb: 2
-                  }}
-                >
-                  <TextField
-                    size="small"
-                    placeholder="Nombre del ejercicio..."
-                    value={filterExerciseName}
-                    onChange={(e) => setFilterExerciseName(e.target.value)}
-                    slotProps={{
-                      input:{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <Search fontSize="small" />
-                          </InputAdornment>
-                        ),
-                      }}
-                    }
-                    sx={{ minWidth: 160 }}
-                  />
-                  <TextField
-                    size="small"
-                    placeholder="Regla..."
-                    value={filterRuleDescription}
-                    onChange={(e) => setFilterRuleDescription(e.target.value)}
-                    slotProps={{
-                      input:{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <Search fontSize="small" />
-                          </InputAdornment>
-                        ),
-                      }}
-                    }
-                    sx={{ minWidth: 160 }}
-                  />
-                </Stack>
+                    alignItems: "center",
+                    gap: 1,
+                  }}>
+                    <Typography variant="h6">Reglas</Typography>
+                    <Tooltip
+                      title="Toda obligación o prohibición que quieras que el ejercicio tenga en cuenta a la hora de examinar el ejercicio, además de que funcione correctamente."
+                      slotProps={{ tooltip: { sx: { fontSize: "1rem", maxWidth: 600 } } }}
+                    >
+                      <IconButton size="small">
+                        <Info color="action" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
 
-                {showResults && (
-                  <Paper elevation={4}>
-                    {results.map((exercise) => (
-                      <Box key={exercise.id}>
-                        <Typography fontWeight={600}>
-                          {exercise.name}
-                        </Typography>
+                  <AutocompleteRules setExercise={setExercise}/>
 
-                        {exercise.rules
-                          .filter((rule) => rule.type === "FORBIDDEN")
-                          .map((rule) => (
-                            <Box key={rule.id} sx={{ pl: 2, py: 0.5 }}>
-                              {rule.description}
-                            </Box>
-                          ))
-                        }
-
-                        {exercise.rules
-                          .filter((rule) => rule.type === "REQUIRED")
-                          .map((rule) => (
-                            <Box key={rule.id} sx={{ pl: 2, py: 0.5 }}>
-                              {rule.description}
-                            </Box>
-                          ))
-                        }
-
-                        <Divider sx={{ my: 1 }} />
-                      </Box>
-                    ))}
-                  </Paper>
-                )}
+                </Box>
 
                 <Box
                   sx={{
                     display: "flex",
                     flexDirection: { xs: "column", md: "row" },
-                    gap: 3,
+                    gap: 2,
                     alignItems: "stretch",
                     width: "100%"
                   }}
@@ -867,14 +799,13 @@ export function ExerciseEditor() {
                           </List>
                         </Box>
                       </Box>
-
                     </Box>
                   </Paper>
                 </Box>
               </Box>
 
               {/* 3. BATERÍA DE EJERCICIOS */}
-              <Box sx={{ width: "100%" }}>
+              <Box sx={{ width: "100%", mt: 4 }}>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", mb: 2 }}>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Typography variant="h6">Batería de Ejercicios</Typography>
@@ -911,7 +842,7 @@ export function ExerciseEditor() {
               </Box>
 
               {/* 4. TAGS */}
-              <Box sx={{ width: "100%" }}>
+              <Box sx={{ width: "100%", mt: 4 }}>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", mb: 2 }}>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Typography variant="h6">Tags</Typography>

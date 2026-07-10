@@ -39,10 +39,6 @@ export function StudentHome() {
   const loginStatus: LoginTypes = useContext(LoginContext);
   const navigate = useNavigate();
 
-  function refresh() {
-    setIsLoading(true);
-  }
-
   useEffect(() => {
 
     const fetchTags = async () => {
@@ -89,9 +85,12 @@ export function StudentHome() {
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [filterExerciseName, filterBatteryName, filterTags, isLoading]);
+  }, [filterExerciseName, filterBatteryName, filterTags]);
 
   const fetchExercises = async (signal?: AbortSignal) => {
+
+    setIsLoading(true);
+
     try {
 
       const params = new URLSearchParams();
@@ -133,8 +132,10 @@ export function StudentHome() {
       console.log(
         "There was a problem fetching the data:\n" + error.message
       );
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
+
   };
 
 
@@ -240,7 +241,7 @@ export function StudentHome() {
         <Stack sx={{ width: "75%" }}>
           <Box display="flex" alignItems="center" sx={{ mb: 1 }}>
             <Box justifyContent="left" display="flex" sx={{ flexGrow: 1 }}>
-              <IconButton color="primary" onClick={refresh}>
+              <IconButton color="primary" onClick={() => fetchExercises()}>
                 <Refresh />
                 <Typography marginLeft="6px"> Reload</Typography>
               </IconButton>
@@ -311,7 +312,7 @@ export function StudentHome() {
                 renderInput={(params) => (
                   <TextField {...params} placeholder={filterTags.length === 0 ? "Tags…" : ""} />
                 )}
-                noOptionsText="No tags found"
+                noOptionsText="No se han encontrado tags"
               />
             </Stack>
 

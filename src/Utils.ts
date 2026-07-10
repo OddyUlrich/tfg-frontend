@@ -1,7 +1,6 @@
 import { createContext, useContext } from "react";
 import { ErrorSpring, LoginTypes } from "./Types";
 import { useNavigate } from "react-router-dom";
-import { enqueueSnackbar } from "notistack";
 
 export const LoginContext = createContext<LoginTypes>({
   email: null,

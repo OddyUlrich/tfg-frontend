@@ -94,6 +94,14 @@ export type Rule = {
   type: RuleType;
 }
 
+export type RuleSearch = {
+  id: string;
+  description: string;
+  type: RuleType;
+  exerciseName: string;
+  batteryName: string;
+}
+
 export type ProcessedRules = {
   rules: Rule[];
   warning: string;
