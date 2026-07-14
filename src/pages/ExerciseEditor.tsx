@@ -1,13 +1,13 @@
 import { createTree, FileTree } from "../components/tree/FileTree";
 import React, {useContext, useEffect, useState } from "react";
-import {Box, Divider, IconButton, List, ListItem, Paper, Tooltip } from "@mui/material";
+import {Box, Divider, IconButton, List, ListItem, ListItemIcon, Paper, Tooltip } from "@mui/material";
 import {
   BatteryExercise,
   EditorExerciseData,
   ErrorSpring, Exercise,
   ExerciseFile,
   LoginTypes,
-  MyTreeNode, ProcessedRules, RuleSearch,
+  MyTreeNode, ProcessedRules,
   Tag,
 } from "../Types";
 import { TreeStructure } from "../TreeStructure";
@@ -20,7 +20,7 @@ import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import { DropzoneExerciseFiles } from "../components/DropzoneExerciseFiles";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import { Add, Info } from "@mui/icons-material";
+import { Add, Cancel, CheckCircle, Delete, Info } from "@mui/icons-material";
 import { AddBatteryDialog } from "../components/dialogs/AddBatteryDialog";
 import { AddTagDialog } from "../components/dialogs/AddTagDialog";
 import JSZip from "jszip";
@@ -351,7 +351,12 @@ export function ExerciseEditor() {
             name: exerciseData.exercise.name,
             nameFromBattery: exerciseData.exercise.nameFromBattery,
             statement: exerciseData.exercise.statement,
-            rules: exerciseData.exercise.rules,
+            rules: exerciseData.exercise.rules.map((rule: any) => ({
+              databaseId : rule.id,
+              localId: crypto.randomUUID(),
+              description: rule.description,
+              type: rule.type,
+            })),
             tags: exerciseData.exercise.tags,
           }
 
@@ -403,6 +408,19 @@ export function ExerciseEditor() {
       };
 
     }, []);
+
+  const handleRemoveRule = async (ruleLocalId: string) => {
+
+    if (ruleLocalId !== null) {
+      setExercise(prev => {
+
+        return {
+          ...prev,
+          rules: prev.rules.filter((r) => r.localId !== ruleLocalId),
+        }
+      })
+    }
+  };
 
   /* ------------------------------------------------------------------------ */
 
@@ -463,6 +481,11 @@ export function ExerciseEditor() {
           body: JSON.stringify({
             exercise: {
               ...exercise,
+              rules: exercise.rules.map((rule: any) => ({
+                id: rule.databaseId,
+                description: rule.description,
+                type: rule.type,
+              })),
               tags: exercise.tags.map(tag => tag.name),
             },
             files: templateFiles
@@ -528,7 +551,17 @@ export function ExerciseEditor() {
         await errorHandler(response, "No tienes permisos para crear nuevas reglas");
       }
 
-      const processedRules: ProcessedRules = await response.json();
+      const json = await response.json();
+
+      const processedRules: ProcessedRules = {
+        rules: json.rules.map((r: any) => ({
+          databaseId: r.id ?? null,
+          localId: crypto.randomUUID(),
+          description: r.description,
+          type: r.type,
+        })),
+        warning: json.warning,
+      };
 
       if (processedRules.warning){
         enqueueSnackbar(processedRules.warning, {
@@ -703,7 +736,10 @@ export function ExerciseEditor() {
                     </Tooltip>
                   </Box>
 
-                  <AutocompleteRules setExercise={setExercise}/>
+                  <AutocompleteRules
+                    setExercise={setExercise}
+                    exercise={exercise}
+                  />
 
                 </Box>
 
@@ -741,65 +777,64 @@ export function ExerciseEditor() {
                   </Paper>
 
                   {/* Panel Derecho: Reglas procesadas con scroll de seguridad */}
-                  <Paper elevation={2} sx={{ flex: 1, p: 2, display: "flex", flexDirection: "column", minWidth: 0 }}>
-                    <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, textAlign: "center" }}>
+                  <Paper sx={{ p: 2, width: "550px"}}>
+                    <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
                       Reglas detectadas
                     </Typography>
 
-                    <Box sx={{ display: "flex", gap: 2, flex: 1, minHeight: 350 }}>
+                    <Typography variant="subtitle2" color="success.main">
+                      Obligaciones
+                    </Typography>
 
-                      {/* Obligaciones */}
-                      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                        <Typography variant="subtitle2" sx={{ mb: 1, textAlign: "center", opacity: 0.8 }}>
-                          Obligaciones
-                        </Typography>
-                        <Box sx={{ flex: 1, maxHeight: 320, overflowY: "auto", border: "1px dashed #eee", borderRadius: 1 }}>
-                          <List dense>
-                            {exercise.rules
-                              .filter((rule) => rule.type === "REQUIRED")
-                              .map((rule, index) => (
-                              <ListItem key={index} disablePadding sx={{ px: 1, py: 0.5 }}>
-                                <ListItemText
-                                  primary={rule.description}
-                                  slotProps={{
-                                    primary: {
-                                      sx: { wordBreak: "break-word", fontSize: "0.875rem" }
-                                    }
-                                  }}
-                                />
-                              </ListItem>
-                            ))}
-                          </List>
-                        </Box>
-                      </Box>
+                    <List dense>
+                      {exercise.rules
+                        .filter(r => r.type === "REQUIRED")
+                        .map((rule, index) => (
+                          <ListItem
+                            key={index}
+                            sx={{ pr: 8}}
+                            secondaryAction={
+                              <IconButton onClick={() => handleRemoveRule(rule.localId) }>
+                                <Delete />
+                              </IconButton>
+                            }
+                          >
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                              <CheckCircle color="success" fontSize="small" />
+                            </ListItemIcon>
 
-                      <Divider orientation="vertical" flexItem />
+                            <ListItemText primary={rule.description} />
+                          </ListItem>
+                        ))}
+                    </List>
 
-                      {/* Prohibiciones */}
-                      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                        <Typography variant="subtitle2" sx={{ mb: 1, textAlign: "center", opacity: 0.8 }}>
-                          Prohibiciones
-                        </Typography>
-                        <Box sx={{ flex: 1, maxHeight: 320, overflowY: "auto", border: "1px dashed #eee", borderRadius: 1 }}>
-                          <List dense>
-                            {exercise.rules
-                              .filter((rule) => rule.type === "FORBIDDEN")
-                              .map((rule, index) => (
-                              <ListItem key={index} disablePadding sx={{ px: 1, py: 0.5 }}>
-                                <ListItemText
-                                  primary={rule.description}
-                                  slotProps={{
-                                    primary: {
-                                      sx: { wordBreak: "break-word", fontSize: "0.875rem" }
-                                    }
-                                  }}
-                                />
-                              </ListItem>
-                            ))}
-                          </List>
-                        </Box>
-                      </Box>
-                    </Box>
+                    <Divider sx={{ my: 2 }} />
+
+                    <Typography variant="subtitle2" color="error.main">
+                      Prohibiciones
+                    </Typography>
+
+                    <List dense>
+                      {exercise.rules
+                        .filter(r => r.type === "FORBIDDEN")
+                        .map((rule, index) => (
+                          <ListItem
+                            key={index}
+                            sx={{ pr: 8}}
+                            secondaryAction={
+                              <IconButton onClick={() => handleRemoveRule(rule.localId) }>
+                                <Delete />
+                              </IconButton>
+                            }
+                          >
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                              <Cancel color="error" fontSize="small" />
+                            </ListItemIcon>
+
+                            <ListItemText primary={rule.description} />
+                          </ListItem>
+                        ))}
+                    </List>
                   </Paper>
                 </Box>
               </Box>

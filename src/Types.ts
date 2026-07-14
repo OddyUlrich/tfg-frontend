@@ -89,10 +89,12 @@ export type EditableMethod = {
 };
 
 export type Rule = {
-  id: string;
+  databaseId: string;
+  localId: string;
   description: string;
   type: RuleType;
 }
+
 
 export type RuleSearch = {
   id: string;

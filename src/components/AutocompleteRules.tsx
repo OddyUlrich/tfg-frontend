@@ -1,8 +1,8 @@
 import TextField from "@mui/material/TextField";
 import { Autocomplete, Box, IconButton, InputAdornment } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Exercise, Rule, RuleSearch } from "../Types";
-import { Add, Delete, Search } from "@mui/icons-material";
+import { Exercise, RuleSearch } from "../Types";
+import { Add, Search } from "@mui/icons-material";
 
 import {useErrorHandler } from "../Utils";
 import { enqueueSnackbar } from "notistack";
@@ -10,27 +10,44 @@ import Typography from "@mui/material/Typography";
 
 interface Props {
   setExercise: React.Dispatch<React.SetStateAction<Exercise>>;
+  exercise: Exercise;
 }
 
-export default function AutocompleteRules({setExercise}: Props) {
+export default function AutocompleteRules({setExercise, exercise}: Props) {
   const [rulesFilter, setRulesFilter] = useState<string>("");
   const [results, setResults] = useState<RuleSearch[]>([])
   const [isLoading, setIsLoading] = React.useState(false);
+  const [open, setOpen] = useState(false)
 
   const errorHandler = useErrorHandler();
 
+  const filteredOptions = results.filter(
+    (rule) => rule.exerciseName !== exercise.name
+  );
 
-
-  const handleChange = (rule: RuleSearch | null) => {
-
-    if (rule == null) return;
-
-    const newRule:Rule = {id: rule.id, description: rule.description, type: rule.type};
-
+  const handleChange = (rule: RuleSearch) => {
     setExercise(prev => {
+
+      if (!rule) return prev;
+
+      if (prev.rules.some((e) => e.databaseId === rule.id)){
+        enqueueSnackbar("Esa regla ya está añadida",{
+          variant: "error"
+        });
+        return prev;
+      }
+
       return {
         ...prev,
-        rules: [...prev.rules, newRule],
+        rules: [
+          ...prev.rules,
+          {
+            databaseId: rule.id,
+            localId: crypto.randomUUID(),
+            description: rule.description,
+            type: rule.type,
+          },
+        ],
       }
     });
   }
@@ -74,14 +91,6 @@ export default function AutocompleteRules({setExercise}: Props) {
     }
   };
 
-  const options = results.map((option) => {
-    const firstLetter = option.exerciseName[0].toUpperCase();
-    return {
-      firstLetter: /[0-9]/.test(firstLetter) ? '0-9' : firstLetter,
-      ...option,
-    };
-  });
-
   return (
     <>
       <Box
@@ -97,8 +106,18 @@ export default function AutocompleteRules({setExercise}: Props) {
       >
 
         <Autocomplete
-          options={options.sort((a, b) => -b.firstLetter.localeCompare(a.firstLetter))}
-          groupBy={(option) => option.exerciseName}
+          open={open}
+          onOpen={() => setOpen(true)}
+          onClose={() => setOpen(false)}
+          options={
+            [...filteredOptions].sort((a, b) => {
+            const group = a.exerciseName.localeCompare(b.exerciseName);
+            if (group !== 0) return group;
+
+            return a.description.localeCompare(b.description);
+            })
+          }
+          groupBy={(option) => option.exerciseName || "Sin ejercicio"}
           value={null}
           sx={{ width: 650 }}
           filterOptions={(x) => x}
@@ -108,6 +127,17 @@ export default function AutocompleteRules({setExercise}: Props) {
           onInputChange={(_, value) => setRulesFilter(value)}
           onChange={(_, newValue) => {
             setRulesFilter("");
+          }}
+
+          slotProps={{
+            paper: {
+              elevation: 4,
+              sx: {
+                border: (theme) => `1px solid ${theme.palette.divider}`,
+                borderRadius: 2,
+                boxShadow: (theme) => theme.shadows[6],
+              },
+            },
           }}
 
           renderOption={(props, option) => (
@@ -129,17 +159,10 @@ export default function AutocompleteRules({setExercise}: Props) {
                     onClick={(e) => {
                       e.stopPropagation();
                       handleChange(option);
+                      setOpen(false)
                     }}
                   >
                     <Add />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      console.log("HOLA");
-                    }}
-                  >
-                    <Delete />
                   </IconButton>
                 </Box>
               </Box>
