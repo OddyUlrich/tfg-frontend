@@ -4,12 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Nuevo AutocompleteRules.tsx para buscador de reglas + añadidos relacionados&#10;Removed ExpandableChip.tsx">
+    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Ordenación nueva del autocomplete de reglas permitiendo agrupar por nombre del ejercicio y orden alfabético&#10;ExerciseEditor.tsx ahora permite borrar reglas y añadir de otros ejercicios">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/AutocompleteRules.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AutocompleteRules.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/src.zip" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,60 +64,60 @@
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
       <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0000000000000022" />
-      <entry key="S2" value="1.0002193469292575" />
-      <entry key="S5" value="1.0345518803710445" />
-      <entry key="S10" value="1.199278971948233" />
-      <entry key="S30" value="2.1761245914222496" />
-      <entry key="S60" value="3.8554141334823653" />
-      <entry key="M2" value="6.05597962787553" />
-      <entry key="M5" value="9.507791779432852" />
-      <entry key="M10" value="16.68422895909417" />
-      <entry key="M15" value="25.652761411972694" />
-      <entry key="M30" value="52.22720252437432" />
-      <entry key="H1" value="91.96126569008601" />
-      <entry key="H2" value="134.84593048897665" />
-      <entry key="H4" value="179.81578714702206" />
-      <entry key="D1" value="488.12682042640955" />
-      <entry key="W1" value="1529.9546089762052" />
+      <entry key="MS500" value="1.0000000393754698" />
+      <entry key="S2" value="1.019899949814472" />
+      <entry key="S5" value="1.3097429747296483" />
+      <entry key="S10" value="1.7842063522421454" />
+      <entry key="S30" value="2.4626556034257296" />
+      <entry key="S60" value="2.7101831974156463" />
+      <entry key="M2" value="2.8563782349227234" />
+      <entry key="M5" value="3.8257119505991763" />
+      <entry key="M10" value="8.515338521276547" />
+      <entry key="M15" value="13.65569289618477" />
+      <entry key="M30" value="25.054166363389697" />
+      <entry key="H1" value="40.56593711047727" />
+      <entry key="H2" value="63.78475814092706" />
+      <entry key="H4" value="110.81528409542774" />
+      <entry key="D1" value="497.2328222799976" />
+      <entry key="W1" value="1629.2981965160864" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="8.688167338110671E-41" />
-      <entry key="MS500" value="9.722672080232721E-9" />
-      <entry key="S2" value="0.010020452215607219" />
-      <entry key="S5" value="0.1825801046154956" />
-      <entry key="S10" value="0.573179987338203" />
-      <entry key="S30" value="1.6114631789978433" />
-      <entry key="S60" value="2.3709600452878528" />
-      <entry key="M2" value="3.0177534863442994" />
-      <entry key="M5" value="4.078627863041591" />
-      <entry key="M10" value="7.053550176205218" />
-      <entry key="M15" value="10.452073244728592" />
-      <entry key="M30" value="19.06536961321169" />
-      <entry key="H1" value="29.72309358900508" />
-      <entry key="H2" value="39.78732642445829" />
-      <entry key="H4" value="49.097291537937075" />
-      <entry key="D1" value="106.97704058321082" />
-      <entry key="W1" value="311.7262195369596" />
+      <entry key="MS100" value="1.5024873599822157E-9" />
+      <entry key="MS500" value="0.01719341577134589" />
+      <entry key="S2" value="0.36211001911969826" />
+      <entry key="S5" value="0.6660950657618039" />
+      <entry key="S10" value="0.816146473227572" />
+      <entry key="S30" value="0.9345216549954111" />
+      <entry key="S60" value="0.966707861105938" />
+      <entry key="M2" value="0.9856477741100846" />
+      <entry key="M5" value="1.257440020031918" />
+      <entry key="M10" value="2.369987653700051" />
+      <entry key="M15" value="3.4327803585631576" />
+      <entry key="M30" value="5.512270780579757" />
+      <entry key="H1" value="7.935027023443774" />
+      <entry key="H2" value="11.571657703838012" />
+      <entry key="H4" value="20.638847131453325" />
+      <entry key="D1" value="97.83536702570831" />
+      <entry key="W1" value="321.26950411974025" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.0076517210748978624" />
-      <entry key="MS500" value="0.3773564947172717" />
-      <entry key="S2" value="0.7911565213143548" />
-      <entry key="S5" value="1.1001857912840276" />
-      <entry key="S10" value="1.683630276330646" />
-      <entry key="S30" value="3.712850141238705" />
-      <entry key="S60" value="6.154832372940964" />
-      <entry key="M2" value="9.017716243571826" />
-      <entry key="M5" value="13.552574521143077" />
-      <entry key="M10" value="23.708747907418886" />
-      <entry key="M15" value="36.07592048858258" />
-      <entry key="M30" value="71.26526877227644" />
-      <entry key="H1" value="121.66219200275052" />
-      <entry key="H2" value="174.61790496093514" />
-      <entry key="H4" value="228.90316335624513" />
-      <entry key="D1" value="595.0997469326629" />
-      <entry key="W1" value="1841.6790696645426" />
+      <entry key="MS100" value="0.07641501735679902" />
+      <entry key="MS500" value="0.6019259922276502" />
+      <entry key="S2" value="1.1463788685996301" />
+      <entry key="S5" value="1.794572510869426" />
+      <entry key="S10" value="2.458867946096419" />
+      <entry key="S30" value="3.3264192433152564" />
+      <entry key="S60" value="3.6371731519332164" />
+      <entry key="M2" value="3.820838786800443" />
+      <entry key="M5" value="5.069951544983169" />
+      <entry key="M10" value="10.869061178598635" />
+      <entry key="M15" value="17.07139079553261" />
+      <entry key="M30" value="30.551623240586245" />
+      <entry key="H1" value="48.48971410164996" />
+      <entry key="H2" value="75.34822952818854" />
+      <entry key="H4" value="131.4477537279332" />
+      <entry key="D1" value="595.0640987951106" />
+      <entry key="W1" value="1950.5658454073657" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -133,45 +134,45 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;JavaScript Debug.Debug Application.executor&quot;: &quot;Run&quot;,
-    &quot;Notification.DisplayName-DoNotAsk-Proofreading missing languages information&quot;: &quot;Proofreading missing languages information&quot;,
-    &quot;Notification.DoNotAsk-Proofreading missing languages information&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
-    &quot;jsx.switch.disabled&quot;: &quot;true&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;G:/tfg-frontend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.npm start.executor&quot;: &quot;Run&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;D:\\tfg-frontend\\node_modules\\prettier&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.intentionPowerPack&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;G:\\tfg-frontend\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "JavaScript Debug.Debug Application.executor": "Run",
+    "Notification.DisplayName-DoNotAsk-Proofreading missing languages information": "Proofreading missing languages information",
+    "Notification.DoNotAsk-Proofreading missing languages information": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "Main",
+    "ignore.virus.scanning.warn.message": "true",
+    "javascript.preferred.runtime.type.id": "node",
+    "jsx.switch.disabled": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "G:/tfg-frontend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.standard": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.standard": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "node",
+    "nodejs_package_manager_path": "npm",
+    "npm.npm start.executor": "Run",
+    "prettierjs.PrettierConfiguration.Package": "D:\\tfg-frontend\\node_modules\\prettier",
+    "settings.editor.selected.configurable": "preferences.intentionPowerPack",
+    "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "G:\\tfg-frontend\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\tfg-frontend\src\pages" />
@@ -449,7 +450,8 @@
       <workItem from="1782851894406" duration="7409000" />
       <workItem from="1783009900612" duration="16081000" />
       <workItem from="1783454364678" duration="23994000" />
-      <workItem from="1783983564328" duration="10216000" />
+      <workItem from="1783983564328" duration="10453000" />
+      <workItem from="1784252943736" duration="16253000" />
     </task>
     <task id="LOCAL-00001" summary="Agregada aclaracion en AlreadyAuth sobre funcionamiento; acabada TransferList y RuleDialog para la creacion de nuevas normas para los ejercicios; agregado abortController en ExerciseEditor por si se cambia de pagina mientras se hace fetch del ejercicio permitiendo cancelarse. Cambio menor en ExerciseRow.tsx">
       <option name="closed" value="true" />
@@ -579,7 +581,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783667591718</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Ordenación nueva del autocomplete de reglas permitiendo agrupar por nombre del ejercicio y orden alfabético&#10;ExerciseEditor.tsx ahora permite borrar reglas y añadir de otros ejercicios">
+      <option name="closed" value="true" />
+      <created>1783994407923</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1783994407923</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -659,7 +669,8 @@
     <MESSAGE value="Arreglada parte visual del MonacoEditor.tsx, utilización de los atributos de ejercicio en CodeEditorPage.tsx y StudentsHome.tsx ahora tiene un buscador de ejercicios" />
     <MESSAGE value="Cambiado para usar el enum RuleType como atributo para las reglas para dividir entre reglas requeridas y reglas prohibidas.&#10;Añadido el inicio del buscador de reglas en ExerciseEditor.&#10;Añadido el aviso por warning como snackbar si el procesamiento de reglas por IA no funciona o tiene algún error." />
     <MESSAGE value="Nuevo AutocompleteRules.tsx para buscador de reglas + añadidos relacionados&#10;Removed ExpandableChip.tsx" />
-    <option name="LAST_COMMIT_MESSAGE" value="Nuevo AutocompleteRules.tsx para buscador de reglas + añadidos relacionados&#10;Removed ExpandableChip.tsx" />
+    <MESSAGE value="Ordenación nueva del autocomplete de reglas permitiendo agrupar por nombre del ejercicio y orden alfabético&#10;ExerciseEditor.tsx ahora permite borrar reglas y añadir de otros ejercicios" />
+    <option name="LAST_COMMIT_MESSAGE" value="Ordenación nueva del autocomplete de reglas permitiendo agrupar por nombre del ejercicio y orden alfabético&#10;ExerciseEditor.tsx ahora permite borrar reglas y añadir de otros ejercicios" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

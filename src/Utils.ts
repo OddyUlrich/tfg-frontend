@@ -51,17 +51,17 @@ export const useErrorHandler = () => {
       throw new Error(error409Message ?? "Error 409, ha ocurrido un conflicto");
 
     } else {
-        const contentType = response.headers.get("content-type");
+      const contentType = response.headers.get("content-type");
 
-        //Checking if the response is a JSON
-        if (contentType?.includes("application/json")) {
-          const errorSpring: ErrorSpring = await response.json();
-          throw new Error("Error " + response.status + " from backend - " + errorSpring.message);
-        }
+      //Checking if the response is a JSON
+      if (contentType?.includes("application/json")) {
+        const errorSpring: ErrorSpring = await response.json();
+        throw new Error("Error " + response.status + " from backend - " + errorSpring.message);
+      }
 
-        //If it is not a JSON we just use the text or the response status
-        const text = await response.text();
-        throw new Error("Error " + response.status + " from Backend - " + (text || "Unknown error"));
+      //If it is not a JSON we just use the text or the response status
+      const text = await response.text();
+      throw new Error("Error " + response.status + " from Backend - " + (text || "Unknown error"));
     }
   }
 }

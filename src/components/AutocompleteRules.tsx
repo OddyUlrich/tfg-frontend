@@ -1,8 +1,8 @@
 import TextField from "@mui/material/TextField";
 import { Autocomplete, Box, IconButton, InputAdornment } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Exercise, RuleSearch } from "../Types";
-import { Add, Search } from "@mui/icons-material";
+import { Exercise, RuleSearch, RuleType } from "../Types";
+import { Add, Cancel, CheckCircle, Delete, Search } from "@mui/icons-material";
 
 import {useErrorHandler } from "../Utils";
 import { enqueueSnackbar } from "notistack";
@@ -13,10 +13,14 @@ interface Props {
   exercise: Exercise;
 }
 
+const typeOrder: Record<RuleType, number> = {
+  FORBIDDEN: 1,
+  REQUIRED: 0,
+};
+
 export default function AutocompleteRules({setExercise, exercise}: Props) {
   const [rulesFilter, setRulesFilter] = useState<string>("");
   const [results, setResults] = useState<RuleSearch[]>([])
-  const [isLoading, setIsLoading] = React.useState(false);
   const [open, setOpen] = useState(false)
 
   const errorHandler = useErrorHandler();
@@ -84,6 +88,9 @@ export default function AutocompleteRules({setExercise, exercise}: Props) {
       const rules: RuleSearch[] = await response.json();
       setResults(rules);
 
+
+      console.log(JSON.stringify(rules));
+
     } catch (error: any) {
       if (error.name !== "AbortError") {
         console.log("Network error: " + error.message);
@@ -109,15 +116,30 @@ export default function AutocompleteRules({setExercise, exercise}: Props) {
           open={open}
           onOpen={() => setOpen(true)}
           onClose={() => setOpen(false)}
-          options={
-            [...filteredOptions].sort((a, b) => {
-            const group = a.exerciseName.localeCompare(b.exerciseName);
-            if (group !== 0) return group;
+          options={[...filteredOptions].sort((a, b) => {
 
+            if (a.exerciseName === null){
+              return 1;
+            }
+
+            if (b.exerciseName === null){
+              return -1;
+            }
+
+            // Exercise name
+            const exercise = a.exerciseName.localeCompare(b.exerciseName);
+            if (exercise !== 0) return exercise;
+
+            // Type
+            const type = typeOrder[a.type] - typeOrder[b.type];
+            if (type !== 0) return type;
+
+            // Description
             return a.description.localeCompare(b.description);
-            })
+          })}
+          groupBy={(option) =>
+            `${option.exerciseName ?? "Sin ejercicio"}||${option.type}`
           }
-          groupBy={(option) => option.exerciseName || "Sin ejercicio"}
           value={null}
           sx={{ width: 650 }}
           filterOptions={(x) => x}
@@ -138,6 +160,58 @@ export default function AutocompleteRules({setExercise, exercise}: Props) {
                 boxShadow: (theme) => theme.shadows[6],
               },
             },
+          }}
+
+          renderGroup={(params) => {
+            const [exerciseName, type] = params.group.split("||");
+
+            return (
+              <li key={params.key}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    px: 2,
+                    py: 1,
+                    bgcolor: "background.paper",
+                    borderBottom: 1,
+                    borderColor: "divider",
+                  }}
+                >
+                  <Typography fontWeight={600}>
+                    {exerciseName ?? "Sin ejercicio"}
+                  </Typography>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                    }}
+                  >
+                    {type === "FORBIDDEN" ? (
+                      <>
+                        <Cancel color="error" fontSize="small" />
+                        <Typography color="error.main">
+                          Prohibiciones
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle color="success" fontSize="small" />
+                        <Typography color="success.main">
+                          Obligaciones
+                        </Typography>
+                      </>
+                    )}
+                  </Box>
+                </Box>
+                <ul style={{ padding: 0, margin: 0 }}>
+                  {params.children}
+                </ul>
+              </li>
+            );
           }}
 
           renderOption={(props, option) => (

@@ -1,13 +1,13 @@
 import { createTree, FileTree } from "../components/tree/FileTree";
 import React, {useContext, useEffect, useState } from "react";
-import {Box, Divider, IconButton, List, ListItem, ListItemIcon, Paper, Tooltip } from "@mui/material";
+import {Box, CircularProgress, Divider, IconButton, List, ListItem, ListItemIcon, Paper, Tooltip } from "@mui/material";
 import {
   BatteryExercise,
   EditorExerciseData,
   ErrorSpring, Exercise,
   ExerciseFile,
   LoginTypes,
-  MyTreeNode, ProcessedRules,
+  MyTreeNode, ProcessedRules, Rule,
   Tag,
 } from "../Types";
 import { TreeStructure } from "../TreeStructure";
@@ -20,7 +20,7 @@ import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import { DropzoneExerciseFiles } from "../components/DropzoneExerciseFiles";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import { Add, Cancel, CheckCircle, Delete, Info } from "@mui/icons-material";
+import { Add, Cancel, CheckCircle, Delete, Edit, Info } from "@mui/icons-material";
 import { AddBatteryDialog } from "../components/dialogs/AddBatteryDialog";
 import { AddTagDialog } from "../components/dialogs/AddTagDialog";
 import JSZip from "jszip";
@@ -55,6 +55,10 @@ export function ExerciseEditor() {
     rules: [],
     tags: [],
   });
+
+  //Variables for editing rules already processed/added
+  const [editingRuleId, setEditingRuleId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState("");
 
   const [unproccessedRules, setUnproccessedRules] = React.useState<string>();
 
@@ -409,6 +413,11 @@ export function ExerciseEditor() {
 
     }, []);
 
+
+
+  /* ------------------------------------------------------------------------ */
+    //HANDLERS
+
   const handleRemoveRule = async (ruleLocalId: string) => {
 
     if (ruleLocalId !== null) {
@@ -422,40 +431,35 @@ export function ExerciseEditor() {
     }
   };
 
-  /* ------------------------------------------------------------------------ */
+  const handleExerciseBatteryClick = (battery: BatteryExercise ) => {
+    setExercise(prev => {
 
+      return {
+        ...prev,
+        nameFromBattery: battery.name,
+      }
+    })
+  };
 
-    //HANDLERS
+  const handleTagClick = (tagMarcada: Tag) => {
+    setExercise(prev => {
 
-    const handleExerciseBatteryClick = (battery: BatteryExercise ) => {
-      setExercise(prev => {
+      const tags = prev.tags ?? [];
 
-        return {
-          ...prev,
-          nameFromBattery: battery.name,
-        }
-      })
-    };
+      let newTags: Tag[];
 
-    const handleTagClick = (tagMarcada: Tag) => {
-      setExercise(prev => {
+      if (tags.some(tag => tag.name === tagMarcada.name)) {
+        newTags = tags.filter(tag => tag.name !== tagMarcada.name);
+      } else {
+        newTags = [...tags, tagMarcada];
+      }
 
-        const tags = prev.tags ?? [];
-
-        let newTags: Tag[];
-
-        if (tags.some(tag => tag.name === tagMarcada.name)) {
-          newTags = tags.filter(tag => tag.name !== tagMarcada.name);
-        } else {
-          newTags = [...tags, tagMarcada];
-        }
-
-        return {
-          ...prev,
-          tags: newTags
-        };
-      });
-    };
+      return {
+        ...prev,
+        tags: newTags
+      };
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -524,8 +528,38 @@ export function ExerciseEditor() {
     }
   };
 
+  /* ------------------------------------------------------------------------ */
+  // ACTIONS
+
+  const startEditing = (rule: Rule) => {
+    setEditingRuleId(rule.localId);
+    setEditingText(rule.description);
+  };
+
+  const saveEditing = () => {
+    setExercise(prev => ({
+      ...prev,
+      rules: prev.rules.map(rule => {
+        if (rule.localId === editingRuleId){
+
+          //Since it is edited, it is no longer the same rule
+          rule.databaseId = null;
+          return {...rule, description: editingText.trim()}
+        }
+        else {
+          return rule;
+        }
+      }),
+    }));
+
+    setEditingRuleId(null);
+    setEditingText("");
+  };
+
   const ruleProcessing = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    setIsLoadingAIProcessing(true);
 
     const controller = new AbortController();
 
@@ -585,6 +619,9 @@ export function ExerciseEditor() {
         });
       }
       return;
+
+    } finally {
+      setIsLoadingAIProcessing(false);
     }
   };
 
@@ -598,6 +635,7 @@ export function ExerciseEditor() {
         batteryName={batteryNameBreadcrumb}
       />
 
+      <form onSubmit={handleSubmit}>
       <Box
         sx={{
           position: "sticky",
@@ -610,7 +648,7 @@ export function ExerciseEditor() {
         }}
       >
         <Button
-          onClick={handleSubmit}
+          type="submit"
           color="success"
           variant="contained"
           size="large"
@@ -621,11 +659,11 @@ export function ExerciseEditor() {
         </Button>
       </Box>
 
-      <form onSubmit={handleSubmit}>
+
         <Container component="main" sx={{ display: "flex", flexDirection: "column", marginTop: 4, paddingBottom: 12 }}>
 
           {/* SECCIÓN SUPERIOR: Nombre y Enunciado */}
-          <Container maxWidth="sm" sx={{ mb: 4 }}>
+          <Container maxWidth="md" sx={{ mb: 4 }}>
             <TextField
               sx={{ marginTop: 1 }}
               margin="normal"
@@ -646,7 +684,7 @@ export function ExerciseEditor() {
             />
 
             <TextField
-              sx={{ marginTop: 1 }}
+              sx={{ marginTop: 4}}
               margin="normal"
               variant="outlined"
               required
@@ -655,7 +693,7 @@ export function ExerciseEditor() {
               id="Statement"
               label="Enunciado del ejercicio"
               name="Statement"
-              rows={6}
+              minRows={6}
               autoComplete="Statement"
               value={exercise.statement ?? ""}
               onChange={(e) => {
@@ -749,17 +787,18 @@ export function ExerciseEditor() {
                     flexDirection: { xs: "column", md: "row" },
                     gap: 2,
                     alignItems: "stretch",
-                    width: "100%"
+                    width: "100%",
+                    height: "550px",
                   }}
                 >
                   {/* Panel Izquierdo: Entrada de texto */}
-                  <Paper elevation={2} sx={{ flex: 1, p: 2, display: "flex", flexDirection: "column" }}>
+                  <Paper elevation={2} sx={{ flex: 1, p: 2, width: "385px", height: "550px", display: "flex", flexDirection: "column" }}>
                     <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
                       Descripción libre
                     </Typography>
                     <TextField
                       multiline
-                      rows={14}
+                      rows={17}
                       fullWidth
                       placeholder={"Escribe aquí las reglas del ejercicio...\n\nEj.: los alumnos no deben usar un bucle for, sino un bucle while con la variable 'var'."}
                       onChange={(e) => setUnproccessedRules(e.target.value)}
@@ -767,17 +806,22 @@ export function ExerciseEditor() {
                     <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
                       <Button
                         variant="contained"
-                        startIcon={<AutoAwesomeIcon />}
-                        sx={{ width: 220 }}
+                        disabled={isLoadingAIProcessing}
                         onClick={ruleProcessing}
+                        startIcon={
+                          isLoadingAIProcessing
+                            ? <CircularProgress size={18} color="inherit" />
+                            : <AutoAwesomeIcon />
+                        }
+                        sx={{ width: 220 }}
                       >
-                        Procesar
+                        {isLoadingAIProcessing ? "Procesando..." : "Procesar"}
                       </Button>
                     </Box>
                   </Paper>
 
                   {/* Panel Derecho: Reglas procesadas con scroll de seguridad */}
-                  <Paper sx={{ p: 2, width: "550px"}}>
+                  <Paper sx={{ p: 2, width: "550px", height:"550px", overflowY: "auto"}}>
                     <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
                       Reglas detectadas
                     </Typography>
@@ -786,24 +830,65 @@ export function ExerciseEditor() {
                       Obligaciones
                     </Typography>
 
-                    <List dense>
+                    <List dense >
                       {exercise.rules
                         .filter(r => r.type === "REQUIRED")
                         .map((rule, index) => (
                           <ListItem
-                            key={index}
-                            sx={{ pr: 8}}
+                            key={rule.localId}
+                            sx={{
+                              pr: 10,
+                              "& .actions": {
+                                opacity: 0,
+                                transition: "opacity 0.2s",
+                              },
+                              "&:hover .actions": {
+                                opacity: 1,
+                              },
+                            }}
                             secondaryAction={
-                              <IconButton onClick={() => handleRemoveRule(rule.localId) }>
-                                <Delete />
-                              </IconButton>
+                              <Box className="actions" sx={{ display: "flex" }}>
+                                <IconButton size="small" onClick={() => startEditing(rule)}>
+                                  <Edit fontSize="small" />
+                                </IconButton>
+
+                                <IconButton size="small" onClick={() => handleRemoveRule(rule.localId)}>
+                                  <Delete fontSize="small" />
+                                </IconButton>
+                              </Box>
                             }
                           >
                             <ListItemIcon sx={{ minWidth: 36 }}>
                               <CheckCircle color="success" fontSize="small" />
                             </ListItemIcon>
 
-                            <ListItemText primary={rule.description} />
+                            {editingRuleId === rule.localId ? (
+                              <TextField
+                                multiline
+                                fullWidth
+                                size="small"
+                                autoFocus
+                                value={editingText}
+                                onChange={(e) => setEditingText(e.target.value)}
+                                onBlur={saveEditing}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" && !e.shiftKey) {
+                                    e.preventDefault();
+                                    saveEditing();
+                                  }
+
+                                  if (e.key === "Escape") {
+                                    setEditingRuleId(null);
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <ListItemText
+                                primary={rule.description}
+                                onDoubleClick={() => startEditing(rule)}
+                                sx={{ cursor: "text" }}
+                              />
+                            )}
                           </ListItem>
                         ))}
                     </List>
@@ -819,19 +904,60 @@ export function ExerciseEditor() {
                         .filter(r => r.type === "FORBIDDEN")
                         .map((rule, index) => (
                           <ListItem
-                            key={index}
-                            sx={{ pr: 8}}
+                            key={rule.localId}
+                            sx={{
+                              pr: 12,
+                              "& .actions": {
+                                opacity: 0,
+                                transition: "opacity 0.2s",
+                              },
+                              "&:hover .actions": {
+                                opacity: 1,
+                              },
+                            }}
                             secondaryAction={
-                              <IconButton onClick={() => handleRemoveRule(rule.localId) }>
-                                <Delete />
-                              </IconButton>
+                              <Box className="actions" sx={{ display: "flex" }}>
+                                <IconButton size="small" onClick={() => startEditing(rule)}>
+                                  <Edit fontSize="small" />
+                                </IconButton>
+
+                                <IconButton size="small" onClick={() => handleRemoveRule(rule.localId)}>
+                                  <Delete fontSize="small" />
+                                </IconButton>
+                              </Box>
                             }
                           >
                             <ListItemIcon sx={{ minWidth: 36 }}>
                               <Cancel color="error" fontSize="small" />
                             </ListItemIcon>
 
-                            <ListItemText primary={rule.description} />
+                            {editingRuleId === rule.localId ? (
+                              <TextField
+                                multiline
+                                fullWidth
+                                size="small"
+                                autoFocus
+                                value={editingText}
+                                onChange={(e) => setEditingText(e.target.value)}
+                                onBlur={saveEditing}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" && !e.shiftKey) {
+                                    e.preventDefault();
+                                    saveEditing();
+                                  }
+
+                                  if (e.key === "Escape") {
+                                    setEditingRuleId(null);
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <ListItemText
+                                primary={rule.description}
+                                onDoubleClick={() => startEditing(rule)}
+                                sx={{ cursor: "text" }}
+                              />
+                            )}
                           </ListItem>
                         ))}
                     </List>
@@ -859,20 +985,18 @@ export function ExerciseEditor() {
                 </Box>
 
                 <Box sx={{ border: "2px groove #ccc", borderRadius: 2, p: 2, bgcolor: "background.paper", width: "100%" }}>
-                  <nav aria-label="Batteries">
-                    <List sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 1 }}>
-                      {Array.from(allExerciseBatteries ?? []).map((battery) => (
-                        <ListItem key={battery.name} disablePadding>
-                          <ListItemButton
-                            sx={{ borderRadius: 1, backgroundColor: exercise.nameFromBattery && exercise.nameFromBattery === battery.name ? 'rgba(155, 155, 155, 0.4)' : 'transparent'}}
-                            onClick={() => handleExerciseBatteryClick(battery)}
-                          >
-                            <ListItemText primary={battery.name} />
-                          </ListItemButton>
-                        </ListItem>
-                      ))}
-                    </List>
-                  </nav>
+                  <List sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 1 }}>
+                    {Array.from(allExerciseBatteries ?? []).map((battery) => (
+                      <ListItem key={battery.name} disablePadding>
+                        <ListItemButton
+                          sx={{ borderRadius: 1, backgroundColor: exercise.nameFromBattery && exercise.nameFromBattery === battery.name ? 'rgba(155, 155, 155, 0.4)' : 'transparent'}}
+                          onClick={() => handleExerciseBatteryClick(battery)}
+                        >
+                          <ListItemText primary={battery.name} />
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                  </List>
                 </Box>
               </Box>
 

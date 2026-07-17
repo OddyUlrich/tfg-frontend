@@ -383,7 +383,7 @@ export function CodeEditorPage() {
               }}
             >
               {/* SECCIÓN SUPERIOR: Información del ejercicio */}
-              <Box>
+              <Box sx={{ m:2 }}>
                 {/* Título del Ejercicio */}
                 <Typography variant="h5" component="h2" sx={{ fontWeight: "bold", mb: 1 }}>
                   {exercise.name}
@@ -475,7 +475,7 @@ export function CodeEditorPage() {
                 </Typography>
                 <TextField
                   multiline
-                  rows={5}
+                  rows={6}
                   fullWidth
                   variant="outlined"
                   placeholder="La respuesta del análisis de la IA aparecerá aquí tras pulsar Examinar..."

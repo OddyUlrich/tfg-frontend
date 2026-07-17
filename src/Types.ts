@@ -89,7 +89,7 @@ export type EditableMethod = {
 };
 
 export type Rule = {
-  databaseId: string;
+  databaseId: string | null;
   localId: string;
   description: string;
   type: RuleType;
@@ -123,7 +123,7 @@ export type EditorExerciseData = {
   files: ExerciseFile[];
 };
 
-enum RuleType {
+export enum RuleType {
   FORBIDDEN = "FORBIDDEN",
   REQUIRED = "REQUIRED",
 }
