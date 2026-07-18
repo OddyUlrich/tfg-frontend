@@ -4,13 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Ordenación nueva del autocomplete de reglas permitiendo agrupar por nombre del ejercicio y orden alfabético&#10;ExerciseEditor.tsx ahora permite borrar reglas y añadir de otros ejercicios">
+    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="AutocompleteRules.tsx ya divide en grupos correctamente y permite hacer las búsquedas como debe.&#10;ExerciseEditor.tsx permite borrar normas y editarlas.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/AutocompleteRules.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AutocompleteRules.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MonacoEditor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/tree/FileTree.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tree/FileTree.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,60 +67,60 @@
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
       <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0000000393754698" />
-      <entry key="S2" value="1.019899949814472" />
-      <entry key="S5" value="1.3097429747296483" />
-      <entry key="S10" value="1.7842063522421454" />
-      <entry key="S30" value="2.4626556034257296" />
-      <entry key="S60" value="2.7101831974156463" />
-      <entry key="M2" value="2.8563782349227234" />
-      <entry key="M5" value="3.8257119505991763" />
-      <entry key="M10" value="8.515338521276547" />
-      <entry key="M15" value="13.65569289618477" />
-      <entry key="M30" value="25.054166363389697" />
-      <entry key="H1" value="40.56593711047727" />
-      <entry key="H2" value="63.78475814092706" />
-      <entry key="H4" value="110.81528409542774" />
-      <entry key="D1" value="497.2328222799976" />
-      <entry key="W1" value="1629.2981965160864" />
+      <entry key="MS500" value="1.0000006094744" />
+      <entry key="S2" value="1.030901901532133" />
+      <entry key="S5" value="1.4026895168637683" />
+      <entry key="S10" value="2.317189970466289" />
+      <entry key="S30" value="5.518277064835626" />
+      <entry key="S60" value="8.092028657481267" />
+      <entry key="M2" value="10.751323303976363" />
+      <entry key="M5" value="16.119993420898982" />
+      <entry key="M10" value="21.89150086203781" />
+      <entry key="M15" value="26.75039792252838" />
+      <entry key="M30" value="41.91408019878401" />
+      <entry key="H1" value="75.98323208466662" />
+      <entry key="H2" value="140.18387400096182" />
+      <entry key="H4" value="234.85920719855983" />
+      <entry key="D1" value="711.1444993944284" />
+      <entry key="W1" value="1912.5428031118859" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.5024873599822157E-9" />
-      <entry key="MS500" value="0.01719341577134589" />
-      <entry key="S2" value="0.36211001911969826" />
-      <entry key="S5" value="0.6660950657618039" />
-      <entry key="S10" value="0.816146473227572" />
-      <entry key="S30" value="0.9345216549954111" />
-      <entry key="S60" value="0.966707861105938" />
-      <entry key="M2" value="0.9856477741100846" />
-      <entry key="M5" value="1.257440020031918" />
-      <entry key="M10" value="2.369987653700051" />
-      <entry key="M15" value="3.4327803585631576" />
-      <entry key="M30" value="5.512270780579757" />
-      <entry key="H1" value="7.935027023443774" />
-      <entry key="H2" value="11.571657703838012" />
-      <entry key="H4" value="20.638847131453325" />
-      <entry key="D1" value="97.83536702570831" />
-      <entry key="W1" value="321.26950411974025" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="1.0862688395649671E-155" />
+      <entry key="S5" value="1.5175411205010963E-62" />
+      <entry key="S10" value="1.7323622953786E-31" />
+      <entry key="S30" value="8.837922153576229E-11" />
+      <entry key="S60" value="1.32929465954524E-5" />
+      <entry key="M2" value="0.005157312284333995" />
+      <entry key="M5" value="0.19718433829879936" />
+      <entry key="M10" value="0.9389020623960376" />
+      <entry key="M15" value="2.017610651775677" />
+      <entry key="M30" value="5.876966021229608" />
+      <entry key="H1" value="13.069585825426712" />
+      <entry key="H2" value="24.30281972076409" />
+      <entry key="H4" value="40.16699918335773" />
+      <entry key="D1" value="129.6107393601371" />
+      <entry key="W1" value="365.476797625963" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.07641501735679902" />
-      <entry key="MS500" value="0.6019259922276502" />
-      <entry key="S2" value="1.1463788685996301" />
-      <entry key="S5" value="1.794572510869426" />
-      <entry key="S10" value="2.458867946096419" />
-      <entry key="S30" value="3.3264192433152564" />
-      <entry key="S60" value="3.6371731519332164" />
-      <entry key="M2" value="3.820838786800443" />
-      <entry key="M5" value="5.069951544983169" />
-      <entry key="M10" value="10.869061178598635" />
-      <entry key="M15" value="17.07139079553261" />
-      <entry key="M30" value="30.551623240586245" />
-      <entry key="H1" value="48.48971410164996" />
-      <entry key="H2" value="75.34822952818854" />
-      <entry key="H4" value="131.4477537279332" />
-      <entry key="D1" value="595.0640987951106" />
-      <entry key="W1" value="1950.5658454073657" />
+      <entry key="MS100" value="1.6693436168318443E-10" />
+      <entry key="MS500" value="0.011079238233222306" />
+      <entry key="S2" value="0.3370542902720724" />
+      <entry key="S5" value="0.9085374729880883" />
+      <entry key="S10" value="1.8801421488815349" />
+      <entry key="S30" value="5.182013196821784" />
+      <entry key="S60" value="7.852562186673814" />
+      <entry key="M2" value="10.604227743215654" />
+      <entry key="M5" value="16.236962391824118" />
+      <entry key="M10" value="22.781259821748485" />
+      <entry key="M15" value="28.73030517821511" />
+      <entry key="M30" value="47.76512110858657" />
+      <entry key="H1" value="89.03330691546793" />
+      <entry key="H2" value="164.47139761270844" />
+      <entry key="H4" value="275.01444394505415" />
+      <entry key="D1" value="840.7496276219016" />
+      <entry key="W1" value="2278.017453287134" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -451,7 +454,7 @@
       <workItem from="1783009900612" duration="16081000" />
       <workItem from="1783454364678" duration="23994000" />
       <workItem from="1783983564328" duration="10453000" />
-      <workItem from="1784252943736" duration="16253000" />
+      <workItem from="1784252943736" duration="33365000" />
     </task>
     <task id="LOCAL-00001" summary="Agregada aclaracion en AlreadyAuth sobre funcionamiento; acabada TransferList y RuleDialog para la creacion de nuevas normas para los ejercicios; agregado abortController en ExerciseEditor por si se cambia de pagina mientras se hace fetch del ejercicio permitiendo cancelarse. Cambio menor en ExerciseRow.tsx">
       <option name="closed" value="true" />
@@ -589,7 +592,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783994407923</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="AutocompleteRules.tsx ya divide en grupos correctamente y permite hacer las búsquedas como debe.&#10;ExerciseEditor.tsx permite borrar normas y editarlas.">
+      <option name="closed" value="true" />
+      <created>1784328998731</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1784328998731</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -670,7 +681,8 @@
     <MESSAGE value="Cambiado para usar el enum RuleType como atributo para las reglas para dividir entre reglas requeridas y reglas prohibidas.&#10;Añadido el inicio del buscador de reglas en ExerciseEditor.&#10;Añadido el aviso por warning como snackbar si el procesamiento de reglas por IA no funciona o tiene algún error." />
     <MESSAGE value="Nuevo AutocompleteRules.tsx para buscador de reglas + añadidos relacionados&#10;Removed ExpandableChip.tsx" />
     <MESSAGE value="Ordenación nueva del autocomplete de reglas permitiendo agrupar por nombre del ejercicio y orden alfabético&#10;ExerciseEditor.tsx ahora permite borrar reglas y añadir de otros ejercicios" />
-    <option name="LAST_COMMIT_MESSAGE" value="Ordenación nueva del autocomplete de reglas permitiendo agrupar por nombre del ejercicio y orden alfabético&#10;ExerciseEditor.tsx ahora permite borrar reglas y añadir de otros ejercicios" />
+    <MESSAGE value="AutocompleteRules.tsx ya divide en grupos correctamente y permite hacer las búsquedas como debe.&#10;ExerciseEditor.tsx permite borrar normas y editarlas." />
+    <option name="LAST_COMMIT_MESSAGE" value="AutocompleteRules.tsx ya divide en grupos correctamente y permite hacer las búsquedas como debe.&#10;ExerciseEditor.tsx permite borrar normas y editarlas." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -66,7 +66,7 @@ export const MonacoEditor: React.FC<MonacoEditorProps> = ({
           options={options}
           onMount={onEditorDidMount}
           onChange={onValueChange}
-          defaultValue={tabs[activeTab]?.node.file?.text ?? templateText}
+          defaultValue= {templateText}
           path={path}
         />
       </Box>

@@ -88,9 +88,6 @@ export default function AutocompleteRules({setExercise, exercise}: Props) {
       const rules: RuleSearch[] = await response.json();
       setResults(rules);
 
-
-      console.log(JSON.stringify(rules));
-
     } catch (error: any) {
       if (error.name !== "AbortError") {
         console.log("Network error: " + error.message);

@@ -63,3 +63,24 @@
 .notFound-mt {
     margin-top: 60px;
 }
+
+/* Bloque completo de línea no editable */
+.readonlyBlock {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Si tienes tema oscuro, usa un color claro con baja opacidad */
+.vs-dark .readonlyBlock,
+.dark .readonlyBlock {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Opcional: atenuar el texto para reforzar que no se puede tocar */
+.readonlyText {
+    opacity: 0.95;
+}
+
+/* Opcional: marcar el margen izquierdo (gutter) para que se note incluso sin scrollear */
+.readonlyMargin {
+    background-color: rgba(0, 0, 0, 0.08);
+}

@@ -78,7 +78,7 @@ export type CodeEditorData = {
   filesForDisplay: ExerciseFile[];
   templateFiles: ExerciseFile[];
   solutions: Solution[];
-  currentSolution: string;
+  currentSolution: string | null;
   exercise: Exercise;
 };
 
@@ -94,7 +94,6 @@ export type Rule = {
   description: string;
   type: RuleType;
 }
-
 
 export type RuleSearch = {
   id: string;

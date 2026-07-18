@@ -99,6 +99,7 @@ export function createTree(tree: TreeStructure, files: ExerciseFile[], root: MyT
 
     //Dividimos los paths de cada fichero para crear los nodos de un arbol
     const pathNames = file.path.split("/");
+
     pathNames.forEach((name, index) => {
       /*El primer nombre de la ruta siempre tendrá como padre el nodo Root
        * en caso contrario el anterior nodo será el padre del actual*/
@@ -106,11 +107,12 @@ export function createTree(tree: TreeStructure, files: ExerciseFile[], root: MyT
         parent = root;
       } else {
         parent = tree.findNodeByLabel(parentName);
-        /*Si estamos en el nombre de la ruta correspondiente a un archivo
-         * asignamos el contenido del archivo a la propiedad content del nodo*/
-        if (index === pathNames.length - 1) {
-          fileContent = file;
-        }
+      }
+
+      /*Si estamos en el nombre de la ruta correspondiente a un archivo
+       * asignamos el contenido del archivo a la propiedad content del nodo*/
+      if (index === pathNames.length - 1) {
+        fileContent = file;
       }
 
       if (!filesAndDirectories.includes(name)) {

@@ -64,8 +64,13 @@ export function CodeEditorPage() {
   const [IAResponse, setIAResponse] = useState<string>();
 
   //Code editor variables
+  const [monacoInstance, setMonacoInstance] = useState<Monaco | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const constrainedInstance = useRef<any>(null);
   const fullRestriction: RangeRestrictionObject[] = [];
+  const restrictionsByModel = useRef(new Map<string, RangeRestrictionObject[]>());
+  const decorationsByModel = useRef(new Map<string, editor.IModelDeltaDecoration[]>());
+  const decorationIdsByModel = useRef(new Map<string, string[]>());
 
   //Route params
   const { exerciseId } = useParams<{exerciseId: string}>();
@@ -86,6 +91,8 @@ export function CodeEditorPage() {
 
   //Fetching files for the editor to show and setting up states and file tree
   useEffect(() => {
+
+    if (!monacoInstance) return;
 
     const fetchData = async () => {
       try {
@@ -108,6 +115,89 @@ export function CodeEditorPage() {
         setExercise(data.exercise);
 
         const filesForDisplay = data.filesForDisplay;
+
+        for (const file of filesForDisplay) {
+          const uri = monacoInstance.Uri.parse(file.path);
+
+          //Creating the models with their respective text
+          let model = monacoInstance.editor.getModel(uri);
+
+          if (!model) {
+            model = monacoInstance.editor.createModel(
+              file.text,
+              "java",
+              uri
+            );
+          }
+
+          //Creating the restrictions for editable methods
+          if (file.editableMethods.length > 0){
+            const restrictions:RangeRestrictionObject[] = [];
+            for (const method of file.editableMethods) {
+              restrictions.push({
+                range: [
+                  method.startLine,
+                  1,
+                  method.endLine,
+                  monacoInstance.editor.getModel(uri)?.getLineMaxColumn(method.endLine) ?? 1,
+                ],
+                allowMultiline: true
+              });
+            }
+
+            restrictionsByModel.current.set(uri.path, restrictions);
+          }
+
+          const decorations: editor.IModelDeltaDecoration[] = [];
+
+          const methods = [...file.editableMethods].sort(
+            (a, b) => a.startLine - b.startLine
+          );
+
+          const lineCount = model.getLineCount();
+          let currentLine = 1;
+
+          for (const method of methods) {
+            const blockEnd = method.startLine - 2;
+
+            if (currentLine <= blockEnd) {
+              decorations.push({
+                range: new monacoInstance.Range(
+                  currentLine,
+                  1,
+                  blockEnd,
+                  model.getLineMaxColumn(blockEnd)
+                ),
+                options: {
+                  isWholeLine: true,
+                  className: "readonlyBlock",
+                  inlineClassName: "readonlyText",
+                  linesDecorationsClassName: "readonlyMargin"
+                }
+              });
+            }
+            currentLine = method.endLine + 2;
+          }
+
+          if (currentLine <= lineCount) {
+            decorations.push({
+              range: new monacoInstance.Range(
+                currentLine,
+                1,
+                lineCount,
+                model.getLineMaxColumn(lineCount)
+              ),
+              options: {
+                isWholeLine: true,
+                className: "readonlyBlock",
+                inlineClassName: "readonlyText",
+                linesDecorationsClassName: "readonlyMargin"
+              }
+            });
+          }
+
+          decorationsByModel.current.set(uri.path, decorations);
+        }
 
         const root: MyTreeNode | null = {
           nodeId: "0",
@@ -133,7 +223,142 @@ export function CodeEditorPage() {
       }
     };
     void fetchData();
-  }, [location.pathname]);
+  }, [location.pathname, monacoInstance]);
+
+
+  const handleEditorChange = (content: string | undefined) => {
+    setUnsavedChanges(true);
+
+    if (!autosave) return;
+
+    if (saveTimeout.current) {
+      clearTimeout(saveTimeout.current);
+    }
+
+    saveTimeout.current = setTimeout(() => {
+      handleSave(false);
+    }, 3000);
+
+  };
+
+  /*--------------------------------------------------*/
+  // TABS RELATED FUNCTIONS
+
+  const handleTabClick = (event: React.SyntheticEvent, index: number) => {
+    setActiveTab(index);
+  };
+
+  const handleCloseTab = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    event.stopPropagation();
+
+
+    const newTabs = [...tabs];
+    if (index > -1) {
+      newTabs.splice(index, 1);
+    }
+
+    if (activeTab === tabs.length - 1 && activeTab > 0) {
+      setActiveTab(activeTab - 1);
+    }
+
+    setTabs(newTabs);
+  };
+
+  /*------------------------------------------------*/
+  // HANDLERS
+
+  function handleEditorDidMount(
+    codeEditor: editor.IStandaloneCodeEditor,
+    monaco: Monaco
+  ) {
+    editorRef.current = codeEditor;
+    setMonacoInstance(monaco);
+
+    constrainedInstance.current = constrainedEditor(monaco);
+    constrainedInstance.current.initializeIn(codeEditor);
+
+
+    codeEditor.onDidChangeModel(() => {
+      queueMicrotask(() => {
+        const model = codeEditor.getModel();
+        if (!model) return;
+
+        const restrictions = restrictionsByModel.current.get(model.uri.path) ?? fullRestriction;
+
+        constrainedInstance.current.addRestrictionsTo(model, restrictions);
+
+        const decorations =
+          decorationsByModel.current.get(model.uri.path) ?? [];
+
+        const previous =
+          decorationIdsByModel.current.get(model.uri.path) ?? [];
+
+        const current = model.deltaDecorations(previous, decorations);
+
+        decorationIdsByModel.current.set(model.uri.path, current);
+      });
+    });
+  }
+
+  const handleStatusAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAutosave(event.target.checked);
+  };
+
+  //Function for handling the event of selecting a node from the tree
+  const handleNodeSelect = (
+    _event: React.SyntheticEvent | null,
+    nodeId: string | null
+  ) => {
+
+    //We don't check the event cause this function could be called by a component and not the user
+    if (fileTree === undefined || nodeId === null) {
+      console.warn("Tree not declared");
+      return;
+    }
+
+    const selectedNode = fileTree.findNodeById(nodeId);
+
+    //If the selected node is not a file, it does nothing
+    if (!selectedNode?.file) {
+      return;
+    }
+
+    const newTabs = [...tabs];
+
+    //If the selected node already has a corresponding tab, it does nothing
+    for (let i = 0; i < tabs.length; i++) {
+      if (tabs[i].node.nodeId === nodeId) {
+        setActiveTab(i);
+        return;
+      }
+    }
+
+    //Create a new tab with the selected node to show the file
+    const newTab: MyTab = {
+      node: selectedNode
+    };
+
+    //Now we add the new tab in the list of tabs
+    newTabs.push(newTab);
+    setTabs(newTabs);
+
+    //Select this new tab to show the content instantly
+    setActiveTab(newTabs.length - 1);
+  };
+
+  //Upload the solution files to get a correction and a number of errors
+  const handleSubmit = () => {
+    //TODO ENVIAR NODOS DEL ÁRBOL (SOLO DE SOLUCIÓN)
+  };
+
+  /* ----------------------------------------------- */
+  // SAVE FUNCTION
+
+  //Auto-save handle (3 seconds)
+  const saveTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleSave = (buttonPressed: boolean) => {
     const displayFiles: Array<ExerciseFile> = [];
@@ -184,31 +409,6 @@ export function CodeEditorPage() {
     void saveData();
   };
 
-  //Auto-save handle (3 seconds)
-  const saveTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  const handleEditorChange = (content: string | undefined) => {
-    const tab = tabs[activeTab];
-
-    if (tab && tab.node.file && content) {
-      const path = Uri.parse(tab.node.file.path);
-      editor.getModel(path)?.setValue(content);
-    }
-
-    setUnsavedChanges(true);
-
-    if (!autosave) return;
-
-    if (saveTimeout.current) {
-      clearTimeout(saveTimeout.current);
-    }
-
-    saveTimeout.current = setTimeout(() => {
-      handleSave(false);
-    }, 3000);
-
-  };
-
   //Clean-up function so no timeout lasts even in page changes
   useEffect(() => {
     return () => {
@@ -218,118 +418,14 @@ export function CodeEditorPage() {
     };
   }, []);
 
-  const handleStatusAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAutosave(event.target.checked);
-  };
-
-  const handleTabClick = (event: React.SyntheticEvent, index: number) => {
-    setActiveTab(index);
-  };
-
-  const handleCloseTab = (
-    event: React.MouseEvent<HTMLElement>,
-    index: number
-  ) => {
-    event.stopPropagation();
-
-
-    const newTabs = [...tabs];
-    if (index > -1) {
-      newTabs.splice(index, 1);
-    }
-
-    if (activeTab === tabs.length - 1 && activeTab > 0) {
-      setActiveTab(activeTab - 1);
-    }
-
-    setTabs(newTabs);
-  };
-
-
-  function handleEditorDidMount(
-    codeEditor: editor.IStandaloneCodeEditor,
-    monaco: Monaco
-  ) {
-    editorRef.current = codeEditor;
-
-    const constrainedInstance = constrainedEditor(monaco);
-    const model = codeEditor.getModel();
-
-    constrainedInstance.initializeIn(codeEditor);
-     fullRestriction.push({
-       range: [1, 1, 2, 81],
-       allowMultiline: true,
-       label: "start"
-     });
-     constrainedInstance.addRestrictionsTo(model, fullRestriction);
-  }
-
-  //Function for handling the event of selecting a node from the tree
-  const handleNodeSelect = (
-    _event: React.SyntheticEvent | null,
-    nodeId: string | null
-  ) => {
-
-    //We don't check the event cause this function could be called by a component and not the user
-
-    if (fileTree === undefined || nodeId === null) {
-      console.warn("Tree not declared");
-      return;
-    }
-
-    const selectedNode = fileTree.findNodeById(nodeId);
-
-    //If the selected node is not a file, it does nothing
-    if (!selectedNode?.file) {
-      return;
-    }
-
-
-    const newTabs = [...tabs];
-
-    //If the selected node already has a corresponding tab, it does nothing
-    for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].node.nodeId === nodeId) {
-        setActiveTab(i);
-        return;
-      }
-    }
-
-    //Create a new tab with the selected node to show the file
-    const newTab: MyTab = {
-      node: selectedNode
-    };
-
-    //If the model already exist for that file, it will use it, if not, it will create a new one with the file content
-    const model = editor.getModel(Uri.parse(selectedNode.file.path));
-
-    if (!model) {
-
-      editor.createModel(
-        selectedNode.file.text,
-        "java",
-        Uri.parse(selectedNode.file.path)
-      );
-    }
-
-    //Now we add the new tab in the list of tabs
-    newTabs.push(newTab);
-    setTabs(newTabs);
-
-    //Select this new tab to show the content instantly
-    setActiveTab(newTabs.length - 1);
-  };
-
-  //Upload the solution files to get a correction and a number of errors
-  const handleSubmit = () => {
-    //TODO ENVIAR NODOS DEL ÁRBOL (SOLO DE SOLUCIÓN)
-  };
+  /* ----------------------------------------------- */
+  // RENDER
 
   let saveStatusIcon;
   if (autosave && unsavedChanges) {
-    saveStatusIcon = <CircularProgress sx={{ marginRight: "5px" }} size={24} />;
+    saveStatusIcon = <CircularProgress sx={{ marginRight: "10px" }} size={24} />;
   } else if (autosave && !unsavedChanges) {
-    saveStatusIcon = <Done sx={{ marginRight: "5px" }} color="success" />;
+    saveStatusIcon = <Done sx={{ marginRight: "10px" }} color="success" />;
   } else {
     saveStatusIcon = null;
   }
@@ -475,7 +571,8 @@ export function CodeEditorPage() {
                 </Typography>
                 <TextField
                   multiline
-                  rows={6}
+                  minRows={6}
+                  maxRows={12}
                   fullWidth
                   variant="outlined"
                   placeholder="La respuesta del análisis de la IA aparecerá aquí tras pulsar Examinar..."
