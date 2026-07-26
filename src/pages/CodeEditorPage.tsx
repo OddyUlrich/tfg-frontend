@@ -131,7 +131,8 @@ export function CodeEditorPage() {
           }
 
           //Creating the restrictions for editable methods
-          if (file.editableMethods.length > 0){
+
+          if (file && file.editableMethods && file.editableMethods.length > 0){
             const restrictions:RangeRestrictionObject[] = [];
             for (const method of file.editableMethods) {
               restrictions.push({
@@ -146,27 +147,46 @@ export function CodeEditorPage() {
             }
 
             restrictionsByModel.current.set(uri.path, restrictions);
-          }
 
-          const decorations: editor.IModelDeltaDecoration[] = [];
 
-          const methods = [...file.editableMethods].sort(
-            (a, b) => a.startLine - b.startLine
-          );
+            const decorations: editor.IModelDeltaDecoration[] = [];
 
-          const lineCount = model.getLineCount();
-          let currentLine = 1;
+            const methods = [...file.editableMethods].sort(
+              (a, b) => a.startLine - b.startLine
+            );
 
-          for (const method of methods) {
-            const blockEnd = method.startLine - 2;
+            const lineCount = model.getLineCount();
+            let currentLine = 1;
 
-            if (currentLine <= blockEnd) {
+            for (const method of methods) {
+              const blockEnd = method.startLine - 2;
+
+              if (currentLine <= blockEnd) {
+                decorations.push({
+                  range: new monacoInstance.Range(
+                    currentLine,
+                    1,
+                    blockEnd,
+                    model.getLineMaxColumn(blockEnd)
+                  ),
+                  options: {
+                    isWholeLine: true,
+                    className: "readonlyBlock",
+                    inlineClassName: "readonlyText",
+                    linesDecorationsClassName: "readonlyMargin"
+                  }
+                });
+              }
+              currentLine = method.endLine + 2;
+            }
+
+            if (currentLine <= lineCount) {
               decorations.push({
                 range: new monacoInstance.Range(
                   currentLine,
                   1,
-                  blockEnd,
-                  model.getLineMaxColumn(blockEnd)
+                  lineCount,
+                  model.getLineMaxColumn(lineCount)
                 ),
                 options: {
                   isWholeLine: true,
@@ -176,27 +196,9 @@ export function CodeEditorPage() {
                 }
               });
             }
-            currentLine = method.endLine + 2;
-          }
 
-          if (currentLine <= lineCount) {
-            decorations.push({
-              range: new monacoInstance.Range(
-                currentLine,
-                1,
-                lineCount,
-                model.getLineMaxColumn(lineCount)
-              ),
-              options: {
-                isWholeLine: true,
-                className: "readonlyBlock",
-                inlineClassName: "readonlyText",
-                linesDecorationsClassName: "readonlyMargin"
-              }
-            });
+            decorationsByModel.current.set(uri.path, decorations);
           }
-
-          decorationsByModel.current.set(uri.path, decorations);
         }
 
         const root: MyTreeNode | null = {
