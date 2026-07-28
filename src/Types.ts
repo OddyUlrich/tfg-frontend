@@ -49,7 +49,7 @@ export type ExerciseHome = {
   favorite: boolean;
   batteryName: string;
   numberErrorsSolution: number;
-  statusSolution: string;
+  statusSolution: SolutionStatus;
   creationTimestamp: DateTime;
 };
 
@@ -122,14 +122,27 @@ export type EditorExerciseData = {
   files: ExerciseFile[];
 };
 
+export type EvaluationResponse = {
+  evaluationStatus: ExerciseEvaluationStatus;
+  response: string;
+  errors: string[];
+}
+
+export enum ExerciseEvaluationStatus {
+  PASS = "PASS",
+  FAIL = "FAIL",
+  UNCERTAIN = "UNCERTAIN",
+}
+
 export enum RuleType {
   FORBIDDEN = "FORBIDDEN",
   REQUIRED = "REQUIRED",
 }
 
-enum SolutionStatus {
+export enum SolutionStatus {
   PENDING = "PENDING",
   COMPLETED = "COMPLETED",
+  IN_PROGRESS = "IN_PROGRESS",
 }
 
 export type ErrorSpring = {

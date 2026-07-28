@@ -6,7 +6,7 @@ import {
 import { MyBreadcrumbs } from "../components/navigation/MyBreadcrumbs";
 import {
   CodeEditorData,
-  ErrorSpring, Exercise,
+  ErrorSpring, EvaluationResponse, Exercise,
   ExerciseFile,
   MyTreeNode
 } from "../Types";
@@ -29,9 +29,14 @@ import SendIcon from "@mui/icons-material/Send";
 import { Done } from "@mui/icons-material";
 import { enqueueSnackbar } from "notistack";
 import TextField from "@mui/material/TextField";
+import { useErrorHandler } from "../Utils";
+
+
+const EMPTY_RESTRICTIONS: RangeRestrictionObject[] = [];
 
 export function CodeEditorPage() {
   const location = useLocation();
+  const errorHandler = useErrorHandler();
   const [openSaveDialog, setOpenSaveDialog] = React.useState(false);
   const [currentSolutionId, setCurrentSolutionId] = useState<string | null>(
     null
@@ -67,10 +72,10 @@ export function CodeEditorPage() {
   const [monacoInstance, setMonacoInstance] = useState<Monaco | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const constrainedInstance = useRef<any>(null);
-  const fullRestriction: RangeRestrictionObject[] = [];
   const restrictionsByModel = useRef(new Map<string, RangeRestrictionObject[]>());
   const decorationsByModel = useRef(new Map<string, editor.IModelDeltaDecoration[]>());
   const decorationIdsByModel = useRef(new Map<string, string[]>());
+  const initializedModels = useRef(new Set<string>());
 
   //Route params
   const { exerciseId } = useParams<{exerciseId: string}>();
@@ -110,6 +115,7 @@ export function CodeEditorPage() {
         }
 
         const data: CodeEditorData = await response.json();
+
         setTemplateFiles(data.templateFiles);
         setCurrentSolutionId(data.currentSolution);
         setExercise(data.exercise);
@@ -123,12 +129,14 @@ export function CodeEditorPage() {
           let model = monacoInstance.editor.getModel(uri);
 
           if (!model) {
+
             model = monacoInstance.editor.createModel(
               file.text,
               "java",
               uri
             );
           }
+
 
           //Creating the restrictions for editable methods
 
@@ -146,11 +154,10 @@ export function CodeEditorPage() {
               });
             }
 
+
             restrictionsByModel.current.set(uri.path, restrictions);
 
-
             const decorations: editor.IModelDeltaDecoration[] = [];
-
             const methods = [...file.editableMethods].sort(
               (a, b) => a.startLine - b.startLine
             );
@@ -173,7 +180,8 @@ export function CodeEditorPage() {
                     isWholeLine: true,
                     className: "readonlyBlock",
                     inlineClassName: "readonlyText",
-                    linesDecorationsClassName: "readonlyMargin"
+                    linesDecorationsClassName: "readonlyMargin",
+                    stickiness: monacoInstance.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
                   }
                 });
               }
@@ -192,12 +200,23 @@ export function CodeEditorPage() {
                   isWholeLine: true,
                   className: "readonlyBlock",
                   inlineClassName: "readonlyText",
-                  linesDecorationsClassName: "readonlyMargin"
+                  linesDecorationsClassName: "readonlyMargin",
+                  stickiness: monacoInstance.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
                 }
               });
             }
 
             decorationsByModel.current.set(uri.path, decorations);
+
+            if (initializedModels.current.has(uri.path)) {
+              constrainedInstance.current.removeRestrictionsIn(model);
+            }
+            constrainedInstance.current.addRestrictionsTo(model, restrictions);
+            initializedModels.current.add(uri.path);
+
+            const previousIds = decorationIdsByModel.current.get(uri.path) ?? [];
+            const newIds = model.deltaDecorations(previousIds, decorations);
+            decorationIdsByModel.current.set(uri.path, newIds);
           }
         }
 
@@ -281,32 +300,14 @@ export function CodeEditorPage() {
 
     constrainedInstance.current = constrainedEditor(monaco);
     constrainedInstance.current.initializeIn(codeEditor);
-
-
-    codeEditor.onDidChangeModel(() => {
-      queueMicrotask(() => {
-        const model = codeEditor.getModel();
-        if (!model) return;
-
-        const restrictions = restrictionsByModel.current.get(model.uri.path) ?? fullRestriction;
-
-        constrainedInstance.current.addRestrictionsTo(model, restrictions);
-
-        const decorations =
-          decorationsByModel.current.get(model.uri.path) ?? [];
-
-        const previous =
-          decorationIdsByModel.current.get(model.uri.path) ?? [];
-
-        const current = model.deltaDecorations(previous, decorations);
-
-        decorationIdsByModel.current.set(model.uri.path, current);
-      });
-    });
   }
 
   const handleStatusAutosave = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAutosave(event.target.checked);
+
+    if (event.target.checked) {
+      handleSave(false);
+    }
   };
 
   //Function for handling the event of selecting a node from the tree
@@ -363,11 +364,11 @@ export function CodeEditorPage() {
   const saveTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleSave = (buttonPressed: boolean) => {
-    const displayFiles: Array<ExerciseFile> = [];
-    fileTree?.filterSolutionNodes(displayFiles);
+    const solutionFiles: Array<ExerciseFile> = [];
+    fileTree?.filterSolutionNodes(solutionFiles);
 
-    displayFiles.forEach((file) => {
-      const model = editor.getModel(Uri.parse(file.path));
+    solutionFiles.forEach((file) => {
+      const model = monacoInstance?.editor.getModel(Uri.parse(file.path));
       if (model) {
         file.text = model.getValue();
       }
@@ -378,8 +379,7 @@ export function CodeEditorPage() {
         const response = await fetch(`http://localhost:8080/exercises/${exerciseId}/solutions`, {
           method: "POST",
           body: JSON.stringify({
-            filesForDisplay: displayFiles,
-            exerciseId: exerciseId,
+            solutionFiles: solutionFiles,
             solutionId: currentSolutionId
           }),
           headers: {
@@ -394,6 +394,7 @@ export function CodeEditorPage() {
         }
 
         setUnsavedChanges(false);
+
 
         if (buttonPressed) {
           enqueueSnackbar("Se ha guardado todo correctamente", {
@@ -419,6 +420,77 @@ export function CodeEditorPage() {
       }
     };
   }, []);
+
+  /* ----------------------------------------------- */
+  //EVALUATION WITH AI FUNCTION
+
+  const handleEvaluation = () => {
+    const filesForEvaluation: Array<ExerciseFile> | undefined =  templateFiles?.map(file => ({ ...file }));
+
+    //We loop all the template files and overwrite the solution files with the current content in the models
+    filesForEvaluation?.forEach((file) => {
+      if (file.editableMethods && file.editableMethods.length > 0){
+
+        const model = monacoInstance?.editor.getModel(Uri.parse(file.path));
+        if (model) {
+          file.text = model.getValue();
+        }
+      }
+    });
+
+    const evaluate = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/exercises/${exerciseId}/solutions/evaluate`, {
+          method: "POST",
+          body: JSON.stringify({
+            filesForEvaluation: filesForEvaluation,
+            statement: exercise.statement,
+            rules: exercise.rules,
+            solutionId: currentSolutionId
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include"
+        });
+
+        if (response.status === 503) {
+          throw new Error("Actualmente no podemos procesar sus reglas con esta IA");
+        }else{
+          await errorHandler(response, "No tienes permisos para crear nuevas reglas");
+        }
+
+        const evaluationResponse: EvaluationResponse = await response.json();
+        const evaluationString: string[] = [];
+
+        if (evaluationResponse.evaluationStatus === "PASS"){
+          evaluationString.push("APTO:\n");
+        }else if(evaluationResponse.evaluationStatus === "FAIL"){
+          evaluationString.push("NO APTO:\n");
+        }else{
+          evaluationString.push("SIN EVALUACIÓN:\n");
+        }
+
+        evaluationString.push(evaluationResponse.response);
+
+        if (evaluationResponse.errors.length > 0) {
+          evaluationString.push("\n\nErrores:\n");
+        }
+        evaluationResponse.errors.forEach((error: string) => {
+          evaluationString.push(`-  ${error}\n`);
+        })
+
+        const evaluationText = evaluationString.join("");
+        setIAResponse(evaluationText);
+
+      } catch (error: any) {
+        if (error instanceof Error) {
+          console.log(error.message);
+        }
+      }
+    };
+    void evaluate();
+  };
 
   /* ----------------------------------------------- */
   // RENDER
@@ -598,7 +670,7 @@ export function CodeEditorPage() {
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                   <Button
                     fullWidth
-                    onClick={() => console.log("Examinando con IA...")}
+                    onClick={() => handleEvaluation()}
                     color="secondary"
                     variant="outlined"
                     sx={{ fontWeight: "bold", textTransform: "none" }}

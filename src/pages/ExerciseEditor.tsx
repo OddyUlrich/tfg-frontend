@@ -579,8 +579,8 @@ export function ExerciseEditor() {
         }
       );
 
-      if (response.status === 500) {
-        throw new Error("Actualmente no podemos procesar sus reglas con esta IA, seleccione otra");
+      if (response.status === 503) {
+        throw new Error("Actualmente no podemos procesar sus reglas con esta IA");
       }else{
         await errorHandler(response, "No tienes permisos para crear nuevas reglas");
       }

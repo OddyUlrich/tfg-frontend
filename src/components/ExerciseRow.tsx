@@ -1,7 +1,7 @@
 import { Box, Chip, IconButton, TableCell, TableRow } from "@mui/material";
 import { Star, StarBorder, NewReleases, ModeEdit } from "@mui/icons-material";
 import React from "react";
-import { ExerciseHome, Tag } from "../Types";
+import { ExerciseHome, SolutionStatus, Tag } from "../Types";
 import { yellow } from "@mui/material/colors";
 import { Link } from "./navigation/Link";
 import { DateTime } from "luxon";
@@ -66,7 +66,19 @@ export function ExerciseRow(props: ExerciseRowProps) {
           <ModeEdit fontSize="medium" />
         </IconButton>
       </TableCell>
-      <TableCell width="10%" align="right">{props.exercise.statusSolution}</TableCell>
+      <TableCell width="10%" align="right">
+        {props.exercise.statusSolution === SolutionStatus.PENDING && (
+          <Chip label="PENDIENTE" color="warning" size="small" />
+        )}
+
+        {props.exercise.statusSolution === SolutionStatus.COMPLETED && (
+          <Chip label="COMPLETADO" color="success" size="small" />
+        )}
+
+        {props.exercise.statusSolution === SolutionStatus.IN_PROGRESS && (
+          <Chip label="EN PROGRESO" color="info" size="small" />
+        )}
+      </TableCell>
     </TableRow>
   );
 }
