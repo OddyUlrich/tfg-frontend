@@ -1,10 +1,12 @@
 import { Box, Chip, IconButton, TableCell, TableRow } from "@mui/material";
-import { Star, StarBorder, NewReleases, ModeEdit } from "@mui/icons-material";
+import { Star, StarBorder, NewReleases, ModeEdit, Brightness4, Brightness7 } from "@mui/icons-material";
 import React from "react";
+import { useTheme } from "@mui/material/styles";
 import { ExerciseHome, SolutionStatus, Tag } from "../Types";
 import { yellow } from "@mui/material/colors";
 import { Link } from "./navigation/Link";
 import { DateTime } from "luxon";
+
 
 type ExerciseRowProps = {
   exercise: ExerciseHome;
@@ -13,7 +15,10 @@ type ExerciseRowProps = {
 
 export function ExerciseRow(props: ExerciseRowProps) {
 
+  const theme = useTheme();
+
   let content = null;
+  const chipTextColor = theme.palette.mode === "dark" ? "black" : "white";
 
   if (DateTime.now().diff(props.exercise.creationTimestamp, 'days').days < 7) {
     content = <NewReleases sx={{ verticalAlign: 'middle' }} color={"primary"}/>
@@ -68,15 +73,15 @@ export function ExerciseRow(props: ExerciseRowProps) {
       </TableCell>
       <TableCell width="10%" align="right">
         {props.exercise.statusSolution === SolutionStatus.PENDING && (
-          <Chip label="PENDIENTE" color="warning" size="small" />
+          <Chip label="PENDIENTE" color="warning" size="small" sx={{ fontWeight: "bold", color: chipTextColor }} />
         )}
 
         {props.exercise.statusSolution === SolutionStatus.COMPLETED && (
-          <Chip label="COMPLETADO" color="success" size="small" />
+          <Chip label="COMPLETADO" color="success" size="small" sx={{ fontWeight: "bold", color: chipTextColor }} />
         )}
 
         {props.exercise.statusSolution === SolutionStatus.IN_PROGRESS && (
-          <Chip label="EN PROGRESO" color="info" size="small" />
+          <Chip label="EN PROGRESO" color="info" size="small" sx={{ fontWeight: "bold", color: chipTextColor}}/>
         )}
       </TableCell>
     </TableRow>

@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Arreglo menor de métodos editables para no usar su variable si no existía el array para contenerlos.">
+    <list default="true" id="bf007748-8423-4b75-bf45-3c165aa4650e" name="Changes" comment="Se ha implementado la corrección de ejercicios&#10;Se ha añadido la actualización del estado de los ejercicios en función del resultado de las soluciones&#10;Soluciones menores por nombres no correspondiendo en servidor e interfaz gráfica">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Types.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ExerciseRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExerciseRow.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/CodeEditorPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ExerciseEditor.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,58 +63,58 @@
       <entry key="MS100" value="1.0" />
       <entry key="MS500" value="1.0" />
       <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.000000000845311" />
-      <entry key="S10" value="1.0000291208396261" />
-      <entry key="S30" value="1.039615951071069" />
-      <entry key="S60" value="1.3632506294808222" />
-      <entry key="M2" value="2.296543199948572" />
-      <entry key="M5" value="4.081006649950707" />
-      <entry key="M10" value="5.392061545760946" />
-      <entry key="M15" value="6.054502678795999" />
-      <entry key="M30" value="8.353356862021478" />
-      <entry key="H1" value="29.059556656304995" />
-      <entry key="H2" value="108.6489775030142" />
-      <entry key="H4" value="260.72623836068624" />
-      <entry key="D1" value="902.7599050084428" />
-      <entry key="W1" value="2190.5044693734717" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0000000000000002" />
+      <entry key="S30" value="1.0000166179939256" />
+      <entry key="S60" value="1.0114114450070575" />
+      <entry key="M2" value="1.4142411183262151" />
+      <entry key="M5" value="5.650421321658481" />
+      <entry key="M10" value="12.03903060789358" />
+      <entry key="M15" value="15.871592100183006" />
+      <entry key="M30" value="21.750646003399517" />
+      <entry key="H1" value="33.103248026192574" />
+      <entry key="H2" value="86.13731003528837" />
+      <entry key="H4" value="220.92098856275211" />
+      <entry key="D1" value="887.1345216778102" />
+      <entry key="W1" value="2203.0965917471212" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="1.270338028529783E-154" />
-      <entry key="S2" value="3.9812736363171364E-39" />
-      <entry key="S5" value="7.209842339272837E-16" />
-      <entry key="S10" value="4.519444568357553E-8" />
-      <entry key="S30" value="0.007363722511714338" />
-      <entry key="S60" value="0.14877904158024072" />
-      <entry key="M2" value="0.6835067028143444" />
-      <entry key="M5" value="1.836270832778726" />
-      <entry key="M10" value="2.659132832372525" />
-      <entry key="M15" value="3.034364218927417" />
-      <entry key="M30" value="3.745249897032748" />
-      <entry key="H1" value="7.343466909872525" />
-      <entry key="H2" value="19.783131543032763" />
-      <entry key="H4" value="43.16846872945284" />
-      <entry key="D1" value="154.82422118941454" />
-      <entry key="W1" value="404.4092471734826" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="3.4844791760576707E-193" />
+      <entry key="S30" value="1.4547276191626142E-64" />
+      <entry key="S60" value="2.0911437661464876E-32" />
+      <entry key="M2" value="2.562499830186257E-16" />
+      <entry key="M5" value="1.2402383691294056E-6" />
+      <entry key="M10" value="0.0021853663208716797" />
+      <entry key="M15" value="0.02662301177260871" />
+      <entry key="M30" value="0.35081288693674656" />
+      <entry key="H1" value="2.2474938456341733" />
+      <entry key="H2" value="10.944444498302838" />
+      <entry key="H4" value="32.10820194969042" />
+      <entry key="D1" value="147.37159857174802" />
+      <entry key="W1" value="401.5691557990033" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.006172197748932635" />
-      <entry key="MS500" value="0.36148307363643684" />
-      <entry key="S2" value="0.7753932063470048" />
-      <entry key="S5" value="0.9032517195921147" />
-      <entry key="S10" value="0.9504246731549008" />
-      <entry key="S30" value="1.0295574204371671" />
-      <entry key="S60" value="1.4973673997180967" />
-      <entry key="M2" value="2.9615229971516186" />
-      <entry key="M5" value="5.900700516123209" />
-      <entry key="M10" value="8.039673052148741" />
-      <entry key="M15" value="9.080154418248561" />
-      <entry key="M30" value="12.09306729754793" />
-      <entry key="H1" value="36.396518149080585" />
-      <entry key="H2" value="128.42214467044911" />
-      <entry key="H4" value="303.883387202171" />
-      <entry key="D1" value="1057.577511063402" />
-      <entry key="W1" value="2594.911338859377" />
+      <entry key="MS100" value="0.8585654364377537" />
+      <entry key="MS500" value="0.9699619103417348" />
+      <entry key="S2" value="0.9924043746858185" />
+      <entry key="S5" value="0.9969547984662518" />
+      <entry key="S10" value="0.9984762383082795" />
+      <entry key="S30" value="0.9995083816549821" />
+      <entry key="S60" value="1.0111284279036714" />
+      <entry key="M2" value="1.4133660855570442" />
+      <entry key="M5" value="5.646420788311508" />
+      <entry key="M10" value="12.036326225548969" />
+      <entry key="M15" value="15.893733327316356" />
+      <entry key="M30" value="22.09794911681419" />
+      <entry key="H1" value="35.347006428892605" />
+      <entry key="H2" value="97.07529974783127" />
+      <entry key="H4" value="253.02028118025825" />
+      <entry key="D1" value="1034.499739241396" />
+      <entry key="W1" value="2604.663374446882" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -458,7 +456,9 @@
       <workItem from="1785025488999" duration="2878000" />
       <workItem from="1785086350555" duration="5823000" />
       <workItem from="1785179356961" duration="21122000" />
-      <workItem from="1785259690298" duration="3927000" />
+      <workItem from="1785259690298" duration="8081000" />
+      <workItem from="1785324434804" duration="1143000" />
+      <workItem from="1785327252939" duration="1281000" />
     </task>
     <task id="LOCAL-00001" summary="Agregada aclaracion en AlreadyAuth sobre funcionamiento; acabada TransferList y RuleDialog para la creacion de nuevas normas para los ejercicios; agregado abortController en ExerciseEditor por si se cambia de pagina mientras se hace fetch del ejercicio permitiendo cancelarse. Cambio menor en ExerciseRow.tsx">
       <option name="closed" value="true" />
@@ -620,7 +620,15 @@
       <option name="project" value="LOCAL" />
       <updated>1785087354779</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="Se ha implementado la corrección de ejercicios&#10;Se ha añadido la actualización del estado de los ejercicios en función del resultado de las soluciones&#10;Soluciones menores por nombres no correspondiendo en servidor e interfaz gráfica">
+      <option name="closed" value="true" />
+      <created>1785265346218</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1785265346218</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -705,7 +713,8 @@
     <MESSAGE value="Añadido CSS para el MonacoEditor.tsx el cual ha sido arreglado de numerosos errores, principalmente dejando ahora solo editar los métodos editables de aquellos archivos que estén marcados para ello." />
     <MESSAGE value="Añadido CSS para el MonacoEditor.tsx el cual ha sido arreglado de numerosos errores, principalmente dejando ahora solo editar los métodos editables de aquellos archivos que estén marcados para ello. Además se ha reordenado ligeramente el archivo." />
     <MESSAGE value="Arreglo menor de métodos editables para no usar su variable si no existía el array para contenerlos." />
-    <option name="LAST_COMMIT_MESSAGE" value="Arreglo menor de métodos editables para no usar su variable si no existía el array para contenerlos." />
+    <MESSAGE value="Se ha implementado la corrección de ejercicios&#10;Se ha añadido la actualización del estado de los ejercicios en función del resultado de las soluciones&#10;Soluciones menores por nombres no correspondiendo en servidor e interfaz gráfica" />
+    <option name="LAST_COMMIT_MESSAGE" value="Se ha implementado la corrección de ejercicios&#10;Se ha añadido la actualización del estado de los ejercicios en función del resultado de las soluciones&#10;Soluciones menores por nombres no correspondiendo en servidor e interfaz gráfica" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

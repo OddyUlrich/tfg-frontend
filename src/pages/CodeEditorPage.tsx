@@ -217,6 +217,40 @@ export function CodeEditorPage() {
             const previousIds = decorationIdsByModel.current.get(uri.path) ?? [];
             const newIds = model.deltaDecorations(previousIds, decorations);
             decorationIdsByModel.current.set(uri.path, newIds);
+          }else{
+
+            restrictionsByModel.current.set(uri.path, EMPTY_RESTRICTIONS);
+
+            if (initializedModels.current.has(uri.path)) {
+              constrainedInstance.current.removeRestrictionsIn(model);
+            }
+            constrainedInstance.current.addRestrictionsTo(model, EMPTY_RESTRICTIONS);
+            initializedModels.current.add(uri.path);
+
+            const lineCount = model.getLineCount();
+            const fullFileDecoration: editor.IModelDeltaDecoration[] = [
+              {
+                range: new monacoInstance.Range(
+                  1,
+                  1,
+                  lineCount,
+                  model.getLineMaxColumn(lineCount)
+                ),
+                options: {
+                  isWholeLine: true,
+                  className: "readonlyBlock",
+                  inlineClassName: "readonlyText",
+                  linesDecorationsClassName: "readonlyMargin",
+                  stickiness: monacoInstance.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
+                }
+              }
+            ];
+
+            decorationsByModel.current.set(uri.path, fullFileDecoration);
+
+            const previousIds = decorationIdsByModel.current.get(uri.path) ?? [];
+            const newIds = model.deltaDecorations(previousIds, fullFileDecoration);
+            decorationIdsByModel.current.set(uri.path, newIds);
           }
         }
 
